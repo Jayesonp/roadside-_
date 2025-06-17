@@ -10,6 +10,8 @@ import {
   TextInput,
   ActivityIndicator,
   Modal,
+  Platform,
+  Linking,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -39,7 +41,23 @@ import {
   EyeOff,
   Shield,
   ArrowLeft,
+  Navigation,
+  Phone,
+  CreditCard,
+  Star,
+  Calendar,
+  DollarSign,
+  MessageCircle,
+  Camera,
+  FileText,
+  Share2,
 } from "lucide-react-native";
+import {
+  renderServiceTracking,
+  renderServiceHistory,
+  renderProfile,
+  renderPaymentMethods,
+} from "./CustomerDashboardViews";
 
 interface CustomerDashboardProps {
   userName?: string;
@@ -51,7 +69,42 @@ interface CustomerUser {
   email: string;
   name: string;
   membershipType: "Premium" | "Standard";
+  phone?: string;
+  address?: string;
+  emergencyContact?: string;
 }
+
+interface ServiceRequest {
+  id: string;
+  type: "towing" | "jumpstart" | "tire" | "lockout" | "fuel" | "emergency";
+  status: "pending" | "assigned" | "enroute" | "arrived" | "inprogress" | "completed" | "cancelled";
+  location: {
+    address: string;
+    coordinates: { lat: number; lng: number };
+  };
+  description: string;
+  priority: "low" | "medium" | "high" | "emergency";
+  estimatedCost: number;
+  estimatedTime: number;
+  technicianId?: string;
+  technicianName?: string;
+  technicianPhone?: string;
+  createdAt: string;
+  updatedAt: string;
+  completedAt?: string;
+  rating?: number;
+  feedback?: string;
+}
+
+interface PaymentMethod {
+  id: string;
+  type: "card" | "paypal" | "apple_pay" | "google_pay";
+  last4?: string;
+  brand?: string;
+  isDefault: boolean;
+}
+
+type DashboardView = "main" | "booking" | "tracking" | "history" | "profile" | "payment";
 
 const CustomerDashboard = React.memo(function CustomerDashboard({
   userName = "Sarah",
@@ -60,6 +113,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
   const [user, setUser] = useState<CustomerUser | null>(null);
   const [isConnected, setIsConnected] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentView, setCurrentView] = useState<DashboardView>("main");
 
   // Auth state
   const [email, setEmail] = useState("");
@@ -71,6 +125,16 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
   const [authMode, setAuthMode] = useState<"login" | "register" | "reset">(
     "login",
   );
+
+  // Service booking state
+  const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
+  const [activeRequest, setActiveRequest] = useState<ServiceRequest | null>(null);
+  const [bookingStep, setBookingStep] = useState(1);
+  const [selectedServiceType, setSelectedServiceType] = useState<string>("");
+  const [serviceLocation, setServiceLocation] = useState("");
+  const [serviceDescription, setServiceDescription] = useState("");
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
   const [authLoading, setAuthLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -189,27 +253,127 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
     );
   };
 
+  // Enhanced service booking functions
   const handleServiceRequest = (serviceId: string) => {
     const service = services.find((s) => s.id === serviceId);
     if (service?.available) {
-      Alert.alert("Service Request", `Request ${service.name}?`, [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Request Service",
-          onPress: () => {
-            Alert.alert(
-              "Service Requested",
-              "We're finding the nearest provider for you!",
-            );
-          },
-        },
-      ]);
+      setSelectedServiceType(serviceId);
+      setCurrentView("booking");
+      setBookingStep(1);
     } else {
       Alert.alert(
         "Service Unavailable",
         "This service is currently unavailable in your area.",
       );
     }
+  };
+
+  const handleBookingNext = () => {
+    if (bookingStep < 4) {
+      setBookingStep(bookingStep + 1);
+    }
+  };
+
+  const handleBookingBack = () => {
+    if (bookingStep > 1) {
+      setBookingStep(bookingStep - 1);
+    } else {
+      setCurrentView("main");
+      setBookingStep(1);
+    }
+  };
+
+  const handleConfirmBooking = async () => {
+    try {
+      const selectedService = services.find(s => s.id === selectedServiceType);
+      if (!selectedService) return;
+
+      const newRequest: ServiceRequest = {
+        id: `req_${Date.now()}`,
+        type: selectedServiceType as any,
+        status: "pending",
+        location: {
+          address: serviceLocation || currentLocation,
+          coordinates: { lat: 40.7128, lng: -74.0060 }
+        },
+        description: serviceDescription,
+        priority: selectedServiceType === "emergency" ? "emergency" : "medium",
+        estimatedCost: selectedService.id === "towing" ? 150 :
+                      selectedService.id === "jumpstart" ? 75 :
+                      selectedService.id === "tire" ? 100 :
+                      selectedService.id === "lockout" ? 85 :
+                      selectedService.id === "fuel" ? 60 : 200,
+        estimatedTime: selectedService.id === "emergency" ? 15 : 30,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      setServiceRequests(prev => [newRequest, ...prev]);
+      setActiveRequest(newRequest);
+      setCurrentView("tracking");
+
+      // Reset booking form
+      setSelectedServiceType("");
+      setServiceLocation("");
+      setServiceDescription("");
+      setBookingStep(1);
+
+      Alert.alert(
+        "Service Requested",
+        "Your request has been submitted! We're finding the nearest provider.",
+      );
+    } catch (error) {
+      console.error("Booking error:", error);
+      Alert.alert("Error", "Failed to submit request. Please try again.");
+    }
+  };
+
+  const handleCancelRequest = (requestId: string) => {
+    Alert.alert(
+      "Cancel Service",
+      "Are you sure you want to cancel this service request?",
+      [
+        { text: "No", style: "cancel" },
+        {
+          text: "Yes, Cancel",
+          style: "destructive",
+          onPress: () => {
+            setServiceRequests(prev =>
+              prev.map(req =>
+                req.id === requestId
+                  ? { ...req, status: "cancelled" as const }
+                  : req
+              )
+            );
+            if (activeRequest?.id === requestId) {
+              setActiveRequest(null);
+              setCurrentView("main");
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  const handleCallTechnician = (phone?: string) => {
+    const phoneNumber = phone || "+1-555-0123";
+    const url = `tel:${phoneNumber}`;
+    Linking.openURL(url).catch(() => {
+      Alert.alert("Error", "Unable to make phone call");
+    });
+  };
+
+  const handleNavigateToTechnician = () => {
+    const destination = "Current technician location";
+    const url = Platform.select({
+      ios: `maps:0,0?q=${encodeURIComponent(destination)}`,
+      android: `geo:0,0?q=${encodeURIComponent(destination)}`,
+      default: `https://maps.google.com/?q=${encodeURIComponent(destination)}`,
+    });
+
+    Linking.openURL(url!).catch(() => {
+      Alert.alert("Error", "Unable to open navigation app");
+    });
   };
 
   const getStatusColor = (status: string) => {
@@ -460,6 +624,38 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
       console.error("Sign in error:", error);
     }
     return false;
+  };
+
+  // Navigation function
+  const renderCurrentView = () => {
+    switch (currentView) {
+      case "booking":
+        return renderBookingFlow();
+      case "tracking":
+        return renderServiceTracking(
+          activeRequest,
+          setCurrentView,
+          handleCancelRequest,
+          handleCallTechnician,
+          handleNavigateToTechnician
+        );
+      case "history":
+        return renderServiceHistory(
+          serviceRequests,
+          setCurrentView,
+          getStatusColor
+        );
+      case "profile":
+        return renderProfile(
+          user,
+          setCurrentView,
+          handleSignOut
+        );
+      case "payment":
+        return renderPaymentMethods(setCurrentView);
+      default:
+        return renderMainDashboard();
+    }
   };
 
   // Show loading screen while checking auth
@@ -806,6 +1002,102 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
       </View>
 
       {/* Main Content */}
+      {renderCurrentView()}
+
+
+
+      {/* Bottom Navigation */}
+      <View className="absolute bottom-0 left-0 right-0 bg-slate-800/90 backdrop-blur-lg border-t border-white/10 px-4 py-4 flex-row justify-around items-center">
+        <TouchableOpacity
+          onPress={() => setCurrentView("main")}
+          className={`items-center py-2 px-4 rounded-xl ${
+            currentView === "main" ? "bg-red-500/20" : ""
+          }`}
+        >
+          <Home
+            size={20}
+            color={currentView === "main" ? "#ef4444" : "#94a3b8"}
+          />
+          <Text
+            className={`text-xs font-semibold mt-1 ${
+              currentView === "main" ? "text-red-400" : "text-slate-400"
+            }`}
+          >
+            Home
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => setCurrentView("booking")}
+          className={`items-center py-2 px-4 rounded-xl ${
+            currentView === "booking" ? "bg-red-500/20" : ""
+          }`}
+        >
+          <Wrench
+            size={20}
+            color={currentView === "booking" ? "#ef4444" : "#94a3b8"}
+          />
+          <Text
+            className={`text-xs font-semibold mt-1 ${
+              currentView === "booking" ? "text-red-400" : "text-slate-400"
+            }`}
+          >
+            Services
+          </Text>
+        </TouchableOpacity>
+
+        {/* Emergency FAB */}
+        <TouchableOpacity
+          onPress={handleEmergencyRequest}
+          className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-500 rounded-full items-center justify-center -mt-6 border-4 border-slate-800"
+        >
+          <Plus size={28} color="white" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => setCurrentView("history")}
+          className={`items-center py-2 px-4 rounded-xl ${
+            currentView === "history" ? "bg-red-500/20" : ""
+          }`}
+        >
+          <BarChart3
+            size={20}
+            color={currentView === "history" ? "#ef4444" : "#94a3b8"}
+          />
+          <Text
+            className={`text-xs font-semibold mt-1 ${
+              currentView === "history" ? "text-red-400" : "text-slate-400"
+            }`}
+          >
+            History
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => setCurrentView("profile")}
+          className={`items-center py-2 px-4 rounded-xl ${
+            currentView === "profile" ? "bg-red-500/20" : ""
+          }`}
+        >
+          <User
+            size={20}
+            color={currentView === "profile" ? "#ef4444" : "#94a3b8"}
+          />
+          <Text
+            className={`text-xs font-semibold mt-1 ${
+              currentView === "profile" ? "text-red-400" : "text-slate-400"
+            }`}
+          >
+            Profile
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+
+  // Main Dashboard View
+  function renderMainDashboard() {
+    return (
       <ScrollView className="flex-1 bg-slate-900/30 px-4 pb-24">
         {/* Emergency Banner */}
         <TouchableOpacity
@@ -826,6 +1118,28 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
             </View>
           </View>
         </TouchableOpacity>
+
+        {/* Active Service Alert */}
+        {activeRequest && (
+          <TouchableOpacity
+            onPress={() => setCurrentView("tracking")}
+            className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl p-5 mb-6"
+          >
+            <View className="flex-row justify-between items-center">
+              <View className="flex-1">
+                <Text className="text-white text-lg font-bold mb-1">
+                  Service in Progress
+                </Text>
+                <Text className="text-white/90">
+                  {services.find(s => s.id === activeRequest.type)?.name} • {activeRequest.status}
+                </Text>
+              </View>
+              <View className="w-12 h-12 bg-white/20 rounded-xl items-center justify-center">
+                <Navigation size={24} color="white" />
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
 
         {/* Membership Status */}
         <View className="bg-gradient-to-r from-green-600 to-green-500 rounded-2xl p-5 mb-6 flex-row justify-between items-center">
@@ -878,7 +1192,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
             </View>
             <View className="flex-1">
               <Text className="text-white font-semibold mb-1">
-                {currentLocation}
+                {serviceLocation || currentLocation}
               </Text>
               <Text className="text-green-400 text-sm flex-row items-center">
                 • GPS Active • Location confirmed
@@ -931,7 +1245,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
             <Text className="text-white text-lg font-semibold">
               Recent Activity
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => setCurrentView("history")}>
               <Text className="text-red-400 text-sm font-medium">View All</Text>
             </TouchableOpacity>
           </View>
@@ -972,95 +1286,251 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
           ))}
         </View>
       </ScrollView>
+    );
+  }
 
-      {/* Bottom Navigation */}
-      <View className="absolute bottom-0 left-0 right-0 bg-slate-800/90 backdrop-blur-lg border-t border-white/10 px-4 py-4 flex-row justify-around items-center">
-        <TouchableOpacity
-          onPress={() => setActiveView("home")}
-          className={`items-center py-2 px-4 rounded-xl ${
-            activeView === "home" ? "bg-red-500/20" : ""
-          }`}
-        >
-          <Home
-            size={20}
-            color={activeView === "home" ? "#ef4444" : "#94a3b8"}
-          />
-          <Text
-            className={`text-xs font-semibold mt-1 ${
-              activeView === "home" ? "text-red-400" : "text-slate-400"
+  // Booking Flow View
+  function renderBookingFlow() {
+    const selectedService = services.find(s => s.id === selectedServiceType);
+
+    return (
+      <ScrollView className="flex-1 bg-slate-900/30 px-4 pb-24">
+        {/* Header */}
+        <View className="flex-row items-center justify-between py-6">
+          <TouchableOpacity
+            onPress={handleBookingBack}
+            className="w-10 h-10 bg-slate-800/80 rounded-xl items-center justify-center"
+          >
+            <ArrowLeft size={20} color="#94a3b8" />
+          </TouchableOpacity>
+          <Text className="text-white text-lg font-bold">Book Service</Text>
+          <View className="w-10 h-10" />
+        </View>
+
+        {/* Progress Indicator */}
+        <View className="flex-row items-center mb-8">
+          {[1, 2, 3, 4].map((step) => (
+            <View key={step} className="flex-1 flex-row items-center">
+              <View
+                className={`w-8 h-8 rounded-full items-center justify-center ${
+                  step <= bookingStep ? "bg-red-500" : "bg-slate-700"
+                }`}
+              >
+                <Text
+                  className={`text-sm font-bold ${
+                    step <= bookingStep ? "text-white" : "text-slate-400"
+                  }`}
+                >
+                  {step}
+                </Text>
+              </View>
+              {step < 4 && (
+                <View
+                  className={`flex-1 h-0.5 mx-2 ${
+                    step < bookingStep ? "bg-red-500" : "bg-slate-700"
+                  }`}
+                />
+              )}
+            </View>
+          ))}
+        </View>
+
+        {/* Step Content */}
+        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
+          {bookingStep === 1 && (
+            <View>
+              <Text className="text-white text-xl font-bold mb-4">
+                Select Service Type
+              </Text>
+              <View className="gap-4">
+                {services.filter(s => s.available).map((service) => {
+                  const IconComponent = service.icon;
+                  const isSelected = selectedServiceType === service.id;
+                  return (
+                    <TouchableOpacity
+                      key={service.id}
+                      onPress={() => setSelectedServiceType(service.id)}
+                      className={`flex-row items-center p-4 rounded-xl border ${
+                        isSelected
+                          ? "bg-red-500/20 border-red-500"
+                          : "bg-slate-700/50 border-white/10"
+                      }`}
+                    >
+                      <View className="w-12 h-12 bg-gradient-to-br from-red-600 to-red-500 rounded-xl items-center justify-center mr-4">
+                        <IconComponent size={20} color="white" />
+                      </View>
+                      <View className="flex-1">
+                        <Text className="text-white font-semibold mb-1">
+                          {service.name}
+                        </Text>
+                        <Text className="text-slate-400 text-sm">
+                          {service.description}
+                        </Text>
+                      </View>
+                      <View className="items-end">
+                        <Text className="text-white font-bold">
+                          ${service.id === "towing" ? "150" :
+                            service.id === "jumpstart" ? "75" :
+                            service.id === "tire" ? "100" :
+                            service.id === "lockout" ? "85" :
+                            service.id === "fuel" ? "60" : "200"}
+                        </Text>
+                        <Text className="text-slate-400 text-xs">
+                          ~{service.id === "emergency" ? "15" : "30"} min
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+          )}
+
+          {bookingStep === 2 && (
+            <View>
+              <Text className="text-white text-xl font-bold mb-4">
+                Location & Details
+              </Text>
+              <View className="gap-4">
+                <View>
+                  <Text className="text-slate-200 font-semibold mb-2">
+                    Service Location
+                  </Text>
+                  <View className="flex-row items-center bg-white/10 border border-white/10 rounded-xl px-4 py-3">
+                    <MapPin size={20} color="#94a3b8" />
+                    <TextInput
+                      value={serviceLocation}
+                      onChangeText={setServiceLocation}
+                      placeholder={currentLocation}
+                      placeholderTextColor="#64748b"
+                      className="flex-1 text-white text-base ml-3"
+                    />
+                  </View>
+                </View>
+                <View>
+                  <Text className="text-slate-200 font-semibold mb-2">
+                    Problem Description
+                  </Text>
+                  <View className="bg-white/10 border border-white/10 rounded-xl px-4 py-3">
+                    <TextInput
+                      value={serviceDescription}
+                      onChangeText={setServiceDescription}
+                      placeholder="Describe the issue you're experiencing..."
+                      placeholderTextColor="#64748b"
+                      className="text-white text-base"
+                      multiline
+                      numberOfLines={4}
+                      textAlignVertical="top"
+                    />
+                  </View>
+                </View>
+              </View>
+            </View>
+          )}
+
+          {bookingStep === 3 && (
+            <View>
+              <Text className="text-white text-xl font-bold mb-4">
+                Payment Method
+              </Text>
+              <View className="gap-4">
+                <TouchableOpacity className="flex-row items-center p-4 rounded-xl bg-slate-700/50 border border-white/10">
+                  <View className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl items-center justify-center mr-4">
+                    <CreditCard size={20} color="white" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-white font-semibold mb-1">
+                      Credit Card •••• 4242
+                    </Text>
+                    <Text className="text-slate-400 text-sm">
+                      Expires 12/25
+                    </Text>
+                  </View>
+                  <View className="w-4 h-4 bg-red-500 rounded-full" />
+                </TouchableOpacity>
+                <TouchableOpacity className="flex-row items-center p-4 rounded-xl bg-slate-700/50 border border-white/10">
+                  <View className="w-12 h-12 bg-gradient-to-br from-green-600 to-green-500 rounded-xl items-center justify-center mr-4">
+                    <DollarSign size={20} color="white" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-white font-semibold mb-1">
+                      Pay on Arrival
+                    </Text>
+                    <Text className="text-slate-400 text-sm">
+                      Cash or card payment to technician
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+
+          {bookingStep === 4 && (
+            <View>
+              <Text className="text-white text-xl font-bold mb-4">
+                Confirm Booking
+              </Text>
+              <View className="gap-4">
+                <View className="bg-white/5 rounded-xl p-4">
+                  <Text className="text-slate-400 text-sm mb-2">Service</Text>
+                  <Text className="text-white font-semibold">
+                    {selectedService?.name}
+                  </Text>
+                </View>
+                <View className="bg-white/5 rounded-xl p-4">
+                  <Text className="text-slate-400 text-sm mb-2">Location</Text>
+                  <Text className="text-white font-semibold">
+                    {serviceLocation || currentLocation}
+                  </Text>
+                </View>
+                <View className="bg-white/5 rounded-xl p-4">
+                  <Text className="text-slate-400 text-sm mb-2">Estimated Cost</Text>
+                  <Text className="text-white font-semibold">
+                    ${selectedService?.id === "towing" ? "150" :
+                      selectedService?.id === "jumpstart" ? "75" :
+                      selectedService?.id === "tire" ? "100" :
+                      selectedService?.id === "lockout" ? "85" :
+                      selectedService?.id === "fuel" ? "60" : "200"}
+                  </Text>
+                </View>
+                <View className="bg-white/5 rounded-xl p-4">
+                  <Text className="text-slate-400 text-sm mb-2">Estimated Time</Text>
+                  <Text className="text-white font-semibold">
+                    {selectedService?.id === "emergency" ? "15" : "30"} minutes
+                  </Text>
+                </View>
+              </View>
+            </View>
+          )}
+        </View>
+
+        {/* Action Buttons */}
+        <View className="flex-row gap-4">
+          {bookingStep > 1 && (
+            <TouchableOpacity
+              onPress={handleBookingBack}
+              className="flex-1 bg-slate-700/50 border border-white/10 rounded-xl py-4 items-center"
+            >
+              <Text className="text-white font-semibold">Back</Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            onPress={bookingStep === 4 ? handleConfirmBooking : handleBookingNext}
+            disabled={bookingStep === 1 && !selectedServiceType}
+            className={`flex-1 rounded-xl py-4 items-center ${
+              (bookingStep === 1 && !selectedServiceType)
+                ? "bg-slate-600 opacity-50"
+                : "bg-gradient-to-r from-red-600 to-red-500"
             }`}
           >
-            Home
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setActiveView("services")}
-          className={`items-center py-2 px-4 rounded-xl ${
-            activeView === "services" ? "bg-red-500/20" : ""
-          }`}
-        >
-          <Wrench
-            size={20}
-            color={activeView === "services" ? "#ef4444" : "#94a3b8"}
-          />
-          <Text
-            className={`text-xs font-semibold mt-1 ${
-              activeView === "services" ? "text-red-400" : "text-slate-400"
-            }`}
-          >
-            Services
-          </Text>
-        </TouchableOpacity>
-
-        {/* Emergency FAB */}
-        <TouchableOpacity
-          onPress={handleEmergencyRequest}
-          className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-500 rounded-full items-center justify-center -mt-6 border-4 border-slate-800"
-        >
-          <Plus size={28} color="white" />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setActiveView("history")}
-          className={`items-center py-2 px-4 rounded-xl ${
-            activeView === "history" ? "bg-red-500/20" : ""
-          }`}
-        >
-          <BarChart3
-            size={20}
-            color={activeView === "history" ? "#ef4444" : "#94a3b8"}
-          />
-          <Text
-            className={`text-xs font-semibold mt-1 ${
-              activeView === "history" ? "text-red-400" : "text-slate-400"
-            }`}
-          >
-            History
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setActiveView("profile")}
-          className={`items-center py-2 px-4 rounded-xl ${
-            activeView === "profile" ? "bg-red-500/20" : ""
-          }`}
-        >
-          <User
-            size={20}
-            color={activeView === "profile" ? "#ef4444" : "#94a3b8"}
-          />
-          <Text
-            className={`text-xs font-semibold mt-1 ${
-              activeView === "profile" ? "text-red-400" : "text-slate-400"
-            }`}
-          >
-            Profile
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
-  );
+            <Text className="text-white font-semibold">
+              {bookingStep === 4 ? "Confirm Booking" : "Next"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    );
+  }
 });
 
 export default CustomerDashboard;
