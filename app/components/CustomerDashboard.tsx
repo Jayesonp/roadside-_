@@ -16,6 +16,17 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
+import designSystem from "../styles/MobileDesignSystem";
+import {
+  ResponsiveContainer,
+  ResponsiveGrid,
+  ResponsiveCard,
+  ResponsiveButton,
+  ResponsiveText,
+  ResponsiveMetricCard,
+  ResponsiveBottomNav,
+  ResponsiveHeader,
+} from "./responsive/ResponsiveComponents";
 import {
   Bell,
   User,
@@ -77,7 +88,14 @@ interface CustomerUser {
 interface ServiceRequest {
   id: string;
   type: "towing" | "jumpstart" | "tire" | "lockout" | "fuel" | "emergency";
-  status: "pending" | "assigned" | "enroute" | "arrived" | "inprogress" | "completed" | "cancelled";
+  status:
+    | "pending"
+    | "assigned"
+    | "enroute"
+    | "arrived"
+    | "inprogress"
+    | "completed"
+    | "cancelled";
   location: {
     address: string;
     coordinates: { lat: number; lng: number };
@@ -104,7 +122,13 @@ interface PaymentMethod {
   isDefault: boolean;
 }
 
-type DashboardView = "main" | "booking" | "tracking" | "history" | "profile" | "payment";
+type DashboardView =
+  | "main"
+  | "booking"
+  | "tracking"
+  | "history"
+  | "profile"
+  | "payment";
 
 const CustomerDashboard = React.memo(function CustomerDashboard({
   userName = "Sarah",
@@ -128,13 +152,16 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
 
   // Service booking state
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
-  const [activeRequest, setActiveRequest] = useState<ServiceRequest | null>(null);
+  const [activeRequest, setActiveRequest] = useState<ServiceRequest | null>(
+    null,
+  );
   const [bookingStep, setBookingStep] = useState(1);
   const [selectedServiceType, setSelectedServiceType] = useState<string>("");
   const [serviceLocation, setServiceLocation] = useState("");
   const [serviceDescription, setServiceDescription] = useState("");
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<string>("");
   const [authLoading, setAuthLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -285,7 +312,9 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
 
   const handleConfirmBooking = async () => {
     try {
-      const selectedService = services.find(s => s.id === selectedServiceType);
+      const selectedService = services.find(
+        (s) => s.id === selectedServiceType,
+      );
       if (!selectedService) return;
 
       const newRequest: ServiceRequest = {
@@ -294,21 +323,28 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
         status: "pending",
         location: {
           address: serviceLocation || currentLocation,
-          coordinates: { lat: 40.7128, lng: -74.0060 }
+          coordinates: { lat: 40.7128, lng: -74.006 },
         },
         description: serviceDescription,
         priority: selectedServiceType === "emergency" ? "emergency" : "medium",
-        estimatedCost: selectedService.id === "towing" ? 150 :
-                      selectedService.id === "jumpstart" ? 75 :
-                      selectedService.id === "tire" ? 100 :
-                      selectedService.id === "lockout" ? 85 :
-                      selectedService.id === "fuel" ? 60 : 200,
+        estimatedCost:
+          selectedService.id === "towing"
+            ? 150
+            : selectedService.id === "jumpstart"
+              ? 75
+              : selectedService.id === "tire"
+                ? 100
+                : selectedService.id === "lockout"
+                  ? 85
+                  : selectedService.id === "fuel"
+                    ? 60
+                    : 200,
         estimatedTime: selectedService.id === "emergency" ? 15 : 30,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
 
-      setServiceRequests(prev => [newRequest, ...prev]);
+      setServiceRequests((prev) => [newRequest, ...prev]);
       setActiveRequest(newRequest);
       setCurrentView("tracking");
 
@@ -338,12 +374,12 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
           text: "Yes, Cancel",
           style: "destructive",
           onPress: () => {
-            setServiceRequests(prev =>
-              prev.map(req =>
+            setServiceRequests((prev) =>
+              prev.map((req) =>
                 req.id === requestId
                   ? { ...req, status: "cancelled" as const }
-                  : req
-              )
+                  : req,
+              ),
             );
             if (activeRequest?.id === requestId) {
               setActiveRequest(null);
@@ -637,20 +673,16 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
           setCurrentView,
           handleCancelRequest,
           handleCallTechnician,
-          handleNavigateToTechnician
+          handleNavigateToTechnician,
         );
       case "history":
         return renderServiceHistory(
           serviceRequests,
           setCurrentView,
-          getStatusColor
+          getStatusColor,
         );
       case "profile":
-        return renderProfile(
-          user,
-          setCurrentView,
-          handleSignOut
-        );
+        return renderProfile(user, setCurrentView, handleSignOut);
       case "payment":
         return renderPaymentMethods(setCurrentView);
       default:
@@ -972,152 +1004,120 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
         </Text>
       </View>
 
-      {/* Header */}
-      <View className="px-6 py-4 bg-slate-800/60 backdrop-blur-lg border-b border-white/10 flex-row justify-between items-center">
-        <View className="flex-row items-center flex-1">
-          <Image
-            source={require("../../public/images/Main-Brand-Logo.png")}
-            className="w-10 h-10 mr-3"
-            resizeMode="contain"
-          />
-          <View>
-            <Text className="text-2xl font-bold text-white">
-              Good evening, {user.name}
-            </Text>
-            <Text className="text-slate-400">Stay safe on the road</Text>
-          </View>
-        </View>
-        <View className="flex-row gap-3">
-          <TouchableOpacity className="w-10 h-10 bg-white/10 rounded-xl items-center justify-center relative">
-            <Bell size={20} color="#94a3b8" />
-            <View className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="w-10 h-10 bg-white/10 rounded-xl items-center justify-center"
-            onPress={handleSignOut}
-          >
-            <User size={20} color="#94a3b8" />
-          </TouchableOpacity>
-        </View>
-      </View>
+      {/* Responsive Header */}
+      <ResponsiveHeader
+        title={`Good evening, ${user.name}`}
+        subtitle="Stay safe on the road"
+        leftAction={{
+          icon: (
+            <Image
+              source={require("../../public/images/Main-Brand-Logo.png")}
+              className={`${designSystem.utils.getResponsiveClass('w-8 h-8', 'w-10 h-10', 'w-12 h-12')}`}
+              resizeMode="contain"
+            />
+          ),
+          onPress: () => setCurrentView("main"),
+          label: "Home"
+        }}
+        rightActions={[
+          {
+            icon: <Bell size={designSystem.utils.getResponsiveValue(18, 20, 22)} color="#94a3b8" />,
+            onPress: () => {
+              // Handle notifications
+              Alert.alert("Notifications", "No new notifications");
+            },
+            label: "Notifications",
+            badge: true
+          },
+          {
+            icon: <User size={designSystem.utils.getResponsiveValue(18, 20, 22)} color="#94a3b8" />,
+            onPress: handleSignOut,
+            label: "Profile menu"
+          }
+        ]}
+      />
 
       {/* Main Content */}
       {renderCurrentView()}
 
-
-
-      {/* Bottom Navigation */}
-      <View className="absolute bottom-0 left-0 right-0 bg-slate-800/90 backdrop-blur-lg border-t border-white/10 px-4 py-4 flex-row justify-around items-center">
-        <TouchableOpacity
-          onPress={() => setCurrentView("main")}
-          className={`items-center py-2 px-4 rounded-xl ${
-            currentView === "main" ? "bg-red-500/20" : ""
-          }`}
-        >
-          <Home
-            size={20}
-            color={currentView === "main" ? "#ef4444" : "#94a3b8"}
-          />
-          <Text
-            className={`text-xs font-semibold mt-1 ${
-              currentView === "main" ? "text-red-400" : "text-slate-400"
-            }`}
-          >
-            Home
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setCurrentView("booking")}
-          className={`items-center py-2 px-4 rounded-xl ${
-            currentView === "booking" ? "bg-red-500/20" : ""
-          }`}
-        >
-          <Wrench
-            size={20}
-            color={currentView === "booking" ? "#ef4444" : "#94a3b8"}
-          />
-          <Text
-            className={`text-xs font-semibold mt-1 ${
-              currentView === "booking" ? "text-red-400" : "text-slate-400"
-            }`}
-          >
-            Services
-          </Text>
-        </TouchableOpacity>
-
-        {/* Emergency FAB */}
-        <TouchableOpacity
-          onPress={handleEmergencyRequest}
-          className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-500 rounded-full items-center justify-center -mt-6 border-4 border-slate-800"
-        >
-          <Plus size={28} color="white" />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setCurrentView("history")}
-          className={`items-center py-2 px-4 rounded-xl ${
-            currentView === "history" ? "bg-red-500/20" : ""
-          }`}
-        >
-          <BarChart3
-            size={20}
-            color={currentView === "history" ? "#ef4444" : "#94a3b8"}
-          />
-          <Text
-            className={`text-xs font-semibold mt-1 ${
-              currentView === "history" ? "text-red-400" : "text-slate-400"
-            }`}
-          >
-            History
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setCurrentView("profile")}
-          className={`items-center py-2 px-4 rounded-xl ${
-            currentView === "profile" ? "bg-red-500/20" : ""
-          }`}
-        >
-          <User
-            size={20}
-            color={currentView === "profile" ? "#ef4444" : "#94a3b8"}
-          />
-          <Text
-            className={`text-xs font-semibold mt-1 ${
-              currentView === "profile" ? "text-red-400" : "text-slate-400"
-            }`}
-          >
-            Profile
-          </Text>
-        </TouchableOpacity>
-      </View>
+      {/* Responsive Bottom Navigation */}
+      <ResponsiveBottomNav
+        activeItem={currentView}
+        onItemPress={(id) => {
+          if (id === "emergency") {
+            handleEmergencyRequest();
+          } else {
+            setCurrentView(id as any);
+          }
+        }}
+        items={[
+          {
+            id: "main",
+            label: "Home",
+            icon: <Home size={designSystem.utils.getResponsiveValue(18, 20, 22)} color="#94a3b8" />,
+            activeIcon: <Home size={designSystem.utils.getResponsiveValue(18, 20, 22)} color="#ef4444" />,
+          },
+          {
+            id: "booking",
+            label: "Services",
+            icon: <Wrench size={designSystem.utils.getResponsiveValue(18, 20, 22)} color="#94a3b8" />,
+            activeIcon: <Wrench size={designSystem.utils.getResponsiveValue(18, 20, 22)} color="#ef4444" />,
+          },
+          {
+            id: "emergency",
+            label: "Emergency",
+            icon: (
+              <View className={`${designSystem.utils.getResponsiveClass('w-14 h-14', 'w-16 h-16', 'w-18 h-18')} bg-gradient-to-br from-red-600 to-red-500 rounded-full items-center justify-center -mt-6 border-4 border-slate-800`}>
+                <Plus size={designSystem.utils.getResponsiveValue(24, 28, 32)} color="white" />
+              </View>
+            ),
+          },
+          {
+            id: "history",
+            label: "History",
+            icon: <BarChart3 size={designSystem.utils.getResponsiveValue(18, 20, 22)} color="#94a3b8" />,
+            activeIcon: <BarChart3 size={designSystem.utils.getResponsiveValue(18, 20, 22)} color="#ef4444" />,
+          },
+          {
+            id: "profile",
+            label: "Profile",
+            icon: <User size={designSystem.utils.getResponsiveValue(18, 20, 22)} color="#94a3b8" />,
+            activeIcon: <User size={designSystem.utils.getResponsiveValue(18, 20, 22)} color="#ef4444" />,
+          },
+        ]}
+      />
     </SafeAreaView>
   );
 
   // Main Dashboard View
   function renderMainDashboard() {
     return (
-      <ScrollView className="flex-1 bg-slate-900/30 px-4 pb-24">
-        {/* Emergency Banner */}
-        <TouchableOpacity
-          onPress={handleEmergencyRequest}
-          className="bg-gradient-to-r from-red-600 to-red-500 rounded-3xl p-6 my-6 relative overflow-hidden"
-        >
-          <View className="flex-row justify-between items-center">
-            <View className="flex-1">
-              <Text className="text-white text-xl font-bold mb-1">
-                Need Help Now?
-              </Text>
-              <Text className="text-white/90">
-                Tap for instant emergency roadside assistance
-              </Text>
+      <ScrollView
+        className="flex-1 bg-slate-900/30"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: designSystem.spacing.responsive.xxl + 80 }}
+      >
+        <ResponsiveContainer>
+          {/* Emergency Banner */}
+          <ResponsiveCard
+            variant="elevated"
+            onPress={handleEmergencyRequest}
+            className="bg-gradient-to-r from-red-600 to-red-500 border-red-500/30 my-6 relative overflow-hidden"
+          >
+            <View className="flex-row justify-between items-center">
+              <View className="flex-1">
+                <ResponsiveText variant="h3" className="mb-2">
+                  Need Help Now?
+                </ResponsiveText>
+                <ResponsiveText variant="body" className="text-white/90">
+                  Tap for instant emergency roadside assistance
+                </ResponsiveText>
+              </View>
+              <View className={`${designSystem.utils.getResponsiveClass('w-12 h-12', 'w-14 h-14', 'w-16 h-16')} bg-white/20 rounded-full items-center justify-center`}>
+                <AlertTriangle size={designSystem.utils.getResponsiveValue(24, 28, 32)} color="white" />
+              </View>
             </View>
-            <View className="w-15 h-15 bg-white/20 rounded-full items-center justify-center">
-              <AlertTriangle size={32} color="white" />
-            </View>
-          </View>
-        </TouchableOpacity>
+          </ResponsiveCard>
 
         {/* Active Service Alert */}
         {activeRequest && (
@@ -1131,7 +1131,8 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
                   Service in Progress
                 </Text>
                 <Text className="text-white/90">
-                  {services.find(s => s.id === activeRequest.type)?.name} • {activeRequest.status}
+                  {services.find((s) => s.id === activeRequest.type)?.name} •{" "}
+                  {activeRequest.status}
                 </Text>
               </View>
               <View className="w-12 h-12 bg-white/20 rounded-xl items-center justify-center">
@@ -1141,157 +1142,183 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
           </TouchableOpacity>
         )}
 
-        {/* Membership Status */}
-        <View className="bg-gradient-to-r from-green-600 to-green-500 rounded-2xl p-5 mb-6 flex-row justify-between items-center">
-          <View>
-            <Text className="text-white text-lg font-bold">
-              {user.membershipType} Member
-            </Text>
-            <Text className="text-white/90">
-              Unlimited services • Priority support
-            </Text>
-          </View>
-          <View className="w-12 h-12 bg-white/20 rounded-xl items-center justify-center">
-            <Crown size={24} color="white" />
-          </View>
-        </View>
-
-        {/* Quick Stats */}
-        <View className="flex-row gap-4 mb-6">
-          {stats.map((stat, index) => (
-            <View
-              key={index}
-              className="flex-1 bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-4 items-center"
-            >
-              <Text className="text-white text-2xl font-bold mb-1">
-                {stat.number}
-              </Text>
-              <Text className="text-slate-400 text-xs text-center">
-                {stat.label}
-              </Text>
+          {/* Membership Status */}
+          <ResponsiveCard
+            variant="elevated"
+            className="bg-gradient-to-r from-green-600 to-green-500 border-green-500/30 mb-6"
+          >
+            <View className="flex-row justify-between items-center">
+              <View className="flex-1">
+                <ResponsiveText variant="h4" className="mb-1">
+                  {user.membershipType} Member
+                </ResponsiveText>
+                <ResponsiveText variant="body" className="text-white/90">
+                  Unlimited services • Priority support
+                </ResponsiveText>
+              </View>
+              <View className={`${designSystem.utils.getResponsiveClass('w-10 h-10', 'w-12 h-12', 'w-14 h-14')} bg-white/20 rounded-xl items-center justify-center`}>
+                <Crown size={designSystem.utils.getResponsiveValue(20, 24, 28)} color="white" />
+              </View>
             </View>
-          ))}
-        </View>
+          </ResponsiveCard>
 
-        {/* Current Status */}
-        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
-          <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-white text-lg font-semibold">
-              Your Status
-            </Text>
-            <View className="bg-green-500/20 border border-green-500/30 px-3 py-1 rounded-lg">
-              <Text className="text-green-400 text-xs font-semibold uppercase">
-                All Good
-              </Text>
+          {/* Quick Stats */}
+          <ResponsiveGrid
+            columns={{ mobile: 2, tablet: 4, desktop: 4 }}
+            gap="md"
+            className="mb-6"
+          >
+            {stats.map((stat, index) => (
+              <ResponsiveMetricCard
+                key={index}
+                title={stat.label}
+                value={stat.number}
+                className={`${designSystem.deviceType.isPhone ? 'min-w-[140px]' : 'min-w-[160px]'}`}
+              />
+            ))}
+          </ResponsiveGrid>
+
+          {/* Current Status */}
+          <ResponsiveCard variant="default" className="mb-6">
+            <View className="flex-row justify-between items-center mb-4">
+              <ResponsiveText variant="h4">
+                Your Status
+              </ResponsiveText>
+              <View className="bg-green-500/20 border border-green-500/30 px-3 py-1 rounded-lg">
+                <ResponsiveText variant="caption" className="text-green-400 font-semibold uppercase">
+                  All Good
+                </ResponsiveText>
+              </View>
             </View>
-          </View>
 
-          <View className="bg-white/5 rounded-2xl p-4 flex-row items-center">
-            <View className="w-12 h-12 bg-gradient-to-br from-red-600 to-red-500 rounded-xl items-center justify-center mr-4">
-              <MapPin size={20} color="white" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-white font-semibold mb-1">
-                {serviceLocation || currentLocation}
-              </Text>
-              <Text className="text-green-400 text-sm flex-row items-center">
-                • GPS Active • Location confirmed
-              </Text>
-            </View>
-            <TouchableOpacity className="bg-white/10 border border-white/10 rounded-lg px-4 py-2">
-              <Text className="text-white text-sm font-medium">Update</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Quick Services */}
-        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
-          <Text className="text-white text-lg font-semibold mb-4">
-            Quick Services
-          </Text>
-
-          <View className="flex-row flex-wrap gap-4">
-            {services.map((service) => {
-              const IconComponent = service.icon;
-              return (
-                <TouchableOpacity
-                  key={service.id}
-                  onPress={() => handleServiceRequest(service.id)}
-                  className="flex-1 min-w-[140px] bg-slate-700/50 border border-white/10 rounded-2xl p-4 items-center relative"
-                >
-                  <View
-                    className={`absolute top-3 right-3 w-2 h-2 rounded-full ${
-                      service.available ? "bg-green-500" : "bg-red-500"
-                    }`}
-                  />
-                  <View className="w-14 h-14 bg-gradient-to-br from-red-600 to-red-500 rounded-2xl items-center justify-center mb-3">
-                    <IconComponent size={24} color="white" />
-                  </View>
-                  <Text className="text-white font-semibold text-sm mb-1">
-                    {service.name}
-                  </Text>
-                  <Text className="text-slate-400 text-xs text-center">
-                    {service.description}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
-
-        {/* Recent Activity */}
-        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
-          <View className="flex-row justify-between items-center mb-5">
-            <Text className="text-white text-lg font-semibold">
-              Recent Activity
-            </Text>
-            <TouchableOpacity onPress={() => setCurrentView("history")}>
-              <Text className="text-red-400 text-sm font-medium">View All</Text>
-            </TouchableOpacity>
-          </View>
-
-          {activities.map((activity) => (
-            <View
-              key={activity.id}
-              className="flex-row items-center py-4 border-b border-white/5 last:border-b-0"
-            >
-              <View
-                className={`w-11 h-11 rounded-xl items-center justify-center mr-4 ${getActivityIconBg(
-                  activity.status,
-                )}`}
-              >
-                <Text className="text-lg">{activity.icon}</Text>
+            <View className="bg-white/5 rounded-2xl p-4 flex-row items-center">
+              <View className={`${designSystem.utils.getResponsiveClass('w-10 h-10', 'w-12 h-12', 'w-14 h-14')} bg-gradient-to-br from-red-600 to-red-500 rounded-xl items-center justify-center mr-4`}>
+                <MapPin size={designSystem.utils.getResponsiveValue(18, 20, 24)} color="white" />
               </View>
               <View className="flex-1">
-                <Text className="text-white font-semibold mb-1">
-                  {activity.service}
-                </Text>
-                <Text className="text-slate-400 text-sm mb-1">
-                  {activity.date}
-                </Text>
-                <Text className="text-slate-500 text-xs">
-                  {activity.location}
-                </Text>
+                <ResponsiveText variant="body" className="font-semibold mb-1">
+                  {serviceLocation || currentLocation}
+                </ResponsiveText>
+                <ResponsiveText variant="caption" className="text-green-400">
+                  • GPS Active • Location confirmed
+                </ResponsiveText>
               </View>
-              <View
-                className={`px-3 py-1 rounded-lg ${getStatusColor(
-                  activity.status,
-                )}`}
+              <ResponsiveButton
+                variant="ghost"
+                size="sm"
+                className="bg-white/10 border border-white/10"
               >
-                <Text className="text-xs font-semibold uppercase">
-                  {activity.status}
-                </Text>
-              </View>
+                Update
+              </ResponsiveButton>
             </View>
-          ))}
-        </View>
+          </ResponsiveCard>
+
+          {/* Quick Services */}
+          <ResponsiveCard variant="default" className="mb-6">
+            <ResponsiveText variant="h4" className="mb-4">
+              Quick Services
+            </ResponsiveText>
+
+            <ResponsiveGrid
+              columns={{ mobile: 2, tablet: 3, desktop: 4 }}
+              gap="md"
+            >
+              {services.map((service) => {
+                const IconComponent = service.icon;
+                return (
+                  <ResponsiveCard
+                    key={service.id}
+                    variant="flat"
+                    onPress={() => handleServiceRequest(service.id)}
+                    className={`flex-1 ${designSystem.utils.getResponsiveClass(
+                      'min-w-[140px] max-w-[48%]', // mobile
+                      'min-w-[160px] max-w-[32%]', // tablet
+                      'min-w-[180px] max-w-[24%]'  // desktop
+                    )} items-center relative`}
+                  >
+                    <View
+                      className={`absolute top-3 right-3 w-2 h-2 rounded-full ${
+                        service.available ? "bg-green-500" : "bg-red-500"
+                      }`}
+                    />
+                    <View className={`${designSystem.utils.getResponsiveClass('w-12 h-12', 'w-14 h-14', 'w-16 h-16')} bg-gradient-to-br from-red-600 to-red-500 rounded-2xl items-center justify-center mb-3`}>
+                      <IconComponent size={designSystem.utils.getResponsiveValue(20, 24, 28)} color="white" />
+                    </View>
+                    <ResponsiveText variant="body" className="font-semibold mb-1 text-center">
+                      {service.name}
+                    </ResponsiveText>
+                    <ResponsiveText variant="caption" color="secondary" className="text-center">
+                      {service.description}
+                    </ResponsiveText>
+                  </ResponsiveCard>
+                );
+              })}
+            </ResponsiveGrid>
+          </ResponsiveCard>
+
+          {/* Recent Activity */}
+          <ResponsiveCard variant="default" className="mb-6">
+            <View className="flex-row justify-between items-center mb-5">
+              <ResponsiveText variant="h4">
+                Recent Activity
+              </ResponsiveText>
+              <ResponsiveButton
+                variant="ghost"
+                size="sm"
+                onPress={() => setCurrentView("history")}
+                className="bg-transparent border-0 px-0"
+              >
+                <ResponsiveText variant="caption" className="text-red-400 font-medium">
+                  View All
+                </ResponsiveText>
+              </ResponsiveButton>
+            </View>
+
+            {activities.map((activity, index) => (
+              <View
+                key={activity.id}
+                className={`flex-row items-center py-4 ${index < activities.length - 1 ? 'border-b border-white/5' : ''}`}
+              >
+                <View
+                  className={`${designSystem.utils.getResponsiveClass('w-10 h-10', 'w-11 h-11', 'w-12 h-12')} rounded-xl items-center justify-center mr-4 ${getActivityIconBg(
+                    activity.status,
+                  )}`}
+                >
+                  <Text className={`${designSystem.utils.getResponsiveClass('text-base', 'text-lg', 'text-xl')}`}>
+                    {activity.icon}
+                  </Text>
+                </View>
+                <View className="flex-1">
+                  <ResponsiveText variant="body" className="font-semibold mb-1">
+                    {activity.service}
+                  </ResponsiveText>
+                  <ResponsiveText variant="caption" color="secondary" className="mb-1">
+                    {activity.date}
+                  </ResponsiveText>
+                  <ResponsiveText variant="caption" color="muted">
+                    {activity.location}
+                  </ResponsiveText>
+                </View>
+                <View
+                  className={`px-3 py-1 rounded-lg ${getStatusColor(
+                    activity.status,
+                  )}`}
+                >
+                  <ResponsiveText variant="caption" className="font-semibold uppercase">
+                    {activity.status}
+                  </ResponsiveText>
+                </View>
+              </View>
+            ))}
+          </ResponsiveCard>
+        </ResponsiveContainer>
       </ScrollView>
     );
   }
 
   // Booking Flow View
   function renderBookingFlow() {
-    const selectedService = services.find(s => s.id === selectedServiceType);
+    const selectedService = services.find((s) => s.id === selectedServiceType);
 
     return (
       <ScrollView className="flex-1 bg-slate-900/30 px-4 pb-24">
@@ -1343,45 +1370,54 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
                 Select Service Type
               </Text>
               <View className="gap-4">
-                {services.filter(s => s.available).map((service) => {
-                  const IconComponent = service.icon;
-                  const isSelected = selectedServiceType === service.id;
-                  return (
-                    <TouchableOpacity
-                      key={service.id}
-                      onPress={() => setSelectedServiceType(service.id)}
-                      className={`flex-row items-center p-4 rounded-xl border ${
-                        isSelected
-                          ? "bg-red-500/20 border-red-500"
-                          : "bg-slate-700/50 border-white/10"
-                      }`}
-                    >
-                      <View className="w-12 h-12 bg-gradient-to-br from-red-600 to-red-500 rounded-xl items-center justify-center mr-4">
-                        <IconComponent size={20} color="white" />
-                      </View>
-                      <View className="flex-1">
-                        <Text className="text-white font-semibold mb-1">
-                          {service.name}
-                        </Text>
-                        <Text className="text-slate-400 text-sm">
-                          {service.description}
-                        </Text>
-                      </View>
-                      <View className="items-end">
-                        <Text className="text-white font-bold">
-                          ${service.id === "towing" ? "150" :
-                            service.id === "jumpstart" ? "75" :
-                            service.id === "tire" ? "100" :
-                            service.id === "lockout" ? "85" :
-                            service.id === "fuel" ? "60" : "200"}
-                        </Text>
-                        <Text className="text-slate-400 text-xs">
-                          ~{service.id === "emergency" ? "15" : "30"} min
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
+                {services
+                  .filter((s) => s.available)
+                  .map((service) => {
+                    const IconComponent = service.icon;
+                    const isSelected = selectedServiceType === service.id;
+                    return (
+                      <TouchableOpacity
+                        key={service.id}
+                        onPress={() => setSelectedServiceType(service.id)}
+                        className={`flex-row items-center p-4 rounded-xl border ${
+                          isSelected
+                            ? "bg-red-500/20 border-red-500"
+                            : "bg-slate-700/50 border-white/10"
+                        }`}
+                      >
+                        <View className="w-12 h-12 bg-gradient-to-br from-red-600 to-red-500 rounded-xl items-center justify-center mr-4">
+                          <IconComponent size={20} color="white" />
+                        </View>
+                        <View className="flex-1">
+                          <Text className="text-white font-semibold mb-1">
+                            {service.name}
+                          </Text>
+                          <Text className="text-slate-400 text-sm">
+                            {service.description}
+                          </Text>
+                        </View>
+                        <View className="items-end">
+                          <Text className="text-white font-bold">
+                            $
+                            {service.id === "towing"
+                              ? "150"
+                              : service.id === "jumpstart"
+                                ? "75"
+                                : service.id === "tire"
+                                  ? "100"
+                                  : service.id === "lockout"
+                                    ? "85"
+                                    : service.id === "fuel"
+                                      ? "60"
+                                      : "200"}
+                          </Text>
+                          <Text className="text-slate-400 text-xs">
+                            ~{service.id === "emergency" ? "15" : "30"} min
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
               </View>
             </View>
           )}
@@ -1484,17 +1520,28 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
                   </Text>
                 </View>
                 <View className="bg-white/5 rounded-xl p-4">
-                  <Text className="text-slate-400 text-sm mb-2">Estimated Cost</Text>
+                  <Text className="text-slate-400 text-sm mb-2">
+                    Estimated Cost
+                  </Text>
                   <Text className="text-white font-semibold">
-                    ${selectedService?.id === "towing" ? "150" :
-                      selectedService?.id === "jumpstart" ? "75" :
-                      selectedService?.id === "tire" ? "100" :
-                      selectedService?.id === "lockout" ? "85" :
-                      selectedService?.id === "fuel" ? "60" : "200"}
+                    $
+                    {selectedService?.id === "towing"
+                      ? "150"
+                      : selectedService?.id === "jumpstart"
+                        ? "75"
+                        : selectedService?.id === "tire"
+                          ? "100"
+                          : selectedService?.id === "lockout"
+                            ? "85"
+                            : selectedService?.id === "fuel"
+                              ? "60"
+                              : "200"}
                   </Text>
                 </View>
                 <View className="bg-white/5 rounded-xl p-4">
-                  <Text className="text-slate-400 text-sm mb-2">Estimated Time</Text>
+                  <Text className="text-slate-400 text-sm mb-2">
+                    Estimated Time
+                  </Text>
                   <Text className="text-white font-semibold">
                     {selectedService?.id === "emergency" ? "15" : "30"} minutes
                   </Text>
@@ -1515,10 +1562,12 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
             </TouchableOpacity>
           )}
           <TouchableOpacity
-            onPress={bookingStep === 4 ? handleConfirmBooking : handleBookingNext}
+            onPress={
+              bookingStep === 4 ? handleConfirmBooking : handleBookingNext
+            }
             disabled={bookingStep === 1 && !selectedServiceType}
             className={`flex-1 rounded-xl py-4 items-center ${
-              (bookingStep === 1 && !selectedServiceType)
+              bookingStep === 1 && !selectedServiceType
                 ? "bg-slate-600 opacity-50"
                 : "bg-gradient-to-r from-red-600 to-red-500"
             }`}

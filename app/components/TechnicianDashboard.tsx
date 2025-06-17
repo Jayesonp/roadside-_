@@ -20,7 +20,19 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Constants from "expo-constants";
 import { supabase } from "../lib/supabase";
+import designSystem from "../styles/MobileDesignSystem";
+import {
+  ResponsiveContainer,
+  ResponsiveGrid,
+  ResponsiveCard,
+  ResponsiveButton,
+  ResponsiveText,
+  ResponsiveMetricCard,
+  ResponsiveBottomNav,
+  ResponsiveHeader,
+} from "./responsive/ResponsiveComponents";
 import {
   Bell,
   Settings,
@@ -41,6 +53,7 @@ import {
   Shield,
   ArrowLeft,
   Wrench,
+
 } from "lucide-react-native";
 
 interface JobTimer {
@@ -62,6 +75,13 @@ interface PendingJob {
   location: string;
   customer: string;
   icon: string;
+  priority: "low" | "medium" | "high" | "emergency";
+  estimatedEarnings: { min: number; max: number };
+  distance: string;
+  eta: string;
+  duration: string;
+  customerPhone?: string;
+  coordinates?: { lat: number; lng: number };
 }
 
 interface TechnicianDashboardProps {
@@ -78,6 +98,11 @@ interface TechnicianUser {
   email: string;
   name: string;
   technicianId: string;
+  lastLogin?: number;
+  phone?: string;
+  rating?: number;
+  totalJobs?: number;
+  successRate?: number;
 }
 
 const TechnicianDashboard = React.memo(function TechnicianDashboard({
@@ -94,7 +119,7 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
   const [troubleshootingGuide, setTroubleshootingGuide] = useState<any>(null);
   const [showTroubleshootingModal, setShowTroubleshootingModal] =
     useState(false);
-  const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [user, setUser] = useState<TechnicianUser | null>(null);
   const [onlineStatus, setOnlineStatus] = useState<boolean>(isOnline);
   const [activeView, setActiveView] = useState<string>("dashboard");
@@ -152,6 +177,13 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
       location: "Highway 101, Mile 23",
       customer: "John Davis (Standard Member)",
       icon: "🛞",
+      priority: "medium",
+      estimatedEarnings: { min: 85, max: 120 },
+      distance: "2.3 km",
+      eta: "8 min",
+      duration: "30 min",
+      customerPhone: "+592-123-4567",
+      coordinates: { lat: 6.8013, lng: -58.1551 },
     },
     {
       id: "RSJ-78954",
@@ -160,6 +192,13 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
       location: "Mall Parking Lot, Georgetown",
       customer: "Emily Wilson (Premium Member)",
       icon: "🚛",
+      priority: "high",
+      estimatedEarnings: { min: 150, max: 200 },
+      distance: "4.1 km",
+      eta: "12 min",
+      duration: "45 min",
+      customerPhone: "+592-987-6543",
+      coordinates: { lat: 6.8047, lng: -58.1626 },
     },
     {
       id: "RSJ-78955",
@@ -168,6 +207,13 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
       location: "Office Building, Camp Street",
       customer: "Alex Thompson (Standard Member)",
       icon: "🔑",
+      priority: "low",
+      estimatedEarnings: { min: 60, max: 90 },
+      distance: "1.8 km",
+      eta: "6 min",
+      duration: "20 min",
+      customerPhone: "+592-555-0123",
+      coordinates: { lat: 6.8077, lng: -58.1578 },
     },
   ]);
 
@@ -308,33 +354,86 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
 
   const handleJobAccept = useCallback(
     (job: PendingJob) => {
+      if (operationLoading) return;
+
       Alert.alert(
-        "Accept Job?",
-        `Do you want to accept the ${job.type} job for ${job.customer}?`,
+        "Accept Job",
+        `Accept ${job.type} job for ${job.customer}?\n\nLocation: ${job.location}\nDistance: ${job.distance}\nEstimated earnings: $${job.estimatedEarnings.min}-$${job.estimatedEarnings.max}\nPriority: ${job.priority.toUpperCase()}`,
         [
           { text: "Decline", style: "cancel" },
           {
             text: "Accept",
             onPress: async () => {
               try {
+                setOperationLoading(true);
+
+                // Simulate API call to accept job
+                await new Promise((resolve) => setTimeout(resolve, 1500));
+
+                // Remove job from pending list
+                setPendingJobs((prev) => prev.filter((j) => j.id !== job.id));
+
+                // Update stats
+                setStats(prev => prev.map(stat => {
+                  if (stat.type === "jobs") {
+                    return {
+                      ...stat,
+                      number: (parseInt(stat.number) + 1).toString(),
+                      change: `+${parseInt(stat.number) + 1 - 8} vs yesterday`
+                    };
+                  }
+                  return stat;
+                }));
+
+                Alert.alert(
+                  "Job Accepted",
+                  `You have accepted the ${job.type} job. Navigate to customer location to begin service.`,
+                  [
+                    {
+                      text: "Navigate Now",
+                      onPress: handleNavigateToCustomer
+                    },
+                    {
+                      text: "OK",
+                      style: "default"
+                    }
+                  ]
+                );
+
+                // Call parent callback if provided
                 onJobAccept?.(job.id);
-                Alert.alert("Job Accepted", `You have accepted job ${job.id}`);
               } catch (error) {
                 console.error("Job accept error:", error);
                 Alert.alert("Error", "Failed to accept job. Please try again.");
+              } finally {
+                setOperationLoading(false);
               }
             },
           },
         ],
       );
     },
-    [onJobAccept],
+    [operationLoading, onJobAccept, handleNavigateToCustomer],
   );
 
   const handleViewChange = useCallback((view: string) => {
     setActiveView(view);
     console.log(`${view} view selected`);
   }, []);
+
+  // View rendering function
+  const renderCurrentView = () => {
+    switch (activeView) {
+      case "jobs":
+        return renderJobsView();
+      case "earnings":
+        return renderEarningsView();
+      case "profile":
+        return renderProfileView();
+      default:
+        return renderDashboardView();
+    }
+  };
 
   useEffect(() => {
     // Job timer simulation - increments every second
@@ -539,7 +638,7 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
 
     setAuthLoading(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
         options: {
@@ -669,306 +768,6 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
     return false;
   };
 
-  // Main dashboard UI component - memoized for performance
-  const MainDashboardUI = useMemo(() => {
-    return (
-      <SafeAreaView className="flex-1 bg-slate-900">
-        <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
-          <View className="flex-1 justify-center items-center px-6 py-8">
-            {/* Back Button */}
-            {authMode !== "login" && (
-              <TouchableOpacity
-                onPress={() => switchAuthMode("login")}
-                className="absolute top-8 left-6 w-10 h-10 bg-white/10 rounded-xl items-center justify-center"
-              >
-                <ArrowLeft size={20} color="#94a3b8" />
-              </TouchableOpacity>
-            )}
-
-            {/* Logo and Title */}
-            <View className="items-center mb-12">
-              <Image
-                source={require("../../public/images/Main-Brand-Logo.png")}
-                className="w-32 h-16 mb-6"
-                resizeMode="contain"
-              />
-              <Text className="text-white text-3xl font-bold mb-2">
-                RoadSide+ Technician
-              </Text>
-              <Text className="text-slate-400 text-center text-base">
-                {authMode === "login" && "Access your technician dashboard"}
-                {authMode === "register" && "Create your technician account"}
-                {authMode === "reset" && "Reset your password"}
-              </Text>
-            </View>
-
-            {/* Auth Form */}
-            <View className="w-full max-w-sm">
-              <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-8">
-                <Text className="text-white text-xl font-bold mb-6 text-center">
-                  {authMode === "login" && "Sign In"}
-                  {authMode === "register" && "Create Account"}
-                  {authMode === "reset" && "Reset Password"}
-                </Text>
-
-                {/* Name Input - Only for Registration */}
-                {authMode === "register" && (
-                  <View className="mb-4">
-                    <Text className="text-slate-200 font-semibold mb-2">
-                      Full Name
-                    </Text>
-                    <View className="flex-row items-center bg-white/10 border border-white/10 rounded-xl px-4 py-3">
-                      <User size={20} color="#94a3b8" />
-                      <TextInput
-                        value={name}
-                        onChangeText={setName}
-                        placeholder="Enter your full name"
-                        placeholderTextColor="#64748b"
-                        className="flex-1 text-white text-base ml-3"
-                        autoCapitalize="words"
-                        autoCorrect={false}
-                      />
-                    </View>
-                  </View>
-                )}
-
-                {/* Email Input */}
-                <View className="mb-4">
-                  <Text className="text-slate-200 font-semibold mb-2">
-                    Email
-                  </Text>
-                  <View className="flex-row items-center bg-white/10 border border-white/10 rounded-xl px-4 py-3">
-                    <Mail size={20} color="#94a3b8" />
-                    <TextInput
-                      value={email}
-                      onChangeText={setEmail}
-                      placeholder="Enter your email"
-                      placeholderTextColor="#64748b"
-                      className="flex-1 text-white text-base ml-3"
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                    />
-                  </View>
-                </View>
-
-                {/* Password Input - Not for Reset */}
-                {authMode !== "reset" && (
-                  <View className="mb-4">
-                    <Text className="text-slate-200 font-semibold mb-2">
-                      Password
-                    </Text>
-                    <View className="flex-row items-center bg-white/10 border border-white/10 rounded-xl px-4 py-3">
-                      <Lock size={20} color="#94a3b8" />
-                      <TextInput
-                        value={password}
-                        onChangeText={setPassword}
-                        placeholder={
-                          authMode === "register"
-                            ? "Create a password (min 6 chars)"
-                            : "Enter your password"
-                        }
-                        placeholderTextColor="#64748b"
-                        className="flex-1 text-white text-base ml-3"
-                        secureTextEntry={!showPassword}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                      />
-                      <TouchableOpacity
-                        onPress={() => setShowPassword(!showPassword)}
-                        className="ml-2"
-                      >
-                        {showPassword ? (
-                          <EyeOff size={20} color="#94a3b8" />
-                        ) : (
-                          <Eye size={20} color="#94a3b8" />
-                        )}
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                )}
-
-                {/* Confirm Password Input - Only for Registration */}
-                {authMode === "register" && (
-                  <View className="mb-6">
-                    <Text className="text-slate-200 font-semibold mb-2">
-                      Confirm Password
-                    </Text>
-                    <View className="flex-row items-center bg-white/10 border border-white/10 rounded-xl px-4 py-3">
-                      <Lock size={20} color="#94a3b8" />
-                      <TextInput
-                        value={confirmPassword}
-                        onChangeText={setConfirmPassword}
-                        placeholder="Confirm your password"
-                        placeholderTextColor="#64748b"
-                        className="flex-1 text-white text-base ml-3"
-                        secureTextEntry={!showConfirmPassword}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                      />
-                      <TouchableOpacity
-                        onPress={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
-                        className="ml-2"
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff size={20} color="#94a3b8" />
-                        ) : (
-                          <Eye size={20} color="#94a3b8" />
-                        )}
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                )}
-
-                {/* Main Action Button */}
-                <TouchableOpacity
-                  onPress={
-                    authMode === "login"
-                      ? handleSignIn
-                      : authMode === "register"
-                        ? handleSignUp
-                        : handlePasswordReset
-                  }
-                  disabled={authLoading}
-                  className={`bg-gradient-to-r from-green-600 to-green-500 rounded-xl py-4 items-center mb-4 ${authLoading ? "opacity-50" : ""}`}
-                >
-                  {authLoading ? (
-                    <View className="flex-row items-center">
-                      <ActivityIndicator color="white" size="small" />
-                      <Text className="text-white font-bold text-base ml-2">
-                        {authMode === "login" && "Signing In..."}
-                        {authMode === "register" && "Creating Account..."}
-                        {authMode === "reset" && "Sending Reset Link..."}
-                      </Text>
-                    </View>
-                  ) : (
-                    <Text className="text-white font-bold text-base">
-                      {authMode === "login" && "Sign In"}
-                      {authMode === "register" && "Create Account"}
-                      {authMode === "reset" && "Send Reset Link"}
-                    </Text>
-                  )}
-                </TouchableOpacity>
-
-                {/* Secondary Actions */}
-                {authMode === "login" && (
-                  <>
-                    <TouchableOpacity
-                      onPress={handleDemoLogin}
-                      disabled={authLoading}
-                      className="bg-white/10 border border-white/10 rounded-xl py-3 items-center mb-4"
-                    >
-                      <Text className="text-slate-300 font-semibold text-sm">
-                        Demo Login
-                      </Text>
-                    </TouchableOpacity>
-
-                    <View className="flex-row justify-between items-center">
-                      <TouchableOpacity
-                        onPress={() => switchAuthMode("register")}
-                        disabled={authLoading}
-                      >
-                        <Text className="text-green-400 text-sm font-medium">
-                          Create Account
-                        </Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => switchAuthMode("reset")}
-                        disabled={authLoading}
-                      >
-                        <Text className="text-green-400 text-sm font-medium">
-                          Forgot Password?
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  </>
-                )}
-
-                {authMode === "register" && (
-                  <TouchableOpacity
-                    onPress={() => switchAuthMode("login")}
-                    disabled={authLoading}
-                    className="items-center"
-                  >
-                    <Text className="text-green-400 text-sm font-medium">
-                      Already have an account? Sign In
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-
-              {/* Security Notice */}
-              <View className="bg-slate-800/50 border border-white/10 rounded-xl p-4 mt-6">
-                <View className="flex-row items-center mb-2">
-                  <Shield size={16} color="#22c55e" />
-                  <Text className="text-green-400 font-semibold text-sm ml-2">
-                    Secure Authentication
-                  </Text>
-                </View>
-                <Text className="text-slate-400 text-xs leading-relaxed">
-                  Your technician credentials are encrypted and protected.
-                  Access your job dashboard securely.
-                </Text>
-              </View>
-            </View>
-          </View>
-        </ScrollView>
-
-        {/* Success Modal */}
-        <Modal
-          visible={showSuccessModal}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setShowSuccessModal(false)}
-        >
-          <View className="flex-1 bg-black/50 justify-center items-center px-6">
-            <View className="bg-slate-800 border border-white/10 rounded-2xl p-8 w-full max-w-sm">
-              <View className="items-center mb-6">
-                <View className="w-16 h-16 bg-green-500/20 rounded-full items-center justify-center mb-4">
-                  <CheckCircle size={32} color="#22c55e" />
-                </View>
-                <Text className="text-white text-xl font-bold text-center mb-2">
-                  Success!
-                </Text>
-                <Text className="text-slate-300 text-center text-sm leading-relaxed">
-                  {successMessage}
-                </Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => setShowSuccessModal(false)}
-                className="bg-gradient-to-r from-green-600 to-green-500 rounded-xl py-3 items-center"
-              >
-                <Text className="text-white font-bold text-base">Continue</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      </SafeAreaView>
-    );
-  }, [
-    user,
-    onlineStatus,
-    activeView,
-    operationLoading,
-    jobTimer,
-    stats,
-    pendingJobs,
-    toggleOnlineStatus,
-    handleNavigateToCustomer,
-    handleContactCustomer,
-    handleMarkArrived,
-    handleEmergencyContact,
-    getStatCardStyle,
-    handleJobAccept,
-    handleViewChange,
-    handleSignOut,
-  ]);
-
-  // Return the main dashboard UI
-  return MainDashboardUI;
-
   // Enhanced error handling function with comprehensive error capture
   const handleError = useCallback(
     async (error: any, context?: string) => {
@@ -989,16 +788,203 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
             : "React Native",
         timestamp: new Date().toISOString(),
         memoryUsage:
-          typeof performance !== "undefined" && performance.memory
+          typeof performance !== "undefined" && (performance as any).memory
             ? {
                 used: Math.round(
-                  performance.memory.usedJSHeapSize / 1024 / 1024,
+                  (performance as any).memory.usedJSHeapSize / 1024 / 1024,
                 ),
                 total: Math.round(
-                  performance.memory.totalJSHeapSize / 1024 / 1024,
+                  (performance as any).memory.totalJSHeapSize / 1024 / 1024,
                 ),
                 limit: Math.round(
-                  performance.memory.jsHeapSizeLimit / 1024 / 1024,
+                  (performance as any).memory.jsHeapSizeLimit / 1024 / 1024,
+                ),
+              }
+            : null,
+        networkStatus:
+          typeof navigator !== "undefined" ? navigator.onLine : true,
+        deviceInfo: {
+          platform: typeof Platform !== "undefined" ? Platform.OS : "web",
+          version:
+            typeof Platform !== "undefined" ? Platform.Version : "unknown",
+        },
+      };
+
+      // Enhanced error details with comprehensive context
+      const errorDetails = {
+        errorType:
+          error?.name || error?.constructor?.name || "ComponentRenderError",
+        errorMessage:
+          error?.message ||
+          error?.toString() ||
+          "Technician dashboard failed to render properly - persistent rendering error",
+        componentName: "TechnicianDashboard",
+        dashboardType: "technician" as const,
+        stackTrace: error?.stack,
+        timestamp: debugInfo.timestamp,
+        context: context || "dashboard_initialization",
+        userAgent: debugInfo.userAgent,
+        userId: user?.id,
+        sessionInfo: {
+          isAuthenticated: !!user,
+          userEmail: user?.email,
+          technicianId: user?.technicianId,
+          onlineStatus,
+          activeView,
+          isLoading,
+          authLoading,
+          hasValidSession: !!user?.id,
+          sessionAge: user ? Date.now() - (user.lastLogin || 0) : 0,
+          componentMountTime: Date.now(),
+        },
+        environmentInfo: {
+          platform: debugInfo.deviceInfo.platform,
+          platformVersion: debugInfo.deviceInfo.version,
+          isDev: typeof __DEV__ !== "undefined" ? __DEV__ : false,
+          expoVersion:
+            typeof Constants !== "undefined"
+              ? Constants.expoVersion
+              : "unknown",
+          networkOnline: debugInfo.networkStatus,
+          supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL
+            ? "configured"
+            : "missing",
+          supabaseKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
+            ? "configured"
+            : "missing",
+        },
+        debugInfo,
+        errorFrequency: {
+          isRecurring: context === "recurring_error",
+          lastErrorTime: errorTimeoutRef.current ? Date.now() : null,
+        },
+      };
+
+      setErrorDetails(errorDetails);
+      setHasError(true);
+
+      // Get AI-powered troubleshooting guide with enhanced retry logic
+      try {
+        console.log(
+          "Requesting enhanced troubleshooting guide for:",
+          errorDetails.errorType,
+          "Context:",
+          errorDetails.context,
+        );
+
+        // Add timeout to prevent hanging requests
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(
+            () => reject(new Error("Troubleshooting request timeout")),
+            15000,
+          ),
+        );
+
+        const troubleshootingPromise = supabase.functions.invoke(
+          "supabase-functions-perplexity-dashboard-troubleshoot",
+          {
+            body: errorDetails,
+          },
+        );
+
+        const { data: guide, error: guideError } = (await Promise.race([
+          troubleshootingPromise,
+          timeoutPromise,
+        ])) as any;
+
+        if (guideError) {
+          console.warn("Troubleshooting guide error:", guideError);
+          // Use fallback guide from error response if available
+          if (guideError.fallbackGuide) {
+            setTroubleshootingGuide(guideError.fallbackGuide);
+          } else {
+            setTroubleshootingGuide(getEnhancedFallbackGuide(errorDetails));
+          }
+        } else if (guide) {
+          console.log("Enhanced troubleshooting guide received:", {
+            severity: guide.severity,
+            stepsCount: guide.specificSteps?.length || 0,
+            causesCount: guide.possibleCauses?.length || 0,
+            fixesCount: guide.quickFixes?.length || 0,
+          });
+          setTroubleshootingGuide(guide);
+        } else {
+          setTroubleshootingGuide(getEnhancedFallbackGuide(errorDetails));
+        }
+      } catch (guideError) {
+        console.warn("Failed to get troubleshooting guide:", guideError);
+        setTroubleshootingGuide(getEnhancedFallbackGuide(errorDetails));
+      }
+
+      // Auto-reset error state after 20 seconds with exponential backoff
+      if (errorTimeoutRef.current) {
+        clearTimeout(errorTimeoutRef.current);
+      }
+
+      const resetDelay = context === "recurring_error" ? 30000 : 20000;
+      errorTimeoutRef.current = setTimeout(() => {
+        console.log(
+          "Auto-resetting error state after",
+          resetDelay / 1000,
+          "seconds",
+        );
+        setHasError(false);
+        setErrorDetails(null);
+        setTroubleshootingGuide(null);
+      }, resetDelay);
+    },
+    [user, onlineStatus, activeView, isLoading, hasError],
+  );
+  }, [
+    user,
+    onlineStatus,
+    activeView,
+    operationLoading,
+    jobTimer,
+    stats,
+    pendingJobs,
+    toggleOnlineStatus,
+    handleNavigateToCustomer,
+    handleContactCustomer,
+    handleMarkArrived,
+    handleEmergencyContact,
+    getStatCardStyle,
+    handleJobAccept,
+    handleViewChange,
+    handleSignOut,
+  ]);
+
+  // Return the main dashboard UI
+  // Enhanced error handling function with comprehensive error capture
+  const handleError = useCallback(
+    async (error: any, context?: string) => {
+      console.error("TechnicianDashboard error:", error, "Context:", context);
+
+      // Prevent error handling loops
+      if (hasError) {
+        console.warn("Error handling already in progress, skipping duplicate");
+        return;
+      }
+
+      // Capture additional debugging information
+      const debugInfo = {
+        url: typeof window !== "undefined" ? window.location.href : "N/A",
+        userAgent:
+          typeof navigator !== "undefined"
+            ? navigator.userAgent
+            : "React Native",
+        timestamp: new Date().toISOString(),
+        memoryUsage:
+          typeof performance !== "undefined" && (performance as any).memory
+            ? {
+                used: Math.round(
+                  (performance as any).memory.usedJSHeapSize / 1024 / 1024,
+                ),
+                total: Math.round(
+                  (performance as any).memory.totalJSHeapSize / 1024 / 1024,
+                ),
+                limit: Math.round(
+                  (performance as any).memory.jsHeapSizeLimit / 1024 / 1024,
                 ),
               }
             : null,
@@ -1728,18 +1714,18 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
           <View className="flex-row items-center flex-1 mr-3">
             <View className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-600 to-green-500 rounded-full items-center justify-center mr-3">
               <Text className="text-white text-sm sm:text-lg font-bold">
-                {user.name
-                  .split(" ")
+                {user?.name
+                  ?.split(" ")
                   .map((n) => n[0])
-                  .join("")}
+                  .join("") || "T"}
               </Text>
             </View>
             <View className="flex-1">
               <Text className="text-white text-base sm:text-lg font-bold">
-                {user.name}
+                {user?.name || "Technician"}
               </Text>
               <Text className="text-slate-400 text-xs sm:text-sm">
-                Tech ID: {user.technicianId}
+                Tech ID: {user?.technicianId || "RSP-0000"}
               </Text>
             </View>
           </View>
@@ -1788,6 +1774,117 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
       </View>
 
       {/* Main Content */}
+      {renderCurrentView()}
+
+
+
+      {/* Bottom Navigation */}
+      <View className="absolute bottom-0 left-0 right-0 bg-slate-800/90 backdrop-blur-lg border-t border-white/10 px-2 py-3 flex-row justify-around items-center">
+        <TouchableOpacity
+          onPress={() => handleViewChange("dashboard")}
+          className={`items-center py-2 px-4 rounded-xl ${
+            activeView === "dashboard" ? "bg-red-500/20" : ""
+          }`}
+          accessibilityRole="button"
+          accessibilityLabel="Dashboard"
+          accessibilityState={{ selected: activeView === "dashboard" }}
+        >
+          <Home
+            size={20}
+            color={activeView === "dashboard" ? "#ef4444" : "#94a3b8"}
+          />
+          <Text
+            className={`text-xs font-semibold mt-1 ${
+              activeView === "dashboard" ? "text-red-400" : "text-slate-400"
+            }`}
+          >
+            Dashboard
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => handleViewChange("jobs")}
+          className={`items-center py-2 px-4 rounded-xl ${
+            activeView === "jobs" ? "bg-red-500/20" : ""
+          }`}
+          accessibilityRole="button"
+          accessibilityLabel="Jobs"
+          accessibilityState={{ selected: activeView === "jobs" }}
+        >
+          <ClipboardList
+            size={20}
+            color={activeView === "jobs" ? "#ef4444" : "#94a3b8"}
+          />
+          <Text
+            className={`text-xs font-semibold mt-1 ${
+              activeView === "jobs" ? "text-red-400" : "text-slate-400"
+            }`}
+          >
+            Jobs
+          </Text>
+        </TouchableOpacity>
+
+        {/* Emergency SOS Button */}
+        <TouchableOpacity
+          onPress={handleEmergencyContact}
+          className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-500 rounded-full items-center justify-center -mt-6 border-4 border-slate-800 shadow-lg"
+          accessibilityRole="button"
+          accessibilityLabel="Emergency SOS"
+          accessibilityHint="Contact emergency support"
+        >
+          <Text className="text-white font-bold text-sm">SOS</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => handleViewChange("earnings")}
+          className={`items-center py-2 px-4 rounded-xl ${
+            activeView === "earnings" ? "bg-red-500/20" : ""
+          }`}
+          accessibilityRole="button"
+          accessibilityLabel="Earnings"
+          accessibilityState={{ selected: activeView === "earnings" }}
+        >
+          <DollarSign
+            size={20}
+            color={activeView === "earnings" ? "#ef4444" : "#94a3b8"}
+          />
+          <Text
+            className={`text-xs font-semibold mt-1 ${
+              activeView === "earnings" ? "text-red-400" : "text-slate-400"
+            }`}
+          >
+            Earnings
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => handleViewChange("profile")}
+          className={`items-center py-2 px-4 rounded-xl ${
+            activeView === "profile" ? "bg-red-500/20" : ""
+          }`}
+          accessibilityRole="button"
+          accessibilityLabel="Profile"
+          accessibilityState={{ selected: activeView === "profile" }}
+        >
+          <User
+            size={20}
+            color={activeView === "profile" ? "#ef4444" : "#94a3b8"}
+          />
+          <Text
+            className={`text-xs font-semibold mt-1 ${
+              activeView === "profile" ? "text-red-400" : "text-slate-400"
+            }`}
+          >
+            Profile
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+
+  // Dashboard View (Main)
+  function renderDashboardView() {
+    return (
       <ScrollView
         className="flex-1 bg-slate-900/30 px-3 pb-24"
         showsVerticalScrollIndicator={false}
@@ -1933,23 +2030,26 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
           <Text className="text-white/90">+18% from last week</Text>
         </View>
 
-        {/* Pending Jobs */}
+        {/* Pending Jobs Preview */}
         <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-3xl p-6 mb-6">
           <View className="flex-row justify-between items-center mb-5">
             <Text className="text-white text-lg font-semibold">
               Pending Jobs
             </Text>
-            <View className="bg-red-500/20 px-3 py-1 rounded-lg">
+            <TouchableOpacity
+              onPress={() => handleViewChange("jobs")}
+              className="bg-red-500/20 px-3 py-1 rounded-lg"
+            >
               <Text className="text-red-400 text-xs font-bold">
-                {pendingJobs.length} Available
+                View All ({pendingJobs.length})
               </Text>
-            </View>
+            </TouchableOpacity>
           </View>
 
-          {pendingJobs.map((job, index) => (
+          {pendingJobs.slice(0, 2).map((job, index) => (
             <TouchableOpacity
               key={job.id}
-              className={`bg-white/5 border border-white/10 rounded-xl p-4 ${index < pendingJobs.length - 1 ? "mb-3" : ""}`}
+              className={`bg-white/5 border border-white/10 rounded-xl p-4 ${index < 1 ? "mb-3" : ""}`}
               onPress={() => handleJobAccept(job)}
               accessibilityRole="button"
               accessibilityLabel={`${job.type} job`}
@@ -1975,110 +2075,442 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
           ))}
         </View>
       </ScrollView>
+    );
+  }
 
-      {/* Bottom Navigation */}
-      <View className="absolute bottom-0 left-0 right-0 bg-slate-800/90 backdrop-blur-lg border-t border-white/10 px-2 py-3 flex-row justify-around items-center">
-        <TouchableOpacity
-          onPress={() => handleViewChange("dashboard")}
-          className={`items-center py-2 px-4 rounded-xl ${
-            activeView === "dashboard" ? "bg-red-500/20" : ""
-          }`}
-          accessibilityRole="button"
-          accessibilityLabel="Dashboard"
-          accessibilityState={{ selected: activeView === "dashboard" }}
-        >
-          <Home
-            size={20}
-            color={activeView === "dashboard" ? "#ef4444" : "#94a3b8"}
-          />
-          <Text
-            className={`text-xs font-semibold mt-1 ${
-              activeView === "dashboard" ? "text-red-400" : "text-slate-400"
-            }`}
-          >
-            Dashboard
-          </Text>
-        </TouchableOpacity>
+  // Jobs View
+  function renderJobsView() {
+    return (
+      <ScrollView
+        className="flex-1 bg-slate-900/30 px-3 pb-24"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View className="flex-row justify-between items-center py-6">
+          <Text className="text-white text-2xl font-bold">Available Jobs</Text>
+          <View className="bg-red-500/20 px-3 py-1 rounded-lg">
+            <Text className="text-red-400 text-xs font-bold">
+              {pendingJobs.length} Jobs
+            </Text>
+          </View>
+        </View>
 
-        <TouchableOpacity
-          onPress={() => handleViewChange("jobs")}
-          className={`items-center py-2 px-4 rounded-xl ${
-            activeView === "jobs" ? "bg-red-500/20" : ""
-          }`}
-          accessibilityRole="button"
-          accessibilityLabel="Jobs"
-          accessibilityState={{ selected: activeView === "jobs" }}
-        >
-          <ClipboardList
-            size={20}
-            color={activeView === "jobs" ? "#ef4444" : "#94a3b8"}
-          />
-          <Text
-            className={`text-xs font-semibold mt-1 ${
-              activeView === "jobs" ? "text-red-400" : "text-slate-400"
-            }`}
-          >
-            Jobs
-          </Text>
-        </TouchableOpacity>
+        {/* Filter Tabs */}
+        <View className="flex-row bg-slate-800/50 rounded-xl p-1 mb-6">
+          <TouchableOpacity className="flex-1 bg-red-500 rounded-lg py-3 items-center">
+            <Text className="text-white font-semibold">All Jobs</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="flex-1 py-3 items-center">
+            <Text className="text-slate-400 font-semibold">Emergency</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="flex-1 py-3 items-center">
+            <Text className="text-slate-400 font-semibold">Nearby</Text>
+          </TouchableOpacity>
+        </View>
 
-        {/* Emergency SOS Button */}
-        <TouchableOpacity
-          onPress={handleEmergencyContact}
-          className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-500 rounded-full items-center justify-center -mt-6 border-4 border-slate-800 shadow-lg"
-          accessibilityRole="button"
-          accessibilityLabel="Emergency SOS"
-          accessibilityHint="Contact emergency support"
-        >
-          <Text className="text-white font-bold text-sm">SOS</Text>
-        </TouchableOpacity>
+        {/* Job List */}
+        <View className="gap-4">
+          {pendingJobs.map((job) => (
+            <View
+              key={job.id}
+              className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6"
+            >
+              <View className="flex-row justify-between items-start mb-4">
+                <View className="flex-row items-center flex-1">
+                  <Text className="text-white font-semibold text-2xl mr-3">
+                    {job.icon}
+                  </Text>
+                  <View className="flex-1">
+                    <Text className="text-white font-bold text-lg mb-1">
+                      {job.type}
+                    </Text>
+                    <Text className="text-slate-400 text-sm">
+                      Job #{job.id}
+                    </Text>
+                  </View>
+                </View>
+                <View className="items-end">
+                  <Text className="text-slate-500 text-xs mb-1">{job.time}</Text>
+                  <View className={`px-2 py-1 rounded-md ${
+                    job.priority === "emergency" ? "bg-red-500/20" :
+                    job.priority === "high" ? "bg-orange-500/20" :
+                    job.priority === "medium" ? "bg-yellow-500/20" : "bg-green-500/20"
+                  }`}>
+                    <Text className={`text-xs font-semibold ${
+                      job.priority === "emergency" ? "text-red-400" :
+                      job.priority === "high" ? "text-orange-400" :
+                      job.priority === "medium" ? "text-yellow-400" : "text-green-400"
+                    }`}>
+                      ${job.estimatedEarnings.min} - ${job.estimatedEarnings.max}
+                    </Text>
+                  </View>
+                </View>
+              </View>
 
-        <TouchableOpacity
-          onPress={() => handleViewChange("earnings")}
-          className={`items-center py-2 px-4 rounded-xl ${
-            activeView === "earnings" ? "bg-red-500/20" : ""
-          }`}
-          accessibilityRole="button"
-          accessibilityLabel="Earnings"
-          accessibilityState={{ selected: activeView === "earnings" }}
-        >
-          <DollarSign
-            size={20}
-            color={activeView === "earnings" ? "#ef4444" : "#94a3b8"}
-          />
-          <Text
-            className={`text-xs font-semibold mt-1 ${
-              activeView === "earnings" ? "text-red-400" : "text-slate-400"
-            }`}
-          >
-            Earnings
-          </Text>
-        </TouchableOpacity>
+              {/* Customer Info */}
+              <View className="bg-white/5 rounded-xl p-4 mb-4">
+                <Text className="text-slate-400 text-sm mb-1">Customer</Text>
+                <Text className="text-white font-semibold mb-2">
+                  {job.customer}
+                </Text>
+                <View className="flex-row items-center">
+                  <MapPin size={14} color="#94a3b8" />
+                  <Text className="text-slate-400 text-sm ml-2">
+                    {job.location}
+                  </Text>
+                </View>
+              </View>
 
+              {/* Job Details */}
+              <View className="flex-row gap-4 mb-4">
+                <View className="flex-1 bg-white/5 rounded-xl p-3 items-center">
+                  <Text className="text-white font-bold">{job.distance}</Text>
+                  <Text className="text-slate-400 text-xs">Distance</Text>
+                </View>
+                <View className="flex-1 bg-white/5 rounded-xl p-3 items-center">
+                  <Text className="text-white font-bold">{job.eta}</Text>
+                  <Text className="text-slate-400 text-xs">ETA</Text>
+                </View>
+                <View className="flex-1 bg-white/5 rounded-xl p-3 items-center">
+                  <Text className="text-white font-bold">{job.duration}</Text>
+                  <Text className="text-slate-400 text-xs">Duration</Text>
+                </View>
+              </View>
+
+              {/* Action Buttons */}
+              <View className="flex-row gap-3">
+                <TouchableOpacity className="flex-1 bg-slate-700/50 border border-white/10 rounded-xl py-3 items-center">
+                  <Text className="text-white font-semibold">View Details</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => handleJobAccept(job)}
+                  className="flex-1 bg-gradient-to-r from-green-600 to-green-500 rounded-xl py-3 items-center"
+                >
+                  <Text className="text-white font-semibold">Accept Job</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+        </View>
+
+        {/* No Jobs Message */}
+        {pendingJobs.length === 0 && (
+          <View className="flex-1 justify-center items-center py-20">
+            <Text className="text-slate-400 text-lg mb-4">No jobs available</Text>
+            <Text className="text-slate-500 text-center">
+              Check back later for new job opportunities
+            </Text>
+          </View>
+        )}
+      </ScrollView>
+    );
+  }
+
+  // Earnings View
+  function renderEarningsView() {
+    const earningsData = [
+      { day: "Mon", amount: 420 },
+      { day: "Tue", amount: 380 },
+      { day: "Wed", amount: 520 },
+      { day: "Thu", amount: 460 },
+      { day: "Fri", amount: 680 },
+      { day: "Sat", amount: 720 },
+      { day: "Sun", amount: 580 },
+    ];
+
+    const recentPayments = [
+      { id: "PAY-001", date: "Dec 1, 2024", amount: 847, status: "completed" },
+      { id: "PAY-002", date: "Nov 30, 2024", amount: 720, status: "completed" },
+      { id: "PAY-003", date: "Nov 29, 2024", amount: 580, status: "pending" },
+    ];
+
+    return (
+      <ScrollView
+        className="flex-1 bg-slate-900/30 px-3 pb-24"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View className="py-6">
+          <Text className="text-white text-2xl font-bold mb-2">Earnings</Text>
+          <Text className="text-slate-400">Track your income and payments</Text>
+        </View>
+
+        {/* Today's Earnings */}
+        <View className="bg-gradient-to-r from-green-600 to-green-500 rounded-2xl p-6 mb-6">
+          <Text className="text-white/90 font-semibold mb-2">Today's Earnings</Text>
+          <Text className="text-white text-4xl font-bold mb-2">$847</Text>
+          <Text className="text-white/90">+$127 vs yesterday</Text>
+        </View>
+
+        {/* Earnings Stats */}
+        <View className="flex-row gap-4 mb-6">
+          <View className="flex-1 bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-4">
+            <Text className="text-white text-xl font-bold mb-1">$3,240</Text>
+            <Text className="text-slate-400 text-sm mb-1">This Week</Text>
+            <Text className="text-green-400 text-xs">+18% vs last week</Text>
+          </View>
+          <View className="flex-1 bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-4">
+            <Text className="text-white text-xl font-bold mb-1">$12,960</Text>
+            <Text className="text-slate-400 text-sm mb-1">This Month</Text>
+            <Text className="text-green-400 text-xs">+12% vs last month</Text>
+          </View>
+        </View>
+
+        {/* Weekly Chart */}
+        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
+          <Text className="text-white text-lg font-bold mb-4">Weekly Overview</Text>
+
+          <View className="flex-row items-end justify-between h-32 mb-4">
+            {earningsData.map((day) => {
+              const height = (day.amount / 720) * 100; // Normalize to percentage
+              return (
+                <View key={day.day} className="items-center flex-1">
+                  <View
+                    className="bg-gradient-to-t from-red-600 to-red-400 rounded-t-lg w-6 mb-2"
+                    style={{ height: `${height}%` }}
+                  />
+                  <Text className="text-slate-400 text-xs">{day.day}</Text>
+                </View>
+              );
+            })}
+          </View>
+
+          <View className="flex-row justify-between">
+            <Text className="text-slate-400 text-sm">Nov 25 - Dec 1</Text>
+            <Text className="text-white font-semibold">$4,760 total</Text>
+          </View>
+        </View>
+
+        {/* Payment Methods */}
+        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
+          <Text className="text-white text-lg font-bold mb-4">Payment Methods</Text>
+
+          <View className="gap-4">
+            <View className="flex-row items-center p-4 bg-white/5 rounded-xl">
+              <View className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl items-center justify-center mr-4">
+                <Text className="text-white font-bold">💳</Text>
+              </View>
+              <View className="flex-1">
+                <Text className="text-white font-semibold mb-1">
+                  Bank Account •••• 4567
+                </Text>
+                <Text className="text-slate-400 text-sm">
+                  Primary payment method
+                </Text>
+              </View>
+              <View className="bg-green-500/20 px-2 py-1 rounded-md">
+                <Text className="text-green-400 text-xs font-semibold">Active</Text>
+              </View>
+            </View>
+
+            <TouchableOpacity className="flex-row items-center p-4 bg-white/5 rounded-xl border border-dashed border-white/20">
+              <View className="w-12 h-12 bg-slate-700 rounded-xl items-center justify-center mr-4">
+                <Text className="text-slate-400 font-bold text-xl">+</Text>
+              </View>
+              <Text className="text-slate-400 font-semibold">
+                Add Payment Method
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Recent Payments */}
+        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
+          <Text className="text-white text-lg font-bold mb-4">Recent Payments</Text>
+
+          <View className="gap-4">
+            {recentPayments.map((payment) => (
+              <View key={payment.id} className="flex-row items-center justify-between p-4 bg-white/5 rounded-xl">
+                <View className="flex-1">
+                  <Text className="text-white font-semibold mb-1">
+                    Payment #{payment.id}
+                  </Text>
+                  <Text className="text-slate-400 text-sm">
+                    {payment.date}
+                  </Text>
+                </View>
+                <View className="items-end">
+                  <Text className="text-white font-bold text-lg">
+                    ${payment.amount}
+                  </Text>
+                  <View className={`px-2 py-1 rounded-md ${
+                    payment.status === "completed"
+                      ? "bg-green-500/20"
+                      : "bg-yellow-500/20"
+                  }`}>
+                    <Text className={`text-xs font-semibold ${
+                      payment.status === "completed"
+                        ? "text-green-400"
+                        : "text-yellow-400"
+                    }`}>
+                      {payment.status}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    );
+  }
+
+  // Profile View
+  function renderProfileView() {
+    return (
+      <ScrollView
+        className="flex-1 bg-slate-900/30 px-3 pb-24"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View className="py-6">
+          <Text className="text-white text-2xl font-bold mb-2">Profile</Text>
+          <Text className="text-slate-400">Manage your account and settings</Text>
+        </View>
+
+        {/* Profile Header */}
+        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
+          <View className="items-center mb-6">
+            <View className="w-20 h-20 bg-gradient-to-br from-red-600 to-red-500 rounded-full items-center justify-center mb-4">
+              <User size={32} color="white" />
+            </View>
+            <Text className="text-white text-xl font-bold mb-1">
+              {user?.name || technicianName}
+            </Text>
+            <Text className="text-slate-400 mb-2">{user?.email}</Text>
+            <View className="bg-green-500/20 border border-green-500/30 px-3 py-1 rounded-lg">
+              <Text className="text-green-400 text-sm font-semibold">
+                ID: {user?.technicianId || technicianId}
+              </Text>
+            </View>
+          </View>
+
+          <View className="flex-row gap-4">
+            <View className="flex-1 bg-white/5 rounded-xl p-4 items-center">
+              <Text className="text-white text-2xl font-bold mb-1">4.9</Text>
+              <Text className="text-slate-400 text-xs">Rating</Text>
+            </View>
+            <View className="flex-1 bg-white/5 rounded-xl p-4 items-center">
+              <Text className="text-white text-2xl font-bold mb-1">247</Text>
+              <Text className="text-slate-400 text-xs">Jobs Done</Text>
+            </View>
+            <View className="flex-1 bg-white/5 rounded-xl p-4 items-center">
+              <Text className="text-white text-2xl font-bold mb-1">98%</Text>
+              <Text className="text-slate-400 text-xs">Success Rate</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Online Status */}
+        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
+          <View className="flex-row justify-between items-center">
+            <View>
+              <Text className="text-white text-lg font-bold mb-1">
+                Online Status
+              </Text>
+              <Text className="text-slate-400 text-sm">
+                {onlineStatus ? "Available for jobs" : "Currently offline"}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={toggleOnlineStatus}
+              className={`w-16 h-8 rounded-full p-1 ${
+                onlineStatus ? "bg-green-500" : "bg-slate-600"
+              }`}
+            >
+              <View
+                className={`w-6 h-6 bg-white rounded-full transition-transform ${
+                  onlineStatus ? "translate-x-8" : "translate-x-0"
+                }`}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Account Settings */}
+        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
+          <Text className="text-white text-lg font-bold mb-4">Account Settings</Text>
+
+          <View className="gap-4">
+            <TouchableOpacity className="flex-row items-center p-4 bg-white/5 rounded-xl">
+              <View className="w-10 h-10 bg-blue-500/20 rounded-lg items-center justify-center mr-4">
+                <User size={20} color="#3b82f6" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-white font-semibold">Personal Information</Text>
+                <Text className="text-slate-400 text-sm">Update your profile details</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity className="flex-row items-center p-4 bg-white/5 rounded-xl">
+              <View className="w-10 h-10 bg-green-500/20 rounded-lg items-center justify-center mr-4">
+                <Settings size={20} color="#22c55e" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-white font-semibold">Work Preferences</Text>
+                <Text className="text-slate-400 text-sm">Set your availability and preferences</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity className="flex-row items-center p-4 bg-white/5 rounded-xl">
+              <View className="w-10 h-10 bg-purple-500/20 rounded-lg items-center justify-center mr-4">
+                <Bell size={20} color="#a855f7" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-white font-semibold">Notifications</Text>
+                <Text className="text-slate-400 text-sm">Configure alert preferences</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity className="flex-row items-center p-4 bg-white/5 rounded-xl">
+              <View className="w-10 h-10 bg-orange-500/20 rounded-lg items-center justify-center mr-4">
+                <Shield size={20} color="#f97316" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-white font-semibold">Privacy & Security</Text>
+                <Text className="text-slate-400 text-sm">Manage your privacy settings</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Support Section */}
+        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
+          <Text className="text-white text-lg font-bold mb-4">Support</Text>
+
+          <View className="gap-4">
+            <TouchableOpacity className="flex-row items-center p-4 bg-white/5 rounded-xl">
+              <View className="w-10 h-10 bg-blue-500/20 rounded-lg items-center justify-center mr-4">
+                <Phone size={20} color="#3b82f6" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-white font-semibold">Contact Support</Text>
+                <Text className="text-slate-400 text-sm">Get help from our support team</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity className="flex-row items-center p-4 bg-white/5 rounded-xl">
+              <View className="w-10 h-10 bg-green-500/20 rounded-lg items-center justify-center mr-4">
+                <Wrench size={20} color="#22c55e" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-white font-semibold">Training Resources</Text>
+                <Text className="text-slate-400 text-sm">Access training materials and guides</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Sign Out */}
         <TouchableOpacity
-          onPress={() => handleViewChange("profile")}
-          className={`items-center py-2 px-4 rounded-xl ${
-            activeView === "profile" ? "bg-red-500/20" : ""
-          }`}
-          accessibilityRole="button"
-          accessibilityLabel="Profile"
-          accessibilityState={{ selected: activeView === "profile" }}
+          onPress={handleSignOut}
+          className="bg-red-500/20 border border-red-500/30 rounded-xl py-4 items-center mb-6"
         >
-          <User
-            size={20}
-            color={activeView === "profile" ? "#ef4444" : "#94a3b8"}
-          />
-          <Text
-            className={`text-xs font-semibold mt-1 ${
-              activeView === "profile" ? "text-red-400" : "text-slate-400"
-            }`}
-          >
-            Profile
-          </Text>
+          <Text className="text-red-400 font-semibold">Sign Out</Text>
         </TouchableOpacity>
-      </View>
-    </SafeAreaView>
-  );
+      </ScrollView>
+    );
+  }
 });
 
 export default TechnicianDashboard;
