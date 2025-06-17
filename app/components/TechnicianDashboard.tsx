@@ -30,8 +30,6 @@ import {
   ResponsiveButton,
   ResponsiveText,
   ResponsiveMetricCard,
-  ResponsiveBottomNav,
-  ResponsiveHeader,
 } from "./responsive/ResponsiveComponents";
 import {
   Bell,
@@ -53,7 +51,6 @@ import {
   Shield,
   ArrowLeft,
   Wrench,
-
 } from "lucide-react-native";
 
 interface JobTimer {
@@ -342,15 +339,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
     ]);
   }, [onEmergencyContact]);
 
-  const getStatCardStyle = useCallback((type: Stat["type"]) => {
-    const styles = {
-      earnings: "border-t-4 border-green-500",
-      jobs: "border-t-4 border-blue-500",
-      rating: "border-t-4 border-yellow-500",
-      time: "border-t-4 border-red-500",
-    };
-    return styles[type] || "border-t-4 border-gray-500";
-  }, []);
+
 
   const handleJobAccept = useCallback(
     (job: PendingJob) => {
@@ -374,16 +363,18 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                 setPendingJobs((prev) => prev.filter((j) => j.id !== job.id));
 
                 // Update stats
-                setStats(prev => prev.map(stat => {
-                  if (stat.type === "jobs") {
-                    return {
-                      ...stat,
-                      number: (parseInt(stat.number) + 1).toString(),
-                      change: `+${parseInt(stat.number) + 1 - 8} vs yesterday`
-                    };
-                  }
-                  return stat;
-                }));
+                setStats((prev) =>
+                  prev.map((stat) => {
+                    if (stat.type === "jobs") {
+                      return {
+                        ...stat,
+                        number: (parseInt(stat.number) + 1).toString(),
+                        change: `+${parseInt(stat.number) + 1 - 8} vs yesterday`,
+                      };
+                    }
+                    return stat;
+                  }),
+                );
 
                 Alert.alert(
                   "Job Accepted",
@@ -391,13 +382,13 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                   [
                     {
                       text: "Navigate Now",
-                      onPress: handleNavigateToCustomer
+                      onPress: handleNavigateToCustomer,
                     },
                     {
                       text: "OK",
-                      style: "default"
-                    }
-                  ]
+                      style: "default",
+                    },
+                  ],
                 );
 
                 // Call parent callback if provided
@@ -427,7 +418,9 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
       <ScrollView
         className="flex-1 bg-slate-900/30"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: designSystem.spacing.responsive.xxl + 80 }}
+        contentContainerStyle={{
+          paddingBottom: designSystem.spacing.responsive.xxl + 80,
+        }}
       >
         <ResponsiveContainer>
           {/* Quick Stats */}
@@ -443,13 +436,16 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                 value={stat.number}
                 change={stat.change}
                 changeType="positive"
-                className={`${designSystem.deviceType.isPhone ? 'min-w-[140px]' : 'min-w-[160px]'}`}
+                className={`${designSystem.deviceType.isPhone ? "min-w-[140px]" : "min-w-[160px]"}`}
               />
             ))}
           </ResponsiveGrid>
 
           {/* Current Job */}
-          <ResponsiveCard variant="elevated" className="bg-slate-800/80 border border-red-500/50 mb-6 relative">
+          <ResponsiveCard
+            variant="elevated"
+            className="bg-slate-800/80 border border-red-500/50 mb-6 relative"
+          >
             <View className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 to-red-500 rounded-t-3xl" />
 
             <View className="flex-row justify-between items-start mb-5">
@@ -462,7 +458,10 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                 </ResponsiveText>
               </View>
               <View className="bg-red-500/20 border border-red-500/30 px-3 py-1 rounded-lg">
-                <ResponsiveText variant="caption" className="text-red-400 font-bold uppercase">
+                <ResponsiveText
+                  variant="caption"
+                  className="text-red-400 font-bold uppercase"
+                >
                   Emergency
                 </ResponsiveText>
               </View>
@@ -472,7 +471,8 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
             <View className="bg-white/10 rounded-xl p-4 mb-5 flex-row items-center justify-center">
               <Clock size={16} color="#fbbf24" />
               <ResponsiveText variant="h4" className="mx-2">
-                {jobTimer.minutes}:{jobTimer.seconds.toString().padStart(2, "0")}
+                {jobTimer.minutes}:
+                {jobTimer.seconds.toString().padStart(2, "0")}
               </ResponsiveText>
               <ResponsiveText variant="caption" color="secondary">
                 elapsed
@@ -482,14 +482,19 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
             {/* Customer Info */}
             <View className="bg-white/5 rounded-2xl p-4 mb-5 flex-row items-center">
               <View className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-full items-center justify-center mr-4">
-                <ResponsiveText variant="body" className="font-bold">SM</ResponsiveText>
+                <ResponsiveText variant="body" className="font-bold">
+                  SM
+                </ResponsiveText>
               </View>
               <View className="flex-1">
                 <ResponsiveText variant="body" className="font-semibold mb-1">
                   Sarah Mitchell
                 </ResponsiveText>
                 <View className="bg-yellow-500/20 px-2 py-1 rounded-md self-start mb-1">
-                  <ResponsiveText variant="caption" className="text-yellow-400 font-semibold">
+                  <ResponsiveText
+                    variant="caption"
+                    className="text-yellow-400 font-semibold"
+                  >
                     Premium Member
                   </ResponsiveText>
                 </View>
@@ -508,10 +513,17 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                 <ResponsiveText variant="body" className="font-semibold mb-1">
                   123 Main Street, Georgetown
                 </ResponsiveText>
-                <ResponsiveText variant="caption" color="secondary" className="mb-1">
+                <ResponsiveText
+                  variant="caption"
+                  color="secondary"
+                  className="mb-1"
+                >
                   2.3 km away
                 </ResponsiveText>
-                <ResponsiveText variant="caption" className="text-green-400 font-semibold">
+                <ResponsiveText
+                  variant="caption"
+                  className="text-green-400 font-semibold"
+                >
                   ETA: 8 minutes
                 </ResponsiveText>
               </View>
@@ -558,9 +570,15 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
           </ResponsiveCard>
 
           {/* Weekly Earnings */}
-          <ResponsiveCard variant="elevated" className="bg-gradient-to-r from-green-600 to-green-500 border-green-500/30 mb-6">
+          <ResponsiveCard
+            variant="elevated"
+            className="bg-gradient-to-r from-green-600 to-green-500 border-green-500/30 mb-6"
+          >
             <View className="flex-row justify-between items-center mb-4">
-              <ResponsiveText variant="body" className="text-white/90 font-semibold">
+              <ResponsiveText
+                variant="body"
+                className="text-white/90 font-semibold"
+              >
                 Weekly Earnings
               </ResponsiveText>
               <ResponsiveText variant="caption" className="text-white/80">
@@ -578,16 +596,17 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
           {/* Pending Jobs Preview */}
           <ResponsiveCard variant="default" className="mb-6">
             <View className="flex-row justify-between items-center mb-5">
-              <ResponsiveText variant="h4">
-                Pending Jobs
-              </ResponsiveText>
+              <ResponsiveText variant="h4">Pending Jobs</ResponsiveText>
               <ResponsiveButton
                 variant="ghost"
                 size="sm"
                 onPress={() => handleViewChange("jobs")}
                 className="bg-red-500/20 px-3 py-1"
               >
-                <ResponsiveText variant="caption" className="text-red-400 font-bold">
+                <ResponsiveText
+                  variant="caption"
+                  className="text-red-400 font-bold"
+                >
                   View All ({pendingJobs.length})
                 </ResponsiveText>
               </ResponsiveButton>
@@ -602,7 +621,10 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
               >
                 <View className="flex-row justify-between items-center mb-2">
                   <View className="flex-row items-center">
-                    <ResponsiveText variant="body" className="font-semibold mr-2">
+                    <ResponsiveText
+                      variant="body"
+                      className="font-semibold mr-2"
+                    >
                       {job.icon}
                     </ResponsiveText>
                     <ResponsiveText variant="body" className="font-semibold">
@@ -614,7 +636,11 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                   </ResponsiveText>
                 </View>
                 <View className="flex-row items-center mb-2">
-                  <ResponsiveText variant="caption" color="secondary" className="mr-2">
+                  <ResponsiveText
+                    variant="caption"
+                    color="secondary"
+                    className="mr-2"
+                  >
                     📍
                   </ResponsiveText>
                   <ResponsiveText variant="caption" color="secondary">
@@ -630,7 +656,17 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
         </ResponsiveContainer>
       </ScrollView>
     );
-  }, [stats, jobTimer, pendingJobs, operationLoading, handleNavigateToCustomer, handleContactCustomer, handleMarkArrived, handleJobAccept, handleViewChange]);
+  }, [
+    stats,
+    jobTimer,
+    pendingJobs,
+    operationLoading,
+    handleNavigateToCustomer,
+    handleContactCustomer,
+    handleMarkArrived,
+    handleJobAccept,
+    handleViewChange,
+  ]);
 
   // Jobs View
   const renderJobsView = useCallback(() => {
@@ -638,10 +674,14 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
       <ScrollView
         className="flex-1 bg-slate-900/30"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: designSystem.spacing.responsive.xxl + 80 }}
+        contentContainerStyle={{
+          paddingBottom: designSystem.spacing.responsive.xxl + 80,
+        }}
       >
         <ResponsiveContainer>
-          <ResponsiveText variant="h2" className="py-6">Available Jobs</ResponsiveText>
+          <ResponsiveText variant="h2" className="py-6">
+            Available Jobs
+          </ResponsiveText>
           <ResponsiveText variant="body" color="secondary" className="mb-6">
             Jobs view coming soon with mobile-first responsive design.
           </ResponsiveText>
@@ -656,10 +696,14 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
       <ScrollView
         className="flex-1 bg-slate-900/30"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: designSystem.spacing.responsive.xxl + 80 }}
+        contentContainerStyle={{
+          paddingBottom: designSystem.spacing.responsive.xxl + 80,
+        }}
       >
         <ResponsiveContainer>
-          <ResponsiveText variant="h2" className="py-6">Earnings</ResponsiveText>
+          <ResponsiveText variant="h2" className="py-6">
+            Earnings
+          </ResponsiveText>
           <ResponsiveText variant="body" color="secondary" className="mb-6">
             Earnings view coming soon with mobile-first responsive design.
           </ResponsiveText>
@@ -674,10 +718,14 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
       <ScrollView
         className="flex-1 bg-slate-900/30"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: designSystem.spacing.responsive.xxl + 80 }}
+        contentContainerStyle={{
+          paddingBottom: designSystem.spacing.responsive.xxl + 80,
+        }}
       >
         <ResponsiveContainer>
-          <ResponsiveText variant="h2" className="py-6">Profile</ResponsiveText>
+          <ResponsiveText variant="h2" className="py-6">
+            Profile
+          </ResponsiveText>
           <ResponsiveText variant="body" color="secondary" className="mb-6">
             Profile view coming soon with mobile-first responsive design.
           </ResponsiveText>
@@ -716,11 +764,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
   }, []);
 
   // Auth functions
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
-
-  const checkAuthStatus = async () => {
+  const checkAuthStatus = useCallback(async () => {
     try {
       setIsLoading(true);
       console.log("Checking technician auth status...");
@@ -849,7 +893,11 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
       setIsLoading(false);
       console.log("Technician auth status check completed");
     }
-  };
+  }, [technicianName, technicianId]);
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, [checkAuthStatus]);
 
   const handleSignIn = async () => {
     if (!email.trim() || !password.trim()) {
@@ -1033,193 +1081,6 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
     return false;
   };
 
-  // Enhanced error handling function with comprehensive error capture
-  const handleError = useCallback(
-    async (error: any, context?: string) => {
-      console.error("TechnicianDashboard error:", error, "Context:", context);
-
-      // Prevent error handling loops
-      if (hasError) {
-        console.warn("Error handling already in progress, skipping duplicate");
-        return;
-      }
-
-      // Capture additional debugging information
-      const debugInfo = {
-        url: typeof window !== "undefined" ? window.location.href : "N/A",
-        userAgent:
-          typeof navigator !== "undefined"
-            ? navigator.userAgent
-            : "React Native",
-        timestamp: new Date().toISOString(),
-        memoryUsage:
-          typeof performance !== "undefined" && (performance as any).memory
-            ? {
-                used: Math.round(
-                  (performance as any).memory.usedJSHeapSize / 1024 / 1024,
-                ),
-                total: Math.round(
-                  (performance as any).memory.totalJSHeapSize / 1024 / 1024,
-                ),
-                limit: Math.round(
-                  (performance as any).memory.jsHeapSizeLimit / 1024 / 1024,
-                ),
-              }
-            : null,
-        networkStatus:
-          typeof navigator !== "undefined" ? navigator.onLine : true,
-        deviceInfo: {
-          platform: typeof Platform !== "undefined" ? Platform.OS : "web",
-          version:
-            typeof Platform !== "undefined" ? Platform.Version : "unknown",
-        },
-      };
-
-      // Enhanced error details with comprehensive context
-      const errorDetails = {
-        errorType:
-          error?.name || error?.constructor?.name || "ComponentRenderError",
-        errorMessage:
-          error?.message ||
-          error?.toString() ||
-          "Technician dashboard failed to render properly - persistent rendering error",
-        componentName: "TechnicianDashboard",
-        dashboardType: "technician" as const,
-        stackTrace: error?.stack,
-        timestamp: debugInfo.timestamp,
-        context: context || "dashboard_initialization",
-        userAgent: debugInfo.userAgent,
-        userId: user?.id,
-        sessionInfo: {
-          isAuthenticated: !!user,
-          userEmail: user?.email,
-          technicianId: user?.technicianId,
-          onlineStatus,
-          activeView,
-          isLoading,
-          authLoading,
-          hasValidSession: !!user?.id,
-          sessionAge: user ? Date.now() - (user.lastLogin || 0) : 0,
-          componentMountTime: Date.now(),
-        },
-        environmentInfo: {
-          platform: debugInfo.deviceInfo.platform,
-          platformVersion: debugInfo.deviceInfo.version,
-          isDev: typeof __DEV__ !== "undefined" ? __DEV__ : false,
-          expoVersion:
-            typeof Constants !== "undefined"
-              ? Constants.expoVersion
-              : "unknown",
-          networkOnline: debugInfo.networkStatus,
-          supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL
-            ? "configured"
-            : "missing",
-          supabaseKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
-            ? "configured"
-            : "missing",
-        },
-        debugInfo,
-        errorFrequency: {
-          isRecurring: context === "recurring_error",
-          lastErrorTime: errorTimeoutRef.current ? Date.now() : null,
-        },
-      };
-
-      setErrorDetails(errorDetails);
-      setHasError(true);
-
-      // Get AI-powered troubleshooting guide with enhanced retry logic
-      try {
-        console.log(
-          "Requesting enhanced troubleshooting guide for:",
-          errorDetails.errorType,
-          "Context:",
-          errorDetails.context,
-        );
-
-        // Add timeout to prevent hanging requests
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(
-            () => reject(new Error("Troubleshooting request timeout")),
-            15000,
-          ),
-        );
-
-        const troubleshootingPromise = supabase.functions.invoke(
-          "supabase-functions-perplexity-dashboard-troubleshoot",
-          {
-            body: errorDetails,
-          },
-        );
-
-        const { data: guide, error: guideError } = (await Promise.race([
-          troubleshootingPromise,
-          timeoutPromise,
-        ])) as any;
-
-        if (guideError) {
-          console.warn("Troubleshooting guide error:", guideError);
-          // Use fallback guide from error response if available
-          if (guideError.fallbackGuide) {
-            setTroubleshootingGuide(guideError.fallbackGuide);
-          } else {
-            setTroubleshootingGuide(getEnhancedFallbackGuide(errorDetails));
-          }
-        } else if (guide) {
-          console.log("Enhanced troubleshooting guide received:", {
-            severity: guide.severity,
-            stepsCount: guide.specificSteps?.length || 0,
-            causesCount: guide.possibleCauses?.length || 0,
-            fixesCount: guide.quickFixes?.length || 0,
-          });
-          setTroubleshootingGuide(guide);
-        } else {
-          setTroubleshootingGuide(getEnhancedFallbackGuide(errorDetails));
-        }
-      } catch (guideError) {
-        console.warn("Failed to get troubleshooting guide:", guideError);
-        setTroubleshootingGuide(getEnhancedFallbackGuide(errorDetails));
-      }
-
-      // Auto-reset error state after 20 seconds with exponential backoff
-      if (errorTimeoutRef.current) {
-        clearTimeout(errorTimeoutRef.current);
-      }
-
-      const resetDelay = context === "recurring_error" ? 30000 : 20000;
-      errorTimeoutRef.current = setTimeout(() => {
-        console.log(
-          "Auto-resetting error state after",
-          resetDelay / 1000,
-          "seconds",
-        );
-        setHasError(false);
-        setErrorDetails(null);
-        setTroubleshootingGuide(null);
-      }, resetDelay);
-    },
-    [user, onlineStatus, activeView, isLoading, hasError],
-  );
-  }, [
-    user,
-    onlineStatus,
-    activeView,
-    operationLoading,
-    jobTimer,
-    stats,
-    pendingJobs,
-    toggleOnlineStatus,
-    handleNavigateToCustomer,
-    handleContactCustomer,
-    handleMarkArrived,
-    handleEmergencyContact,
-    getStatCardStyle,
-    handleJobAccept,
-    handleViewChange,
-    handleSignOut,
-  ]);
-
-  // Return the main dashboard UI
   // Enhanced error handling function with comprehensive error capture
   const handleError = useCallback(
     async (error: any, context?: string) => {
@@ -2040,8 +1901,6 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
 
       {/* Main Content */}
       {renderCurrentView()}
-
-
 
       {/* Bottom Navigation */}
       <View className="absolute bottom-0 left-0 right-0 bg-slate-800/90 backdrop-blur-lg border-t border-white/10 px-2 py-3 flex-row justify-around items-center">
