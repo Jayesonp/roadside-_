@@ -421,6 +421,217 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
     console.log(`${view} view selected`);
   }, []);
 
+  // Dashboard View (Main)
+  const renderDashboardView = useCallback(() => {
+    return (
+      <ScrollView
+        className="flex-1 bg-slate-900/30"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: designSystem.spacing.responsive.xxl + 80 }}
+      >
+        <ResponsiveContainer>
+          {/* Quick Stats */}
+          <ResponsiveGrid
+            columns={{ mobile: 2, tablet: 4, desktop: 4 }}
+            gap="md"
+            className="my-6"
+          >
+            {stats.map((stat, index) => (
+              <ResponsiveMetricCard
+                key={index}
+                title={stat.label}
+                value={stat.number}
+                change={stat.change}
+                changeType="positive"
+                className={`${designSystem.deviceType.isPhone ? 'min-w-[140px]' : 'min-w-[160px]'}`}
+              />
+            ))}
+          </ResponsiveGrid>
+
+          {/* Current Job */}
+          <ResponsiveCard variant="elevated" className="bg-slate-800/80 border border-red-500/50 mb-6 relative">
+            <View className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 to-red-500 rounded-t-3xl" />
+
+            <View className="flex-row justify-between items-start mb-5">
+              <View>
+                <ResponsiveText variant="h3" className="mb-1">
+                  Battery Jump Start
+                </ResponsiveText>
+                <ResponsiveText variant="caption" color="secondary">
+                  Job #RSJ-78952
+                </ResponsiveText>
+              </View>
+              <View className="bg-red-500/20 border border-red-500/30 px-3 py-1 rounded-lg">
+                <ResponsiveText variant="caption" className="text-red-400 font-bold uppercase">
+                  Emergency
+                </ResponsiveText>
+              </View>
+            </View>
+
+            {/* Job Timer */}
+            <View className="bg-white/10 rounded-xl p-4 mb-5 flex-row items-center justify-center">
+              <Clock size={16} color="#fbbf24" />
+              <ResponsiveText variant="h4" className="mx-2">
+                {jobTimer.minutes}:{jobTimer.seconds.toString().padStart(2, "0")}
+              </ResponsiveText>
+              <ResponsiveText variant="caption" color="secondary">
+                elapsed
+              </ResponsiveText>
+            </View>
+
+            {/* Customer Info */}
+            <View className="bg-white/5 rounded-2xl p-4 mb-5 flex-row items-center">
+              <View className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-full items-center justify-center mr-4">
+                <ResponsiveText variant="body" className="font-bold">SM</ResponsiveText>
+              </View>
+              <View className="flex-1">
+                <ResponsiveText variant="body" className="font-semibold mb-1">
+                  Sarah Mitchell
+                </ResponsiveText>
+                <View className="bg-yellow-500/20 px-2 py-1 rounded-md self-start mb-1">
+                  <ResponsiveText variant="caption" className="text-yellow-400 font-semibold">
+                    Premium Member
+                  </ResponsiveText>
+                </View>
+                <ResponsiveText variant="caption" color="secondary">
+                  Phone: +592-123-4567
+                </ResponsiveText>
+              </View>
+            </View>
+
+            {/* Location */}
+            <View className="flex-row items-start mb-5">
+              <View className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-500 rounded-xl items-center justify-center mr-3">
+                <MapPin size={20} color="white" />
+              </View>
+              <View className="flex-1">
+                <ResponsiveText variant="body" className="font-semibold mb-1">
+                  123 Main Street, Georgetown
+                </ResponsiveText>
+                <ResponsiveText variant="caption" color="secondary" className="mb-1">
+                  2.3 km away
+                </ResponsiveText>
+                <ResponsiveText variant="caption" className="text-green-400 font-semibold">
+                  ETA: 8 minutes
+                </ResponsiveText>
+              </View>
+            </View>
+
+            {/* Job Actions */}
+            <View className="gap-3">
+              <View className="flex-row gap-3">
+                <ResponsiveButton
+                  variant="primary"
+                  size="md"
+                  onPress={handleNavigateToCustomer}
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500"
+                  disabled={operationLoading}
+                  icon={<Navigation size={16} color="white" />}
+                  iconPosition="left"
+                >
+                  Navigate
+                </ResponsiveButton>
+                <ResponsiveButton
+                  variant="ghost"
+                  size="md"
+                  onPress={handleContactCustomer}
+                  className="flex-1 bg-white/10 border border-white/10"
+                  disabled={operationLoading}
+                  icon={<Phone size={16} color="white" />}
+                  iconPosition="left"
+                >
+                  Call
+                </ResponsiveButton>
+              </View>
+              <ResponsiveButton
+                variant="success"
+                size="md"
+                onPress={handleMarkArrived}
+                fullWidth
+                disabled={operationLoading}
+                icon={<CheckCircle size={16} color="white" />}
+                iconPosition="left"
+              >
+                {operationLoading ? "Updating..." : "Mark Arrived"}
+              </ResponsiveButton>
+            </View>
+          </ResponsiveCard>
+
+          {/* Weekly Earnings */}
+          <ResponsiveCard variant="elevated" className="bg-gradient-to-r from-green-600 to-green-500 border-green-500/30 mb-6">
+            <View className="flex-row justify-between items-center mb-4">
+              <ResponsiveText variant="body" className="text-white/90 font-semibold">
+                Weekly Earnings
+              </ResponsiveText>
+              <ResponsiveText variant="caption" className="text-white/80">
+                Nov 25 - Dec 1
+              </ResponsiveText>
+            </View>
+            <ResponsiveText variant="h2" className="mb-2">
+              $3,240
+            </ResponsiveText>
+            <ResponsiveText variant="body" className="text-white/90">
+              +18% from last week
+            </ResponsiveText>
+          </ResponsiveCard>
+
+          {/* Pending Jobs Preview */}
+          <ResponsiveCard variant="default" className="mb-6">
+            <View className="flex-row justify-between items-center mb-5">
+              <ResponsiveText variant="h4">
+                Pending Jobs
+              </ResponsiveText>
+              <ResponsiveButton
+                variant="ghost"
+                size="sm"
+                onPress={() => handleViewChange("jobs")}
+                className="bg-red-500/20 px-3 py-1"
+              >
+                <ResponsiveText variant="caption" className="text-red-400 font-bold">
+                  View All ({pendingJobs.length})
+                </ResponsiveText>
+              </ResponsiveButton>
+            </View>
+
+            {pendingJobs.slice(0, 2).map((job, index) => (
+              <ResponsiveCard
+                key={job.id}
+                variant="flat"
+                onPress={() => handleJobAccept(job)}
+                className={`bg-white/5 border border-white/10 ${index < 1 ? "mb-3" : ""}`}
+              >
+                <View className="flex-row justify-between items-center mb-2">
+                  <View className="flex-row items-center">
+                    <ResponsiveText variant="body" className="font-semibold mr-2">
+                      {job.icon}
+                    </ResponsiveText>
+                    <ResponsiveText variant="body" className="font-semibold">
+                      {job.type}
+                    </ResponsiveText>
+                  </View>
+                  <ResponsiveText variant="caption" color="muted">
+                    {job.time}
+                  </ResponsiveText>
+                </View>
+                <View className="flex-row items-center mb-2">
+                  <ResponsiveText variant="caption" color="secondary" className="mr-2">
+                    📍
+                  </ResponsiveText>
+                  <ResponsiveText variant="caption" color="secondary">
+                    {job.location}
+                  </ResponsiveText>
+                </View>
+                <ResponsiveText variant="caption" color="muted">
+                  Customer: {job.customer}
+                </ResponsiveText>
+              </ResponsiveCard>
+            ))}
+          </ResponsiveCard>
+        </ResponsiveContainer>
+      </ScrollView>
+    );
+  }, [stats, jobTimer, pendingJobs, operationLoading, handleNavigateToCustomer, handleContactCustomer, handleMarkArrived, handleJobAccept, handleViewChange]);
+
   // View rendering function
   const renderCurrentView = () => {
     switch (activeView) {
@@ -1882,35 +2093,6 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
     </SafeAreaView>
   );
 
-  // Dashboard View (Main)
-  function renderDashboardView() {
-    return (
-      <ScrollView
-        className="flex-1 bg-slate-900/30 px-3 pb-24"
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Quick Stats */}
-        <View className="flex-row flex-wrap gap-3 my-6">
-          {stats.map((stat, index) => (
-            <View
-              key={index}
-              className={`flex-1 min-w-[150px] max-w-[48%] bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-3 ${getStatCardStyle(
-                stat.type,
-              )}`}
-            >
-              <Text className="text-white text-xl sm:text-2xl font-bold mb-1">
-                {stat.number}
-              </Text>
-              <Text className="text-slate-400 text-xs mb-2 leading-4">
-                {stat.label}
-              </Text>
-              <Text className="text-green-400 text-xs leading-4">
-                {stat.change}
-              </Text>
-            </View>
-          ))}
-        </View>
-
         {/* Current Job */}
         <View className="bg-slate-800/80 backdrop-blur-lg border border-red-500/50 rounded-3xl p-6 mb-6 relative">
           <View className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 to-red-500 rounded-t-3xl" />
@@ -2078,439 +2260,10 @@ const TechnicianDashboard = React.memo(function TechnicianDashboard({
     );
   }
 
-  // Jobs View
-  function renderJobsView() {
-    return (
-      <ScrollView
-        className="flex-1 bg-slate-900/30 px-3 pb-24"
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View className="flex-row justify-between items-center py-6">
-          <Text className="text-white text-2xl font-bold">Available Jobs</Text>
-          <View className="bg-red-500/20 px-3 py-1 rounded-lg">
-            <Text className="text-red-400 text-xs font-bold">
-              {pendingJobs.length} Jobs
-            </Text>
-          </View>
-        </View>
 
-        {/* Filter Tabs */}
-        <View className="flex-row bg-slate-800/50 rounded-xl p-1 mb-6">
-          <TouchableOpacity className="flex-1 bg-red-500 rounded-lg py-3 items-center">
-            <Text className="text-white font-semibold">All Jobs</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="flex-1 py-3 items-center">
-            <Text className="text-slate-400 font-semibold">Emergency</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="flex-1 py-3 items-center">
-            <Text className="text-slate-400 font-semibold">Nearby</Text>
-          </TouchableOpacity>
-        </View>
 
-        {/* Job List */}
-        <View className="gap-4">
-          {pendingJobs.map((job) => (
-            <View
-              key={job.id}
-              className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6"
-            >
-              <View className="flex-row justify-between items-start mb-4">
-                <View className="flex-row items-center flex-1">
-                  <Text className="text-white font-semibold text-2xl mr-3">
-                    {job.icon}
-                  </Text>
-                  <View className="flex-1">
-                    <Text className="text-white font-bold text-lg mb-1">
-                      {job.type}
-                    </Text>
-                    <Text className="text-slate-400 text-sm">
-                      Job #{job.id}
-                    </Text>
-                  </View>
-                </View>
-                <View className="items-end">
-                  <Text className="text-slate-500 text-xs mb-1">{job.time}</Text>
-                  <View className={`px-2 py-1 rounded-md ${
-                    job.priority === "emergency" ? "bg-red-500/20" :
-                    job.priority === "high" ? "bg-orange-500/20" :
-                    job.priority === "medium" ? "bg-yellow-500/20" : "bg-green-500/20"
-                  }`}>
-                    <Text className={`text-xs font-semibold ${
-                      job.priority === "emergency" ? "text-red-400" :
-                      job.priority === "high" ? "text-orange-400" :
-                      job.priority === "medium" ? "text-yellow-400" : "text-green-400"
-                    }`}>
-                      ${job.estimatedEarnings.min} - ${job.estimatedEarnings.max}
-                    </Text>
-                  </View>
-                </View>
-              </View>
 
-              {/* Customer Info */}
-              <View className="bg-white/5 rounded-xl p-4 mb-4">
-                <Text className="text-slate-400 text-sm mb-1">Customer</Text>
-                <Text className="text-white font-semibold mb-2">
-                  {job.customer}
-                </Text>
-                <View className="flex-row items-center">
-                  <MapPin size={14} color="#94a3b8" />
-                  <Text className="text-slate-400 text-sm ml-2">
-                    {job.location}
-                  </Text>
-                </View>
-              </View>
 
-              {/* Job Details */}
-              <View className="flex-row gap-4 mb-4">
-                <View className="flex-1 bg-white/5 rounded-xl p-3 items-center">
-                  <Text className="text-white font-bold">{job.distance}</Text>
-                  <Text className="text-slate-400 text-xs">Distance</Text>
-                </View>
-                <View className="flex-1 bg-white/5 rounded-xl p-3 items-center">
-                  <Text className="text-white font-bold">{job.eta}</Text>
-                  <Text className="text-slate-400 text-xs">ETA</Text>
-                </View>
-                <View className="flex-1 bg-white/5 rounded-xl p-3 items-center">
-                  <Text className="text-white font-bold">{job.duration}</Text>
-                  <Text className="text-slate-400 text-xs">Duration</Text>
-                </View>
-              </View>
-
-              {/* Action Buttons */}
-              <View className="flex-row gap-3">
-                <TouchableOpacity className="flex-1 bg-slate-700/50 border border-white/10 rounded-xl py-3 items-center">
-                  <Text className="text-white font-semibold">View Details</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => handleJobAccept(job)}
-                  className="flex-1 bg-gradient-to-r from-green-600 to-green-500 rounded-xl py-3 items-center"
-                >
-                  <Text className="text-white font-semibold">Accept Job</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-        </View>
-
-        {/* No Jobs Message */}
-        {pendingJobs.length === 0 && (
-          <View className="flex-1 justify-center items-center py-20">
-            <Text className="text-slate-400 text-lg mb-4">No jobs available</Text>
-            <Text className="text-slate-500 text-center">
-              Check back later for new job opportunities
-            </Text>
-          </View>
-        )}
-      </ScrollView>
-    );
-  }
-
-  // Earnings View
-  function renderEarningsView() {
-    const earningsData = [
-      { day: "Mon", amount: 420 },
-      { day: "Tue", amount: 380 },
-      { day: "Wed", amount: 520 },
-      { day: "Thu", amount: 460 },
-      { day: "Fri", amount: 680 },
-      { day: "Sat", amount: 720 },
-      { day: "Sun", amount: 580 },
-    ];
-
-    const recentPayments = [
-      { id: "PAY-001", date: "Dec 1, 2024", amount: 847, status: "completed" },
-      { id: "PAY-002", date: "Nov 30, 2024", amount: 720, status: "completed" },
-      { id: "PAY-003", date: "Nov 29, 2024", amount: 580, status: "pending" },
-    ];
-
-    return (
-      <ScrollView
-        className="flex-1 bg-slate-900/30 px-3 pb-24"
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View className="py-6">
-          <Text className="text-white text-2xl font-bold mb-2">Earnings</Text>
-          <Text className="text-slate-400">Track your income and payments</Text>
-        </View>
-
-        {/* Today's Earnings */}
-        <View className="bg-gradient-to-r from-green-600 to-green-500 rounded-2xl p-6 mb-6">
-          <Text className="text-white/90 font-semibold mb-2">Today's Earnings</Text>
-          <Text className="text-white text-4xl font-bold mb-2">$847</Text>
-          <Text className="text-white/90">+$127 vs yesterday</Text>
-        </View>
-
-        {/* Earnings Stats */}
-        <View className="flex-row gap-4 mb-6">
-          <View className="flex-1 bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-4">
-            <Text className="text-white text-xl font-bold mb-1">$3,240</Text>
-            <Text className="text-slate-400 text-sm mb-1">This Week</Text>
-            <Text className="text-green-400 text-xs">+18% vs last week</Text>
-          </View>
-          <View className="flex-1 bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-4">
-            <Text className="text-white text-xl font-bold mb-1">$12,960</Text>
-            <Text className="text-slate-400 text-sm mb-1">This Month</Text>
-            <Text className="text-green-400 text-xs">+12% vs last month</Text>
-          </View>
-        </View>
-
-        {/* Weekly Chart */}
-        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
-          <Text className="text-white text-lg font-bold mb-4">Weekly Overview</Text>
-
-          <View className="flex-row items-end justify-between h-32 mb-4">
-            {earningsData.map((day) => {
-              const height = (day.amount / 720) * 100; // Normalize to percentage
-              return (
-                <View key={day.day} className="items-center flex-1">
-                  <View
-                    className="bg-gradient-to-t from-red-600 to-red-400 rounded-t-lg w-6 mb-2"
-                    style={{ height: `${height}%` }}
-                  />
-                  <Text className="text-slate-400 text-xs">{day.day}</Text>
-                </View>
-              );
-            })}
-          </View>
-
-          <View className="flex-row justify-between">
-            <Text className="text-slate-400 text-sm">Nov 25 - Dec 1</Text>
-            <Text className="text-white font-semibold">$4,760 total</Text>
-          </View>
-        </View>
-
-        {/* Payment Methods */}
-        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
-          <Text className="text-white text-lg font-bold mb-4">Payment Methods</Text>
-
-          <View className="gap-4">
-            <View className="flex-row items-center p-4 bg-white/5 rounded-xl">
-              <View className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl items-center justify-center mr-4">
-                <Text className="text-white font-bold">💳</Text>
-              </View>
-              <View className="flex-1">
-                <Text className="text-white font-semibold mb-1">
-                  Bank Account •••• 4567
-                </Text>
-                <Text className="text-slate-400 text-sm">
-                  Primary payment method
-                </Text>
-              </View>
-              <View className="bg-green-500/20 px-2 py-1 rounded-md">
-                <Text className="text-green-400 text-xs font-semibold">Active</Text>
-              </View>
-            </View>
-
-            <TouchableOpacity className="flex-row items-center p-4 bg-white/5 rounded-xl border border-dashed border-white/20">
-              <View className="w-12 h-12 bg-slate-700 rounded-xl items-center justify-center mr-4">
-                <Text className="text-slate-400 font-bold text-xl">+</Text>
-              </View>
-              <Text className="text-slate-400 font-semibold">
-                Add Payment Method
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Recent Payments */}
-        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
-          <Text className="text-white text-lg font-bold mb-4">Recent Payments</Text>
-
-          <View className="gap-4">
-            {recentPayments.map((payment) => (
-              <View key={payment.id} className="flex-row items-center justify-between p-4 bg-white/5 rounded-xl">
-                <View className="flex-1">
-                  <Text className="text-white font-semibold mb-1">
-                    Payment #{payment.id}
-                  </Text>
-                  <Text className="text-slate-400 text-sm">
-                    {payment.date}
-                  </Text>
-                </View>
-                <View className="items-end">
-                  <Text className="text-white font-bold text-lg">
-                    ${payment.amount}
-                  </Text>
-                  <View className={`px-2 py-1 rounded-md ${
-                    payment.status === "completed"
-                      ? "bg-green-500/20"
-                      : "bg-yellow-500/20"
-                  }`}>
-                    <Text className={`text-xs font-semibold ${
-                      payment.status === "completed"
-                        ? "text-green-400"
-                        : "text-yellow-400"
-                    }`}>
-                      {payment.status}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            ))}
-          </View>
-        </View>
-      </ScrollView>
-    );
-  }
-
-  // Profile View
-  function renderProfileView() {
-    return (
-      <ScrollView
-        className="flex-1 bg-slate-900/30 px-3 pb-24"
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View className="py-6">
-          <Text className="text-white text-2xl font-bold mb-2">Profile</Text>
-          <Text className="text-slate-400">Manage your account and settings</Text>
-        </View>
-
-        {/* Profile Header */}
-        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
-          <View className="items-center mb-6">
-            <View className="w-20 h-20 bg-gradient-to-br from-red-600 to-red-500 rounded-full items-center justify-center mb-4">
-              <User size={32} color="white" />
-            </View>
-            <Text className="text-white text-xl font-bold mb-1">
-              {user?.name || technicianName}
-            </Text>
-            <Text className="text-slate-400 mb-2">{user?.email}</Text>
-            <View className="bg-green-500/20 border border-green-500/30 px-3 py-1 rounded-lg">
-              <Text className="text-green-400 text-sm font-semibold">
-                ID: {user?.technicianId || technicianId}
-              </Text>
-            </View>
-          </View>
-
-          <View className="flex-row gap-4">
-            <View className="flex-1 bg-white/5 rounded-xl p-4 items-center">
-              <Text className="text-white text-2xl font-bold mb-1">4.9</Text>
-              <Text className="text-slate-400 text-xs">Rating</Text>
-            </View>
-            <View className="flex-1 bg-white/5 rounded-xl p-4 items-center">
-              <Text className="text-white text-2xl font-bold mb-1">247</Text>
-              <Text className="text-slate-400 text-xs">Jobs Done</Text>
-            </View>
-            <View className="flex-1 bg-white/5 rounded-xl p-4 items-center">
-              <Text className="text-white text-2xl font-bold mb-1">98%</Text>
-              <Text className="text-slate-400 text-xs">Success Rate</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Online Status */}
-        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
-          <View className="flex-row justify-between items-center">
-            <View>
-              <Text className="text-white text-lg font-bold mb-1">
-                Online Status
-              </Text>
-              <Text className="text-slate-400 text-sm">
-                {onlineStatus ? "Available for jobs" : "Currently offline"}
-              </Text>
-            </View>
-            <TouchableOpacity
-              onPress={toggleOnlineStatus}
-              className={`w-16 h-8 rounded-full p-1 ${
-                onlineStatus ? "bg-green-500" : "bg-slate-600"
-              }`}
-            >
-              <View
-                className={`w-6 h-6 bg-white rounded-full transition-transform ${
-                  onlineStatus ? "translate-x-8" : "translate-x-0"
-                }`}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Account Settings */}
-        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
-          <Text className="text-white text-lg font-bold mb-4">Account Settings</Text>
-
-          <View className="gap-4">
-            <TouchableOpacity className="flex-row items-center p-4 bg-white/5 rounded-xl">
-              <View className="w-10 h-10 bg-blue-500/20 rounded-lg items-center justify-center mr-4">
-                <User size={20} color="#3b82f6" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-white font-semibold">Personal Information</Text>
-                <Text className="text-slate-400 text-sm">Update your profile details</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity className="flex-row items-center p-4 bg-white/5 rounded-xl">
-              <View className="w-10 h-10 bg-green-500/20 rounded-lg items-center justify-center mr-4">
-                <Settings size={20} color="#22c55e" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-white font-semibold">Work Preferences</Text>
-                <Text className="text-slate-400 text-sm">Set your availability and preferences</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity className="flex-row items-center p-4 bg-white/5 rounded-xl">
-              <View className="w-10 h-10 bg-purple-500/20 rounded-lg items-center justify-center mr-4">
-                <Bell size={20} color="#a855f7" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-white font-semibold">Notifications</Text>
-                <Text className="text-slate-400 text-sm">Configure alert preferences</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity className="flex-row items-center p-4 bg-white/5 rounded-xl">
-              <View className="w-10 h-10 bg-orange-500/20 rounded-lg items-center justify-center mr-4">
-                <Shield size={20} color="#f97316" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-white font-semibold">Privacy & Security</Text>
-                <Text className="text-slate-400 text-sm">Manage your privacy settings</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Support Section */}
-        <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mb-6">
-          <Text className="text-white text-lg font-bold mb-4">Support</Text>
-
-          <View className="gap-4">
-            <TouchableOpacity className="flex-row items-center p-4 bg-white/5 rounded-xl">
-              <View className="w-10 h-10 bg-blue-500/20 rounded-lg items-center justify-center mr-4">
-                <Phone size={20} color="#3b82f6" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-white font-semibold">Contact Support</Text>
-                <Text className="text-slate-400 text-sm">Get help from our support team</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity className="flex-row items-center p-4 bg-white/5 rounded-xl">
-              <View className="w-10 h-10 bg-green-500/20 rounded-lg items-center justify-center mr-4">
-                <Wrench size={20} color="#22c55e" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-white font-semibold">Training Resources</Text>
-                <Text className="text-slate-400 text-sm">Access training materials and guides</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Sign Out */}
-        <TouchableOpacity
-          onPress={handleSignOut}
-          className="bg-red-500/20 border border-red-500/30 rounded-xl py-4 items-center mb-6"
-        >
-          <Text className="text-red-400 font-semibold">Sign Out</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    );
-  }
 });
 
 export default TechnicianDashboard;
