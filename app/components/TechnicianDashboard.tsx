@@ -893,11 +893,11 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
       setIsLoading(false);
       console.log("Technician auth status check completed");
     }
-  }, [technicianName, technicianId]);
+  }, []); // Remove dependencies to prevent re-creation
 
   useEffect(() => {
     checkAuthStatus();
-  }, [checkAuthStatus]);
+  }, []); // Empty dependency array to run only once on mount
 
   const handleSignIn = async () => {
     if (!email.trim() || !password.trim()) {
@@ -1246,7 +1246,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
         setTroubleshootingGuide(null);
       }, resetDelay);
     },
-    [user, onlineStatus, activeView, isLoading, hasError],
+    [hasError], // Simplified dependencies to prevent infinite loops
   );
 
   // Enhanced fallback guide generator
@@ -1317,9 +1317,10 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
     try {
       setOnlineStatus(isOnline);
     } catch (error) {
-      handleError(error, "online_status_sync");
+      console.error("Error syncing online status:", error);
+      // Don't call handleError here to prevent dependency loops
     }
-  }, [isOnline, handleError]);
+  }, [isOnline]); // Removed handleError from dependencies
 
   // Error UI component - moved outside conditional rendering to ensure consistent hook calls
   const ErrorUI = useMemo(() => {

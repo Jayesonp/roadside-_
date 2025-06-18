@@ -11,7 +11,7 @@ import {
   Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { supabase } from "../lib/supabase";
+import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import {
   Eye,
   EyeOff,
@@ -68,6 +68,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // If Supabase is not configured, use demo mode
+    if (!isSupabaseConfigured) {
+      console.log("🚀 Running in demo mode - Supabase not configured");
+      setUser({
+        id: "demo-user",
+        email: "demo@roadside.com",
+        role: "super_admin",
+        permissions: ["all"],
+        name: "Demo Admin",
+        lastLogin: new Date().toISOString(),
+      });
+      setLoading(false);
+      return;
+    }
+
     // Check for existing session
     checkAuthStatus();
 
