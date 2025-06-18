@@ -19,6 +19,14 @@ import {
   Modal,
   Image,
 } from "react-native";
+import {
+  ResponsiveContainer,
+  ResponsiveGrid,
+  ResponsiveCard,
+  ResponsiveButton,
+  ResponsiveText,
+  ResponsiveMetricCard,
+} from "./responsive/ResponsiveComponents";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import {
@@ -1543,7 +1551,7 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
             <Shield size={32} color="white" />
           </View>
           <ActivityIndicator size="large" color="#ea580c" />
-          <Text className="text-white text-lg font-semibold mt-4">
+          <ResponsiveText className="text-white text-lg font-semibold mt-4">
             Loading...
           </Text>
         </View>
@@ -1560,9 +1568,9 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
             {/* Back Button */}
             {authMode !== "login" && (
               <TouchableOpacity
-                onPress={() => switchAuthMode("login")}
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("login")}
                 className="absolute top-8 left-6 w-10 h-10 bg-white/10 rounded-xl items-center justify-center"
-              >
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <ArrowLeft size={20} color="#94a3b8" />
               </TouchableOpacity>
             )}
@@ -1574,10 +1582,10 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                 className="w-32 h-16 mb-6"
                 resizeMode="contain"
               />
-              <Text className="text-white text-3xl font-bold mb-2">
+              <ResponsiveText className="text-white text-3xl font-bold mb-2">
                 RoadSide+ Security
               </Text>
-              <Text className="text-slate-400 text-center text-base">
+              <ResponsiveText className="text-slate-400 text-center text-base">
                 {authMode === "login" &&
                   "Access the security operations center"}
                 {authMode === "register" && "Create your security account"}
@@ -1588,7 +1596,7 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
             {/* Auth Form */}
             <View className="w-full max-w-sm">
               <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-8">
-                <Text className="text-white text-xl font-bold mb-6 text-center">
+                <ResponsiveText className="text-white text-xl font-bold mb-6 text-center">
                   {authMode === "login" && "Sign In"}
                   {authMode === "register" && "Create Account"}
                   {authMode === "reset" && "Reset Password"}
@@ -1597,7 +1605,7 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                 {/* Name Input - Only for Registration */}
                 {authMode === "register" && (
                   <View className="mb-4">
-                    <Text className="text-slate-200 font-semibold mb-2">
+                    <ResponsiveText className="text-slate-200 font-semibold mb-2">
                       Full Name
                     </Text>
                     <View className="flex-row items-center bg-white/10 border border-white/10 rounded-xl px-4 py-3">
@@ -1617,7 +1625,7 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
 
                 {/* Email Input */}
                 <View className="mb-4">
-                  <Text className="text-slate-200 font-semibold mb-2">
+                  <ResponsiveText className="text-slate-200 font-semibold mb-2">
                     Email
                   </Text>
                   <View className="flex-row items-center bg-white/10 border border-white/10 rounded-xl px-4 py-3">
@@ -1638,7 +1646,7 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                 {/* Password Input - Not for Reset */}
                 {authMode !== "reset" && (
                   <View className="mb-4">
-                    <Text className="text-slate-200 font-semibold mb-2">
+                    <ResponsiveText className="text-slate-200 font-semibold mb-2">
                       Password
                     </Text>
                     <View className="flex-row items-center bg-white/10 border border-white/10 rounded-xl px-4 py-3">
@@ -1658,9 +1666,9 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                         autoCorrect={false}
                       />
                       <TouchableOpacity
-                        onPress={() => setShowPassword(!showPassword)}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowPassword(!showPassword)}
                         className="ml-2"
-                      >
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
                         {showPassword ? (
                           <EyeOff size={20} color="#94a3b8" />
                         ) : (
@@ -1674,7 +1682,7 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                 {/* Confirm Password Input - Only for Registration */}
                 {authMode === "register" && (
                   <View className="mb-6">
-                    <Text className="text-slate-200 font-semibold mb-2">
+                    <ResponsiveText className="text-slate-200 font-semibold mb-2">
                       Confirm Password
                     </Text>
                     <View className="flex-row items-center bg-white/10 border border-white/10 rounded-xl px-4 py-3">
@@ -1690,11 +1698,11 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                         autoCorrect={false}
                       />
                       <TouchableOpacity
-                        onPress={() =>
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                           setShowConfirmPassword(!showConfirmPassword)
                         }
                         className="ml-2"
-                      >
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
                         {showConfirmPassword ? (
                           <EyeOff size={20} color="#94a3b8" />
                         ) : (
@@ -1716,18 +1724,18 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                   }
                   disabled={authLoading}
                   className={`bg-gradient-to-r from-orange-600 to-orange-500 rounded-xl py-4 items-center mb-4 ${authLoading ? "opacity-50" : ""}`}
-                >
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
                   {authLoading ? (
                     <View className="flex-row items-center">
                       <ActivityIndicator color="white" size="small" />
-                      <Text className="text-white font-bold text-base ml-2">
+                      <ResponsiveText className="text-white font-bold text-base ml-2">
                         {authMode === "login" && "Signing In..."}
                         {authMode === "register" && "Creating Account..."}
                         {authMode === "reset" && "Sending Reset Link..."}
                       </Text>
                     </View>
                   ) : (
-                    <Text className="text-white font-bold text-base">
+                    <ResponsiveText className="text-white font-bold text-base">
                       {authMode === "login" && "Sign In"}
                       {authMode === "register" && "Create Account"}
                       {authMode === "reset" && "Send Reset Link"}
@@ -1738,30 +1746,30 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                 {/* Secondary Actions */}
                 {authMode === "login" && (
                   <>
-                    <TouchableOpacity
+                    <ResponsiveButton
                       onPress={handleDemoLogin}
                       disabled={authLoading}
                       className="bg-white/10 border border-white/10 rounded-xl py-3 items-center mb-4"
-                    >
-                      <Text className="text-slate-300 font-semibold text-sm">
+                     accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
+                      <ResponsiveText className="text-slate-300 font-semibold text-sm">
                         Demo Login
                       </Text>
                     </TouchableOpacity>
 
                     <View className="flex-row justify-between items-center">
                       <TouchableOpacity
-                        onPress={() => switchAuthMode("register")}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("register")}
                         disabled={authLoading}
-                      >
-                        <Text className="text-orange-400 text-sm font-medium">
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
+                        <ResponsiveText className="text-orange-400 text-sm font-medium">
                           Create Account
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        onPress={() => switchAuthMode("reset")}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("reset")}
                         disabled={authLoading}
-                      >
-                        <Text className="text-orange-400 text-sm font-medium">
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
+                        <ResponsiveText className="text-orange-400 text-sm font-medium">
                           Forgot Password?
                         </Text>
                       </TouchableOpacity>
@@ -1771,11 +1779,11 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
 
                 {authMode === "register" && (
                   <TouchableOpacity
-                    onPress={() => switchAuthMode("login")}
+                    onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("login")}
                     disabled={authLoading}
                     className="items-center"
-                  >
-                    <Text className="text-orange-400 text-sm font-medium">
+                   accessibilityRole="button" accessibilityLabel="Interactive button">
+                    <ResponsiveText className="text-orange-400 text-sm font-medium">
                       Already have an account? Sign In
                     </Text>
                   </TouchableOpacity>
@@ -1786,11 +1794,11 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
               <View className="bg-slate-800/50 border border-white/10 rounded-xl p-4 mt-6">
                 <View className="flex-row items-center mb-2">
                   <Shield size={16} color="#22c55e" />
-                  <Text className="text-green-400 font-semibold text-sm ml-2">
+                  <ResponsiveText className="text-green-400 font-semibold text-sm ml-2">
                     Secure Authentication
                   </Text>
                 </View>
-                <Text className="text-slate-400 text-xs leading-relaxed">
+                <ResponsiveText className="text-slate-400 text-xs leading-relaxed">
                   Your security credentials are encrypted and protected. Access
                   the security operations center securely.
                 </Text>
@@ -1804,7 +1812,7 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
           visible={showSuccessModal}
           transparent
           animationType="fade"
-          onRequestClose={() => setShowSuccessModal(false)}
+          onRequestClose={() = accessibilityViewIsModal={true}> setShowSuccessModal(false)}
         >
           <View className="flex-1 bg-black/50 justify-center items-center px-6">
             <View className="bg-slate-800 border border-white/10 rounded-2xl p-8 w-full max-w-sm">
@@ -1812,18 +1820,18 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                 <View className="w-16 h-16 bg-green-500/20 rounded-full items-center justify-center mb-4">
                   <CheckCircle size={32} color="#22c55e" />
                 </View>
-                <Text className="text-white text-xl font-bold text-center mb-2">
+                <ResponsiveText className="text-white text-xl font-bold text-center mb-2">
                   Success!
                 </Text>
-                <Text className="text-slate-300 text-center text-sm leading-relaxed">
+                <ResponsiveText className="text-slate-300 text-center text-sm leading-relaxed">
                   {successMessage}
                 </Text>
               </View>
               <TouchableOpacity
-                onPress={() => setShowSuccessModal(false)}
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowSuccessModal(false)}
                 className="bg-gradient-to-r from-green-600 to-green-500 rounded-xl py-3 items-center"
-              >
-                <Text className="text-white font-bold text-base">Continue</Text>
+               accessibilityRole="button" accessibilityLabel="Interactive button">
+                <ResponsiveText className="text-white font-bold text-base">Continue</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -1852,10 +1860,10 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
               <Shield size={24} color="white" />
             </Animated.View>
             <View>
-              <Text className="text-white text-xl font-bold">
+              <ResponsiveText className="text-white text-xl font-bold">
                 RoadSide+ Security Operations Center
               </Text>
-              <Text className="text-white/90 text-sm">
+              <ResponsiveText className="text-white/90 text-sm">
                 Emergency Response & Monitoring
               </Text>
             </View>
@@ -1883,12 +1891,12 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
               </Animated.View>
               {unacknowledgedCount > 0 && (
                 <View className="absolute -top-2 -right-2 bg-red-500 rounded-full w-6 h-6 items-center justify-center">
-                  <Text className="text-white text-xs font-bold">
+                  <ResponsiveText className="text-white text-xs font-bold">
                     {unacknowledgedCount > 99 ? "99+" : unacknowledgedCount}
                   </Text>
                 </View>
               )}
-              <Text className="text-white text-sm font-semibold ml-2">
+              <ResponsiveText className="text-white text-sm font-semibold ml-2">
                 Notifications
               </Text>
             </TouchableOpacity>
@@ -1899,7 +1907,7 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                 isPlayingSound ? "bg-red-500/30" : ""
               }`}
               onPress={stopAllSounds}
-            >
+             accessibilityRole="button" accessibilityLabel="Interactive button">
               {isPlayingSound ? (
                 <VolumeX size={20} color="white" />
               ) : (
@@ -1913,15 +1921,15 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                   isMonitoring ? "bg-green-400" : "bg-gray-400"
                 }`}
               />
-              <Text className="text-white text-sm font-semibold">
+              <ResponsiveText className="text-white text-sm font-semibold">
                 {isMonitoring ? "All Systems Monitoring" : "Monitoring Paused"}
               </Text>
-              <TouchableOpacity onPress={handleSignOut} className="ml-4">
+              <ResponsiveButton onPress={handleSignOut} className="ml-4" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                 <User size={16} color="#94a3b8" />
               </TouchableOpacity>
             </View>
             <View className="bg-gradient-to-r from-red-700 to-red-600 rounded-lg px-4 py-2">
-              <Text className="text-white font-bold text-sm">
+              <ResponsiveText className="text-white font-bold text-sm">
                 🚨 {securityConfig.activeAlerts.length} Active Alerts
               </Text>
             </View>
@@ -1934,7 +1942,7 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
           {/* Security Overview Panel */}
           <View className="flex-1 bg-slate-800/80 border border-white/10 rounded-2xl p-3 sm:p-6">
             <View className="flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
-              <Text className="text-white text-lg sm:text-xl font-bold">
+              <ResponsiveText className="text-white text-lg sm:text-xl font-bold">
                 Security Overview
               </Text>
               <ScrollView
@@ -1945,33 +1953,33 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                 <View className="flex-row gap-2">
                   <TouchableOpacity
                     className={`px-3 py-2 rounded-lg min-w-[80px] items-center ${activeTab === "overview" ? "bg-orange-600" : "bg-white/10"}`}
-                    onPress={() => setActiveTab("overview")}
-                  >
-                    <Text className="text-white text-xs font-semibold">
+                    onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setActiveTab("overview")}
+                   accessibilityRole="button" accessibilityLabel="Interactive button">
+                    <ResponsiveText className="text-white text-xs font-semibold">
                       Overview
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     className={`px-3 py-2 rounded-lg min-w-[80px] items-center ${activeTab === "threats" ? "bg-orange-600" : "bg-white/10"}`}
-                    onPress={() => setActiveTab("threats")}
-                  >
-                    <Text className="text-white text-xs font-semibold">
+                    onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setActiveTab("threats")}
+                   accessibilityRole="button" accessibilityLabel="Interactive button">
+                    <ResponsiveText className="text-white text-xs font-semibold">
                       Threats
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     className={`px-3 py-2 rounded-lg min-w-[80px] items-center ${activeTab === "access" ? "bg-orange-600" : "bg-white/10"}`}
-                    onPress={() => setActiveTab("access")}
-                  >
-                    <Text className="text-white text-xs font-semibold">
+                    onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setActiveTab("access")}
+                   accessibilityRole="button" accessibilityLabel="Interactive button">
+                    <ResponsiveText className="text-white text-xs font-semibold">
                       Access
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     className={`px-3 py-2 rounded-lg min-w-[100px] items-center ${activeTab === "vulnerabilities" ? "bg-orange-600" : "bg-white/10"}`}
-                    onPress={() => setActiveTab("vulnerabilities")}
-                  >
-                    <Text className="text-white text-xs font-semibold">
+                    onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setActiveTab("vulnerabilities")}
+                   accessibilityRole="button" accessibilityLabel="Interactive button">
+                    <ResponsiveText className="text-white text-xs font-semibold">
                       Vulnerabilities
                     </Text>
                   </TouchableOpacity>
@@ -1984,10 +1992,10 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
               <View className="bg-gradient-to-br from-slate-700 to-slate-600 rounded-xl min-h-[320px] p-3 sm:p-6">
                 <View className="flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-4">
                   <View className="flex-1">
-                    <Text className="text-white text-xl sm:text-2xl font-bold mb-2">
+                    <ResponsiveText className="text-white text-xl sm:text-2xl font-bold mb-2">
                       Security Score: {securityConfig.securityScore}/100
                     </Text>
-                    <Text className="text-slate-400 text-sm">
+                    <ResponsiveText className="text-slate-400 text-sm">
                       Overall system security health
                     </Text>
                   </View>
@@ -2015,68 +2023,68 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
 
                 <View className="flex-col sm:flex-row gap-2 sm:gap-4 mb-4">
                   <View className="flex-1 bg-white/5 rounded-lg p-3 min-h-[60px] justify-center">
-                    <Text className="text-red-400 text-lg font-bold text-center">
+                    <ResponsiveText className="text-red-400 text-lg font-bold text-center">
                       {
                         securityConfig.threatDetections.filter(
                           (t) => t.status === "active",
                         ).length
                       }
                     </Text>
-                    <Text className="text-slate-400 text-xs">
+                    <ResponsiveText className="text-slate-400 text-xs">
                       Active Threats
                     </Text>
                   </View>
                   <View className="flex-1 bg-white/5 rounded-lg p-3 min-h-[60px] justify-center">
-                    <Text className="text-yellow-400 text-lg font-bold text-center">
+                    <ResponsiveText className="text-yellow-400 text-lg font-bold text-center">
                       {
                         securityConfig.vulnerabilityReports.filter(
                           (v) => v.status === "open",
                         ).length
                       }
                     </Text>
-                    <Text className="text-slate-400 text-xs">
+                    <ResponsiveText className="text-slate-400 text-xs">
                       Open Vulnerabilities
                     </Text>
                   </View>
                   <View className="flex-1 bg-white/5 rounded-lg p-3 min-h-[60px] justify-center">
-                    <Text className="text-blue-400 text-lg font-bold text-center">
+                    <ResponsiveText className="text-blue-400 text-lg font-bold text-center">
                       {
                         securityConfig.accessLogs.filter(
                           (l) => l.status === "suspicious",
                         ).length
                       }
                     </Text>
-                    <Text className="text-slate-400 text-xs">
+                    <ResponsiveText className="text-slate-400 text-xs">
                       Suspicious Access
                     </Text>
                   </View>
                 </View>
 
                 <View className="bg-white/5 rounded-lg p-4">
-                  <Text className="text-white font-semibold mb-3">
+                  <ResponsiveText className="text-white font-semibold mb-3">
                     Recent Security Events
                   </Text>
                   <View className="space-y-2">
                     <View className="flex-row items-center">
                       <View className="w-2 h-2 bg-red-500 rounded-full mr-3" />
-                      <Text className="text-slate-300 text-sm flex-1">
+                      <ResponsiveText className="text-slate-300 text-sm flex-1">
                         DDoS attack detected and mitigated
                       </Text>
-                      <Text className="text-slate-500 text-xs">12 min ago</Text>
+                      <ResponsiveText className="text-slate-500 text-xs">12 min ago</Text>
                     </View>
                     <View className="flex-row items-center">
                       <View className="w-2 h-2 bg-yellow-500 rounded-full mr-3" />
-                      <Text className="text-slate-300 text-sm flex-1">
+                      <ResponsiveText className="text-slate-300 text-sm flex-1">
                         Multiple failed login attempts
                       </Text>
-                      <Text className="text-slate-500 text-xs">5 min ago</Text>
+                      <ResponsiveText className="text-slate-500 text-xs">5 min ago</Text>
                     </View>
                     <View className="flex-row items-center">
                       <View className="w-2 h-2 bg-green-500 rounded-full mr-3" />
-                      <Text className="text-slate-300 text-sm flex-1">
+                      <ResponsiveText className="text-slate-300 text-sm flex-1">
                         Security patch applied successfully
                       </Text>
-                      <Text className="text-slate-500 text-xs">1 hour ago</Text>
+                      <ResponsiveText className="text-slate-500 text-xs">1 hour ago</Text>
                     </View>
                   </View>
                 </View>
@@ -2084,7 +2092,7 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
             )}
 
             {activeTab === "threats" && (
-              <ScrollView className="h-80" showsVerticalScrollIndicator={false}>
+              <ScrollView className="h-80" style={{ minHeight: designSystem.spacing.touchTarget.min }} showsVerticalScrollIndicator={false}>
                 {securityConfig.threatDetections.map((threat) => (
                   <View
                     key={threat.id}
@@ -2099,7 +2107,7 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                     }`}
                   >
                     <View className="flex-row justify-between items-start mb-2">
-                      <Text className="text-white font-bold text-sm flex-1">
+                      <ResponsiveText className="text-white font-bold text-sm flex-1">
                         {threat.title}
                       </Text>
                       <View
@@ -2124,16 +2132,16 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                         </Text>
                       </View>
                     </View>
-                    <Text className="text-slate-400 text-xs mb-2">
+                    <ResponsiveText className="text-slate-400 text-xs mb-2">
                       {threat.description}
                     </Text>
-                    <Text className="text-slate-500 text-xs mb-2">
+                    <ResponsiveText className="text-slate-500 text-xs mb-2">
                       Source: {threat.source}
                     </Text>
-                    <Text className="text-slate-500 text-xs mb-2">
+                    <ResponsiveText className="text-slate-500 text-xs mb-2">
                       Affected: {threat.affectedSystems.join(", ")}
                     </Text>
-                    <Text className="text-slate-500 text-xs">
+                    <ResponsiveText className="text-slate-500 text-xs">
                       {threat.timestamp}
                     </Text>
                   </View>
@@ -2155,23 +2163,23 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                     }`}
                   >
                     <View className="flex-row justify-between items-start mb-2">
-                      <Text className="text-white font-bold text-sm">
+                      <ResponsiveText className="text-white font-bold text-sm">
                         {log.action}
                       </Text>
-                      <Text className="text-slate-500 text-xs">
+                      <ResponsiveText className="text-slate-500 text-xs">
                         {log.timestamp}
                       </Text>
                     </View>
-                    <Text className="text-slate-400 text-xs mb-1">
+                    <ResponsiveText className="text-slate-400 text-xs mb-1">
                       User: {log.userName} ({log.userType})
                     </Text>
-                    <Text className="text-slate-400 text-xs mb-1">
+                    <ResponsiveText className="text-slate-400 text-xs mb-1">
                       Resource: {log.resource}
                     </Text>
-                    <Text className="text-slate-400 text-xs mb-1">
+                    <ResponsiveText className="text-slate-400 text-xs mb-1">
                       IP: {log.ipAddress} - {log.location}
                     </Text>
-                    <Text className="text-slate-500 text-xs">
+                    <ResponsiveText className="text-slate-500 text-xs">
                       Agent: {log.userAgent}
                     </Text>
                   </View>
@@ -2195,7 +2203,7 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                     }`}
                   >
                     <View className="flex-row justify-between items-start mb-2">
-                      <Text className="text-white font-bold text-sm flex-1">
+                      <ResponsiveText className="text-white font-bold text-sm flex-1">
                         {vuln.title}
                       </Text>
                       <View className="flex-row items-center gap-2">
@@ -2235,21 +2243,21 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                         </View>
                       </View>
                     </View>
-                    <Text className="text-slate-400 text-xs mb-2">
+                    <ResponsiveText className="text-slate-400 text-xs mb-2">
                       {vuln.description}
                     </Text>
                     {vuln.cveId && (
-                      <Text className="text-slate-500 text-xs mb-1">
+                      <ResponsiveText className="text-slate-500 text-xs mb-1">
                         CVE: {vuln.cveId}
                       </Text>
                     )}
-                    <Text className="text-slate-500 text-xs mb-2">
+                    <ResponsiveText className="text-slate-500 text-xs mb-2">
                       Components: {vuln.affectedComponents.join(", ")}
                     </Text>
-                    <Text className="text-slate-500 text-xs mb-2">
+                    <ResponsiveText className="text-slate-500 text-xs mb-2">
                       Discovered: {vuln.discoveredDate}
                     </Text>
-                    <Text className="text-slate-400 text-xs">
+                    <ResponsiveText className="text-slate-400 text-xs">
                       Remediation: {vuln.remediation}
                     </Text>
                   </View>
@@ -2261,17 +2269,17 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
           {/* Emergency Alerts Panel */}
           <View className="w-full lg:w-96 bg-slate-800/80 border border-white/10 rounded-2xl p-3 sm:p-6 mt-4 lg:mt-0">
             <View className="flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
-              <Text className="text-white text-lg sm:text-xl font-bold">
+              <ResponsiveText className="text-white text-lg sm:text-xl font-bold">
                 Emergency Alerts
               </Text>
               <View className="flex-row gap-2">
-                <TouchableOpacity className="w-10 h-10 bg-white/10 rounded-lg items-center justify-center">
+                <ResponsiveButton className="w-10 h-10 bg-white/10 rounded-lg items-center justify-center" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                   <Search size={16} color="#94a3b8" />
                 </TouchableOpacity>
-                <TouchableOpacity className="w-10 h-10 bg-white/10 rounded-lg items-center justify-center">
+                <ResponsiveButton className="w-10 h-10 bg-white/10 rounded-lg items-center justify-center" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                   <Settings size={16} color="#94a3b8" />
                 </TouchableOpacity>
-                <TouchableOpacity className="w-10 h-10 bg-orange-600 rounded-lg items-center justify-center">
+                <ResponsiveButton className="w-10 h-10 bg-orange-600 rounded-lg items-center justify-center" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                   <RefreshCw size={16} color="white" />
                 </TouchableOpacity>
               </View>
@@ -2287,56 +2295,56 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                   className={`border-l-4 rounded-xl p-4 mb-3 ${getPriorityColor(
                     alert.priority,
                   )}`}
-                  onPress={() => setSelectedAlert(alert.id)}
-                >
+                  onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setSelectedAlert(alert.id)}
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
                   <View className="flex-row justify-between items-start mb-2">
-                    <Text className="text-white font-bold text-sm flex-1">
+                    <ResponsiveText className="text-white font-bold text-sm flex-1">
                       {alert.title}
                     </Text>
-                    <Text className="text-slate-500 text-xs">
+                    <ResponsiveText className="text-slate-500 text-xs">
                       {alert.timestamp}
                     </Text>
                   </View>
-                  <Text className="text-slate-400 text-xs mb-1">
+                  <ResponsiveText className="text-slate-400 text-xs mb-1">
                     {alert.source}
                   </Text>
-                  <Text className="text-slate-500 text-xs mb-2">
+                  <ResponsiveText className="text-slate-500 text-xs mb-2">
                     📍 {alert.location}
                     {alert.gpsActive && " - GPS: Active"}
                   </Text>
                   {alert.user && (
-                    <Text className="text-slate-500 text-xs mb-2">
+                    <ResponsiveText className="text-slate-500 text-xs mb-2">
                       👤 User: {alert.user}
                     </Text>
                   )}
                   {alert.gpsCoordinates && (
-                    <Text className="text-slate-500 text-xs mb-3">
+                    <ResponsiveText className="text-slate-500 text-xs mb-3">
                       🌐 Coordinates: {alert.gpsCoordinates.lat.toFixed(4)},{" "}
                       {alert.gpsCoordinates.lng.toFixed(4)} ({alert.accuracy})
                     </Text>
                   )}
                   <View className="flex-row flex-wrap gap-2">
-                    <TouchableOpacity
+                    <ResponsiveButton
                       className="bg-gradient-to-r from-red-700 to-red-600 rounded-md px-3 py-2 min-h-[44px] items-center justify-center"
-                      onPress={() => handleEmergencyResponse(alert.id)}
+                      onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}> handleEmergencyResponse(alert.id)}
                     >
-                      <Text className="text-white text-xs font-bold">
+                      <ResponsiveText className="text-white text-xs font-bold">
                         🚨 RESPOND
                       </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
+                    <ResponsiveButton
                       className="bg-blue-500/20 rounded-md px-3 py-2 min-h-[44px] items-center justify-center"
-                      onPress={() => handleTrackLocation(alert.id)}
+                      onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}> handleTrackLocation(alert.id)}
                     >
-                      <Text className="text-blue-400 text-xs font-bold">
+                      <ResponsiveText className="text-blue-400 text-xs font-bold">
                         📍 TRACK
                       </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
+                    <ResponsiveButton
                       className="bg-white/10 rounded-md px-3 py-2 min-h-[44px] items-center justify-center"
-                      onPress={() => handleContactUser(alert.id)}
+                      onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}> handleContactUser(alert.id)}
                     >
-                      <Text className="text-white text-xs font-bold">
+                      <ResponsiveText className="text-white text-xs font-bold">
                         📞 CALL
                       </Text>
                     </TouchableOpacity>
@@ -2346,10 +2354,10 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
 
               {securityConfig.activeAlerts.length === 0 && (
                 <View className="items-center justify-center py-8">
-                  <Text className="text-slate-400 text-sm">
+                  <ResponsiveText className="text-slate-400 text-sm">
                     No active alerts
                   </Text>
-                  <Text className="text-slate-500 text-xs mt-1">
+                  <ResponsiveText className="text-slate-500 text-xs mt-1">
                     All systems monitoring normally
                   </Text>
                 </View>
@@ -2361,17 +2369,17 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
         {/* Security Monitoring Dashboard */}
         <View className="bg-slate-800/80 border border-white/10 rounded-2xl p-3 sm:p-6 mt-6">
           <View className="flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
-            <Text className="text-white text-lg sm:text-xl font-bold">
+            <ResponsiveText className="text-white text-lg sm:text-xl font-bold">
               Security Monitoring Dashboard
             </Text>
             <View className="flex-row gap-2">
-              <TouchableOpacity className="w-10 h-10 bg-orange-600 rounded-lg items-center justify-center">
+              <ResponsiveButton className="w-10 h-10 bg-orange-600 rounded-lg items-center justify-center" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                 <Shield size={16} color="white" />
               </TouchableOpacity>
-              <TouchableOpacity className="w-10 h-10 bg-white/10 rounded-lg items-center justify-center">
+              <ResponsiveButton className="w-10 h-10 bg-white/10 rounded-lg items-center justify-center" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                 <Monitor size={16} color="#94a3b8" />
               </TouchableOpacity>
-              <TouchableOpacity className="w-10 h-10 bg-white/10 rounded-lg items-center justify-center">
+              <ResponsiveButton className="w-10 h-10 bg-white/10 rounded-lg items-center justify-center" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                 <Database size={16} color="#94a3b8" />
               </TouchableOpacity>
             </View>
@@ -2380,46 +2388,46 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
           {/* Security Stats */}
           <View className="flex-col sm:flex-row gap-2 sm:gap-4 mb-6">
             <View className="flex-1 bg-white/5 rounded-xl p-4 items-center min-h-[80px] justify-center">
-              <Text className="text-red-400 text-xl sm:text-2xl font-bold mb-1">
+              <ResponsiveText className="text-red-400 text-xl sm:text-2xl font-bold mb-1">
                 {
                   securityConfig.threatDetections.filter(
                     (t) => t.status === "active",
                   ).length
                 }
               </Text>
-              <Text className="text-slate-400 text-xs font-semibold uppercase text-center">
+              <ResponsiveText className="text-slate-400 text-xs font-semibold uppercase text-center">
                 Active Threats
               </Text>
             </View>
             <View className="flex-1 bg-white/5 rounded-xl p-4 items-center min-h-[80px] justify-center">
-              <Text className="text-yellow-400 text-xl sm:text-2xl font-bold mb-1">
+              <ResponsiveText className="text-yellow-400 text-xl sm:text-2xl font-bold mb-1">
                 {
                   securityConfig.vulnerabilityReports.filter(
                     (v) => v.status === "open",
                   ).length
                 }
               </Text>
-              <Text className="text-slate-400 text-xs font-semibold uppercase text-center">
+              <ResponsiveText className="text-slate-400 text-xs font-semibold uppercase text-center">
                 Open Vulnerabilities
               </Text>
             </View>
             <View className="flex-1 bg-white/5 rounded-xl p-4 items-center min-h-[80px] justify-center">
-              <Text className="text-blue-400 text-xl sm:text-2xl font-bold mb-1">
+              <ResponsiveText className="text-blue-400 text-xl sm:text-2xl font-bold mb-1">
                 {
                   securityConfig.accessLogs.filter(
                     (l) => l.status === "suspicious",
                   ).length
                 }
               </Text>
-              <Text className="text-slate-400 text-xs font-semibold uppercase text-center">
+              <ResponsiveText className="text-slate-400 text-xs font-semibold uppercase text-center">
                 Suspicious Access
               </Text>
             </View>
             <View className="flex-1 bg-white/5 rounded-xl p-4 items-center min-h-[80px] justify-center">
-              <Text className="text-green-400 text-xl sm:text-2xl font-bold mb-1">
+              <ResponsiveText className="text-green-400 text-xl sm:text-2xl font-bold mb-1">
                 {securityConfig.securityScore}
               </Text>
-              <Text className="text-slate-400 text-xs font-semibold uppercase text-center">
+              <ResponsiveText className="text-slate-400 text-xs font-semibold uppercase text-center">
                 Security Score
               </Text>
             </View>
@@ -2439,10 +2447,10 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                     {platform.icon}
                   </View>
                   <View className="flex-1">
-                    <Text className="text-white font-semibold text-sm">
+                    <ResponsiveText className="text-white font-semibold text-sm">
                       {platform.name}
                     </Text>
-                    <Text className="text-slate-400 text-xs">
+                    <ResponsiveText className="text-slate-400 text-xs">
                       {platform.users} active users
                     </Text>
                   </View>
@@ -2454,12 +2462,12 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                     }`}
                   />
                 </View>
-                <Text className="text-slate-500 text-xs">
+                <ResponsiveText className="text-slate-500 text-xs">
                   GPS enabled: {platform.gpsEnabled}
                 </Text>
                 {platform.alerts > 0 && (
                   <View className="bg-red-500/20 rounded-md px-2 py-1 mt-2">
-                    <Text className="text-red-400 text-xs font-bold">
+                    <ResponsiveText className="text-red-400 text-xs font-bold">
                       {platform.alerts} Alert{platform.alerts > 1 ? "s" : ""}
                     </Text>
                   </View>
@@ -2470,37 +2478,37 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
 
           {/* Security Tools Status */}
           <View className="bg-white/5 rounded-xl p-4 mt-6">
-            <Text className="text-white font-semibold mb-4">
+            <ResponsiveText className="text-white font-semibold mb-4">
               Security Tools Status
             </Text>
             <View className="gap-2">
               <View className="flex-row items-center">
                 <View className="w-2 h-2 bg-green-500 rounded-full mr-3" />
-                <Text className="text-slate-300 text-sm">
+                <ResponsiveText className="text-slate-300 text-sm">
                   Firewall - Active
                 </Text>
               </View>
               <View className="flex-row items-center">
                 <View className="w-2 h-2 bg-green-500 rounded-full mr-3" />
-                <Text className="text-slate-300 text-sm">
+                <ResponsiveText className="text-slate-300 text-sm">
                   Intrusion Detection - Monitoring
                 </Text>
               </View>
               <View className="flex-row items-center">
                 <View className="w-2 h-2 bg-yellow-500 rounded-full mr-3" />
-                <Text className="text-slate-300 text-sm">
+                <ResponsiveText className="text-slate-300 text-sm">
                   Vulnerability Scanner - Scanning
                 </Text>
               </View>
               <View className="flex-row items-center">
                 <View className="w-2 h-2 bg-green-500 rounded-full mr-3" />
-                <Text className="text-slate-300 text-sm">
+                <ResponsiveText className="text-slate-300 text-sm">
                   Access Control - Enforced
                 </Text>
               </View>
               <View className="flex-row items-center">
                 <View className="w-2 h-2 bg-green-500 rounded-full mr-3" />
-                <Text className="text-slate-300 text-sm">
+                <ResponsiveText className="text-slate-300 text-sm">
                   Audit Logging - Recording
                 </Text>
               </View>
@@ -2510,13 +2518,13 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
 
         {/* Security Response Center */}
         <View className="bg-slate-800/80 border border-white/10 rounded-2xl p-3 sm:p-6 mt-6">
-          <Text className="text-white text-lg sm:text-xl font-bold mb-4 sm:mb-6">
+          <ResponsiveText className="text-white text-lg sm:text-xl font-bold mb-4 sm:mb-6">
             Security Response Center
           </Text>
           <View className="flex-col sm:flex-row gap-3 sm:gap-4">
-            <TouchableOpacity
+            <ResponsiveButton
               className="flex-1 bg-gradient-to-br from-red-700 to-red-600 rounded-xl p-4 items-center min-h-[100px] justify-center"
-              onPress={() =>
+              onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                 Alert.alert(
                   "Incident Response",
                   "Initiating security incident response protocol",
@@ -2524,13 +2532,13 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
               }
             >
               <AlertTriangle size={24} color="white" />
-              <Text className="text-white font-semibold text-sm mt-2 text-center">
+              <ResponsiveText className="text-white font-semibold text-sm mt-2 text-center">
                 Incident Response
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            <ResponsiveButton
               className="flex-1 bg-gradient-to-br from-blue-700 to-blue-600 rounded-xl p-4 items-center min-h-[100px] justify-center"
-              onPress={() =>
+              onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                 Alert.alert(
                   "System Lockdown",
                   "Initiating emergency system lockdown",
@@ -2538,13 +2546,13 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
               }
             >
               <Lock size={24} color="white" />
-              <Text className="text-white font-semibold text-sm mt-2 text-center">
+              <ResponsiveText className="text-white font-semibold text-sm mt-2 text-center">
                 System Lockdown
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            <ResponsiveButton
               className="flex-1 bg-gradient-to-br from-purple-700 to-purple-600 rounded-xl p-4 items-center min-h-[100px] justify-center"
-              onPress={() =>
+              onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                 Alert.alert(
                   "Forensic Analysis",
                   "Starting forensic data collection",
@@ -2552,13 +2560,13 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
               }
             >
               <Search size={24} color="white" />
-              <Text className="text-white font-semibold text-sm mt-2 text-center">
+              <ResponsiveText className="text-white font-semibold text-sm mt-2 text-center">
                 Forensic Analysis
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            <ResponsiveButton
               className="flex-1 bg-gradient-to-br from-green-700 to-green-600 rounded-xl p-4 items-center min-h-[100px] justify-center"
-              onPress={() =>
+              onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                 Alert.alert(
                   "Security Team",
                   "Contacting security response team",
@@ -2566,7 +2574,7 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
               }
             >
               <Users size={24} color="white" />
-              <Text className="text-white font-semibold text-sm mt-2 text-center">
+              <ResponsiveText className="text-white font-semibold text-sm mt-2 text-center">
                 Security Team
               </Text>
             </TouchableOpacity>
@@ -2578,27 +2586,27 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
       {emergencyOverride && (
         <View className="absolute inset-0 bg-black/80 items-center justify-center z-50 p-4">
           <View className="bg-gradient-to-br from-red-700 to-red-600 rounded-2xl p-6 sm:p-8 w-full max-w-md items-center">
-            <Text className="text-4xl sm:text-6xl mb-4">🚨</Text>
-            <Text className="text-white text-xl sm:text-2xl font-bold mb-2 text-center">
+            <ResponsiveText className="text-4xl sm:text-6xl mb-4">🚨</Text>
+            <ResponsiveText className="text-white text-xl sm:text-2xl font-bold mb-2 text-center">
               CRITICAL EMERGENCY
             </Text>
-            <Text className="text-white/90 text-center mb-6 text-sm sm:text-base">
+            <ResponsiveText className="text-white/90 text-center mb-6 text-sm sm:text-base">
               Multiple panic buttons activated in your area
             </Text>
             <View className="flex-col sm:flex-row gap-3 sm:gap-4 w-full">
-              <TouchableOpacity
+              <ResponsiveButton
                 className="bg-white rounded-lg px-6 py-3 flex-1 min-h-[48px] items-center justify-center"
                 onPress={handleMassEmergencyResponse}
-              >
-                <Text className="text-red-600 font-bold text-center">
+               accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
+                <ResponsiveText className="text-red-600 font-bold text-center">
                   INITIATE RESPONSE
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity
+              <ResponsiveButton
                 className="bg-white/20 rounded-lg px-6 py-3 flex-1 min-h-[48px] items-center justify-center"
-                onPress={() => setEmergencyOverride(false)}
+                onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}> setEmergencyOverride(false)}
               >
-                <Text className="text-white font-bold text-center">
+                <ResponsiveText className="text-white font-bold text-center">
                   ACKNOWLEDGE
                 </Text>
               </TouchableOpacity>
@@ -2612,10 +2620,10 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
         <View className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 bg-gradient-to-r from-red-700 to-red-600 rounded-xl p-3 sm:p-4 flex-row items-center animate-pulse max-w-[280px]">
           <Volume2 size={20} color="white" />
           <View className="ml-2 sm:ml-3 flex-1">
-            <Text className="text-white font-bold text-sm">
+            <ResponsiveText className="text-white font-bold text-sm">
               🔊 AUDIO ALERT ACTIVE
             </Text>
-            <Text className="text-white/90 text-xs">
+            <ResponsiveText className="text-white/90 text-xs">
               Emergency notification in progress
             </Text>
           </View>
@@ -2627,8 +2635,8 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
         <View className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 bg-gradient-to-r from-green-700 to-green-600 rounded-xl p-3 flex-row items-center max-w-[240px]">
           <Navigation size={18} color="white" />
           <View className="ml-2 flex-1">
-            <Text className="text-white font-bold text-sm">GPS ACTIVE</Text>
-            <Text className="text-white/90 text-xs">
+            <ResponsiveText className="text-white font-bold text-sm">GPS ACTIVE</Text>
+            <ResponsiveText className="text-white/90 text-xs">
               Cross-platform tracking enabled
             </Text>
           </View>
@@ -2661,37 +2669,37 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
           <View className="p-3 sm:p-4 border-b border-white/10">
             <View className="flex-row justify-between items-start mb-3">
               <View className="flex-1">
-                <Text className="text-white text-base sm:text-lg font-bold">
+                <ResponsiveText className="text-white text-base sm:text-lg font-bold">
                   Emergency Notifications
                 </Text>
-                <Text className="text-slate-400 text-sm">
+                <ResponsiveText className="text-slate-400 text-sm">
                   {unacknowledgedCount} unacknowledged alerts
                 </Text>
               </View>
-              <TouchableOpacity
+              <ResponsiveButton
                 className="bg-white/10 rounded-lg p-2 ml-2"
                 onPress={toggleNotificationPanel}
-              >
+               accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                 <X size={16} color="white" />
               </TouchableOpacity>
             </View>
             <View className="flex-row gap-2">
               {notifications.length > 0 && (
-                <TouchableOpacity
+                <ResponsiveButton
                   className="bg-blue-500/20 rounded-lg px-3 py-2 min-h-[36px] items-center justify-center"
                   onPress={acknowledgeAllNotifications}
-                >
-                  <Text className="text-blue-400 text-xs font-bold">
+                 accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
+                  <ResponsiveText className="text-blue-400 text-xs font-bold">
                     ACK ALL
                   </Text>
                 </TouchableOpacity>
               )}
               {notifications.length > 0 && (
-                <TouchableOpacity
+                <ResponsiveButton
                   className="bg-red-500/20 rounded-lg px-3 py-2 min-h-[36px] items-center justify-center"
                   onPress={clearAllNotifications}
-                >
-                  <Text className="text-red-400 text-xs font-bold">CLEAR</Text>
+                 accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
+                  <ResponsiveText className="text-red-400 text-xs font-bold">CLEAR</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -2699,7 +2707,7 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
 
           {/* Notification Settings */}
           <View className="p-3 border-b border-white/5 bg-white/5">
-            <Text className="text-white text-sm font-semibold mb-2">
+            <ResponsiveText className="text-white text-sm font-semibold mb-2">
               Quick Settings
             </Text>
             <View className="flex-row gap-2">
@@ -2709,13 +2717,13 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                     ? "bg-green-500/20"
                     : "bg-white/10"
                 }`}
-                onPress={() =>
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                   setNotificationSettings((prev) => ({
                     ...prev,
                     soundEnabled: !prev.soundEnabled,
                   }))
                 }
-              >
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <Text
                   className={`text-xs font-bold ${
                     notificationSettings.soundEnabled
@@ -2732,13 +2740,13 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                     ? "bg-green-500/20"
                     : "bg-white/10"
                 }`}
-                onPress={() =>
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                   setNotificationSettings((prev) => ({
                     ...prev,
                     vibrationEnabled: !prev.vibrationEnabled,
                   }))
                 }
-              >
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <Text
                   className={`text-xs font-bold ${
                     notificationSettings.vibrationEnabled
@@ -2755,13 +2763,13 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                     ? "bg-red-500/20"
                     : "bg-white/10"
                 }`}
-                onPress={() =>
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                   setNotificationSettings((prev) => ({
                     ...prev,
                     criticalOnly: !prev.criticalOnly,
                   }))
                 }
-              >
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <Text
                   className={`text-xs font-bold ${
                     notificationSettings.criticalOnly
@@ -2780,10 +2788,10 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
             {notifications.length === 0 ? (
               <View className="p-6 items-center">
                 <Bell size={32} color="#64748b" />
-                <Text className="text-slate-400 text-center mt-2">
+                <ResponsiveText className="text-slate-400 text-center mt-2">
                   No notifications
                 </Text>
-                <Text className="text-slate-500 text-center text-xs mt-1">
+                <ResponsiveText className="text-slate-500 text-center text-xs mt-1">
                   Emergency alerts will appear here
                 </Text>
               </View>
@@ -2809,17 +2817,17 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
                                   : "bg-blue-500"
                           }`}
                         />
-                        <Text className="text-white font-bold text-sm flex-1">
+                        <ResponsiveText className="text-white font-bold text-sm flex-1">
                           {notification.title}
                         </Text>
                         {!notification.acknowledged && (
                           <View className="bg-red-500 rounded-full w-2 h-2" />
                         )}
                       </View>
-                      <Text className="text-slate-400 text-xs mb-1">
+                      <ResponsiveText className="text-slate-400 text-xs mb-1">
                         {notification.message}
                       </Text>
-                      <Text className="text-slate-500 text-xs">
+                      <ResponsiveText className="text-slate-500 text-xs">
                         {new Date(notification.timestamp).toLocaleTimeString()}
                         {notification.autoAcknowledged &&
                           " • Auto-acknowledged"}
@@ -2829,32 +2837,32 @@ const SecurityOperationsCenter = React.memo(function SecurityOperationsCenter({
 
                   <View className="flex-row gap-2 mt-2">
                     {!notification.acknowledged && (
-                      <TouchableOpacity
+                      <ResponsiveButton
                         className="bg-green-500/20 rounded-md px-3 py-1"
-                        onPress={() => acknowledgeNotification(notification.id)}
+                        onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}> acknowledgeNotification(notification.id)}
                       >
-                        <Text className="text-green-400 text-xs font-bold">
+                        <ResponsiveText className="text-green-400 text-xs font-bold">
                           ✓ ACKNOWLEDGE
                         </Text>
                       </TouchableOpacity>
                     )}
                     {notification.requiresResponse && (
-                      <TouchableOpacity
+                      <ResponsiveButton
                         className="bg-red-500/20 rounded-md px-3 py-1"
-                        onPress={() =>
+                        onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                           handleEmergencyResponse(notification.alertId)
                         }
                       >
-                        <Text className="text-red-400 text-xs font-bold">
+                        <ResponsiveText className="text-red-400 text-xs font-bold">
                           🚨 RESPOND
                         </Text>
                       </TouchableOpacity>
                     )}
-                    <TouchableOpacity
+                    <ResponsiveButton
                       className="bg-white/10 rounded-md px-3 py-1"
-                      onPress={() => clearNotification(notification.id)}
+                      onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}> clearNotification(notification.id)}
                     >
-                      <Text className="text-slate-400 text-xs font-bold">
+                      <ResponsiveText className="text-slate-400 text-xs font-bold">
                         ✕ CLEAR
                       </Text>
                     </TouchableOpacity>

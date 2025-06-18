@@ -15,6 +15,14 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+import {
+  ResponsiveContainer,
+  ResponsiveGrid,
+  ResponsiveCard,
+  ResponsiveButton,
+  ResponsiveText,
+  ResponsiveMetricCard,
+} from "./responsive/ResponsiveComponents";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import {
@@ -951,7 +959,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
             <Building size={32} color="white" />
           </View>
           <ActivityIndicator size="large" color="#eab308" />
-          <Text className="text-white text-lg font-semibold mt-4">
+          <ResponsiveText className="text-white text-lg font-semibold mt-4">
             Loading...
           </Text>
         </View>
@@ -968,9 +976,9 @@ const PartnerManagement = React.memo(function PartnerManagement({
             {/* Back Button */}
             {authMode !== "login" && (
               <TouchableOpacity
-                onPress={() => switchAuthMode("login")}
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("login")}
                 className="absolute top-8 left-6 w-10 h-10 bg-white/10 rounded-xl items-center justify-center"
-              >
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <ArrowLeft size={20} color="#94a3b8" />
               </TouchableOpacity>
             )}
@@ -982,10 +990,10 @@ const PartnerManagement = React.memo(function PartnerManagement({
                 className="w-32 h-16 mb-6"
                 resizeMode="contain"
               />
-              <Text className="text-white text-3xl font-bold mb-2">
+              <ResponsiveText className="text-white text-3xl font-bold mb-2">
                 RoadSide+ Partner
               </Text>
-              <Text className="text-slate-400 text-center text-base">
+              <ResponsiveText className="text-slate-400 text-center text-base">
                 {authMode === "login" &&
                   "Access your partner management portal"}
                 {authMode === "register" && "Create your partner account"}
@@ -996,7 +1004,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
             {/* Auth Form */}
             <View className="w-full max-w-sm">
               <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-8">
-                <Text className="text-white text-xl font-bold mb-6 text-center">
+                <ResponsiveText className="text-white text-xl font-bold mb-6 text-center">
                   {authMode === "login" && "Sign In"}
                   {authMode === "register" && "Create Account"}
                   {authMode === "reset" && "Reset Password"}
@@ -1005,7 +1013,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
                 {/* Name Input - Only for Registration */}
                 {authMode === "register" && (
                   <View className="mb-4">
-                    <Text className="text-slate-200 font-semibold mb-2">
+                    <ResponsiveText className="text-slate-200 font-semibold mb-2">
                       Full Name
                     </Text>
                     <View className="flex-row items-center bg-white/10 border border-white/10 rounded-xl px-4 py-3">
@@ -1025,7 +1033,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
 
                 {/* Email Input */}
                 <View className="mb-4">
-                  <Text className="text-slate-200 font-semibold mb-2">
+                  <ResponsiveText className="text-slate-200 font-semibold mb-2">
                     Email
                   </Text>
                   <View className="flex-row items-center bg-white/10 border border-white/10 rounded-xl px-4 py-3">
@@ -1046,7 +1054,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
                 {/* Password Input - Not for Reset */}
                 {authMode !== "reset" && (
                   <View className="mb-4">
-                    <Text className="text-slate-200 font-semibold mb-2">
+                    <ResponsiveText className="text-slate-200 font-semibold mb-2">
                       Password
                     </Text>
                     <View className="flex-row items-center bg-white/10 border border-white/10 rounded-xl px-4 py-3">
@@ -1066,9 +1074,9 @@ const PartnerManagement = React.memo(function PartnerManagement({
                         autoCorrect={false}
                       />
                       <TouchableOpacity
-                        onPress={() => setShowPassword(!showPassword)}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowPassword(!showPassword)}
                         className="ml-2"
-                      >
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
                         {showPassword ? (
                           <EyeOff size={20} color="#94a3b8" />
                         ) : (
@@ -1082,7 +1090,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
                 {/* Confirm Password Input - Only for Registration */}
                 {authMode === "register" && (
                   <View className="mb-6">
-                    <Text className="text-slate-200 font-semibold mb-2">
+                    <ResponsiveText className="text-slate-200 font-semibold mb-2">
                       Confirm Password
                     </Text>
                     <View className="flex-row items-center bg-white/10 border border-white/10 rounded-xl px-4 py-3">
@@ -1098,11 +1106,11 @@ const PartnerManagement = React.memo(function PartnerManagement({
                         autoCorrect={false}
                       />
                       <TouchableOpacity
-                        onPress={() =>
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                           setShowConfirmPassword(!showConfirmPassword)
                         }
                         className="ml-2"
-                      >
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
                         {showConfirmPassword ? (
                           <EyeOff size={20} color="#94a3b8" />
                         ) : (
@@ -1124,18 +1132,18 @@ const PartnerManagement = React.memo(function PartnerManagement({
                   }
                   disabled={authLoading}
                   className={`bg-gradient-to-r from-yellow-600 to-yellow-500 rounded-xl py-4 items-center mb-4 ${authLoading ? "opacity-50" : ""}`}
-                >
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
                   {authLoading ? (
                     <View className="flex-row items-center">
                       <ActivityIndicator color="white" size="small" />
-                      <Text className="text-white font-bold text-base ml-2">
+                      <ResponsiveText className="text-white font-bold text-base ml-2">
                         {authMode === "login" && "Signing In..."}
                         {authMode === "register" && "Creating Account..."}
                         {authMode === "reset" && "Sending Reset Link..."}
                       </Text>
                     </View>
                   ) : (
-                    <Text className="text-white font-bold text-base">
+                    <ResponsiveText className="text-white font-bold text-base">
                       {authMode === "login" && "Sign In"}
                       {authMode === "register" && "Create Account"}
                       {authMode === "reset" && "Send Reset Link"}
@@ -1146,30 +1154,30 @@ const PartnerManagement = React.memo(function PartnerManagement({
                 {/* Secondary Actions */}
                 {authMode === "login" && (
                   <>
-                    <TouchableOpacity
+                    <ResponsiveButton
                       onPress={handleDemoLogin}
                       disabled={authLoading}
                       className="bg-white/10 border border-white/10 rounded-xl py-3 items-center mb-4"
-                    >
-                      <Text className="text-slate-300 font-semibold text-sm">
+                     accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
+                      <ResponsiveText className="text-slate-300 font-semibold text-sm">
                         Demo Login
                       </Text>
                     </TouchableOpacity>
 
                     <View className="flex-row justify-between items-center">
                       <TouchableOpacity
-                        onPress={() => switchAuthMode("register")}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("register")}
                         disabled={authLoading}
-                      >
-                        <Text className="text-yellow-400 text-sm font-medium">
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
+                        <ResponsiveText className="text-yellow-400 text-sm font-medium">
                           Create Account
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        onPress={() => switchAuthMode("reset")}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("reset")}
                         disabled={authLoading}
-                      >
-                        <Text className="text-yellow-400 text-sm font-medium">
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
+                        <ResponsiveText className="text-yellow-400 text-sm font-medium">
                           Forgot Password?
                         </Text>
                       </TouchableOpacity>
@@ -1179,11 +1187,11 @@ const PartnerManagement = React.memo(function PartnerManagement({
 
                 {authMode === "register" && (
                   <TouchableOpacity
-                    onPress={() => switchAuthMode("login")}
+                    onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("login")}
                     disabled={authLoading}
                     className="items-center"
-                  >
-                    <Text className="text-yellow-400 text-sm font-medium">
+                   accessibilityRole="button" accessibilityLabel="Interactive button">
+                    <ResponsiveText className="text-yellow-400 text-sm font-medium">
                       Already have an account? Sign In
                     </Text>
                   </TouchableOpacity>
@@ -1194,11 +1202,11 @@ const PartnerManagement = React.memo(function PartnerManagement({
               <View className="bg-slate-800/50 border border-white/10 rounded-xl p-4 mt-6">
                 <View className="flex-row items-center mb-2">
                   <Shield size={16} color="#22c55e" />
-                  <Text className="text-green-400 font-semibold text-sm ml-2">
+                  <ResponsiveText className="text-green-400 font-semibold text-sm ml-2">
                     Secure Authentication
                   </Text>
                 </View>
-                <Text className="text-slate-400 text-xs leading-relaxed">
+                <ResponsiveText className="text-slate-400 text-xs leading-relaxed">
                   Your partner credentials are encrypted and protected. Manage
                   your business operations securely.
                 </Text>
@@ -1212,7 +1220,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
           visible={showSuccessModal}
           transparent
           animationType="fade"
-          onRequestClose={() => setShowSuccessModal(false)}
+          onRequestClose={() = accessibilityViewIsModal={true}> setShowSuccessModal(false)}
         >
           <View className="flex-1 bg-black/50 justify-center items-center px-6">
             <View className="bg-slate-800 border border-white/10 rounded-2xl p-8 w-full max-w-sm">
@@ -1220,18 +1228,18 @@ const PartnerManagement = React.memo(function PartnerManagement({
                 <View className="w-16 h-16 bg-green-500/20 rounded-full items-center justify-center mb-4">
                   <CheckCircle size={32} color="#22c55e" />
                 </View>
-                <Text className="text-white text-xl font-bold text-center mb-2">
+                <ResponsiveText className="text-white text-xl font-bold text-center mb-2">
                   Success!
                 </Text>
-                <Text className="text-slate-300 text-center text-sm leading-relaxed">
+                <ResponsiveText className="text-slate-300 text-center text-sm leading-relaxed">
                   {successMessage}
                 </Text>
               </View>
               <TouchableOpacity
-                onPress={() => setShowSuccessModal(false)}
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowSuccessModal(false)}
                 className="bg-gradient-to-r from-green-600 to-green-500 rounded-xl py-3 items-center"
-              >
-                <Text className="text-white font-bold text-base">Continue</Text>
+               accessibilityRole="button" accessibilityLabel="Interactive button">
+                <ResponsiveText className="text-white font-bold text-base">Continue</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -1248,28 +1256,28 @@ const PartnerManagement = React.memo(function PartnerManagement({
           <View className="bg-slate-800/80 backdrop-blur-lg border border-yellow-500/50 rounded-2xl p-6 mb-4">
             <View className="flex-row items-center mb-4">
               <AlertTriangle size={24} color="#eab308" />
-              <Text className="text-white text-xl font-bold ml-3">
+              <ResponsiveText className="text-white text-xl font-bold ml-3">
                 Partner Management Error
               </Text>
             </View>
 
-            <Text className="text-slate-300 mb-4">
+            <ResponsiveText className="text-slate-300 mb-4">
               There was a problem loading the partner management dashboard.
               Here's what we know:
             </Text>
 
             {errorDetails && (
               <View className="bg-slate-900/50 rounded-xl p-4 mb-4">
-                <Text className="text-yellow-400 font-semibold mb-2">
+                <ResponsiveText className="text-yellow-400 font-semibold mb-2">
                   Error Details:
                 </Text>
-                <Text className="text-slate-300 text-sm mb-1">
+                <ResponsiveText className="text-slate-300 text-sm mb-1">
                   Type: {errorDetails.errorType}
                 </Text>
-                <Text className="text-slate-300 text-sm mb-1">
+                <ResponsiveText className="text-slate-300 text-sm mb-1">
                   Message: {errorDetails.errorMessage}
                 </Text>
-                <Text className="text-slate-300 text-sm">
+                <ResponsiveText className="text-slate-300 text-sm">
                   Time: {new Date(errorDetails.timestamp).toLocaleString()}
                 </Text>
               </View>
@@ -1277,22 +1285,22 @@ const PartnerManagement = React.memo(function PartnerManagement({
 
             <View className="flex-row gap-3">
               <TouchableOpacity
-                onPress={() => {
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> {
                   setHasError(false);
                   setErrorDetails(null);
                   setTroubleshootingGuide(null);
                 }}
                 className="flex-1 bg-gradient-to-r from-yellow-600 to-yellow-500 rounded-xl py-3 items-center"
-              >
-                <Text className="text-white font-bold">Try Again</Text>
+               accessibilityRole="button" accessibilityLabel="Interactive button">
+                <ResponsiveText className="text-white font-bold">Try Again</Text>
               </TouchableOpacity>
 
               {troubleshootingGuide && (
                 <TouchableOpacity
-                  onPress={() => setShowTroubleshootingModal(true)}
+                  onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowTroubleshootingModal(true)}
                   className="flex-1 bg-blue-600 rounded-xl py-3 items-center"
-                >
-                  <Text className="text-white font-bold">Get Help</Text>
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
+                  <ResponsiveText className="text-white font-bold">Get Help</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -1300,15 +1308,15 @@ const PartnerManagement = React.memo(function PartnerManagement({
 
           {troubleshootingGuide && (
             <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6">
-              <Text className="text-white text-lg font-bold mb-4">
+              <ResponsiveText className="text-white text-lg font-bold mb-4">
                 Quick Fixes:
               </Text>
               {troubleshootingGuide.quickFixes
                 ?.slice(0, 3)
                 .map((fix: string, index: number) => (
                   <View key={index} className="flex-row items-start mb-2">
-                    <Text className="text-green-400 mr-2">•</Text>
-                    <Text className="text-slate-300 text-sm flex-1">{fix}</Text>
+                    <ResponsiveText className="text-green-400 mr-2">•</Text>
+                    <ResponsiveText className="text-slate-300 text-sm flex-1">{fix}</Text>
                   </View>
                 ))}
             </View>
@@ -1320,19 +1328,19 @@ const PartnerManagement = React.memo(function PartnerManagement({
           visible={showTroubleshootingModal}
           transparent
           animationType="slide"
-          onRequestClose={() => setShowTroubleshootingModal(false)}
+          onRequestClose={() = accessibilityViewIsModal={true}> setShowTroubleshootingModal(false)}
         >
           <View className="flex-1 bg-black/50">
             <View className="flex-1 bg-slate-900 mt-20 rounded-t-3xl">
               <View className="p-6 border-b border-white/10">
                 <View className="flex-row justify-between items-center">
-                  <Text className="text-white text-xl font-bold">
+                  <ResponsiveText className="text-white text-xl font-bold">
                     AI Troubleshooting Guide
                   </Text>
                   <TouchableOpacity
-                    onPress={() => setShowTroubleshootingModal(false)}
-                    className="w-8 h-8 bg-white/10 rounded-full items-center justify-center"
-                  >
+                    onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowTroubleshootingModal(false)}
+                    className="w-8 h-8 bg-white/10 rounded-full items-center justify-center" style={{ minHeight: designSystem.spacing.touchTarget.min }}
+                   accessibilityRole="button" accessibilityLabel="Interactive button">
                     <X size={16} color="#94a3b8" />
                   </TouchableOpacity>
                 </View>
@@ -1342,7 +1350,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
                 {troubleshootingGuide && (
                   <>
                     <View className="mb-6">
-                      <Text className="text-white text-lg font-semibold mb-3">
+                      <ResponsiveText className="text-white text-lg font-semibold mb-3">
                         Possible Causes:
                       </Text>
                       {troubleshootingGuide.possibleCauses?.map(
@@ -1351,8 +1359,8 @@ const PartnerManagement = React.memo(function PartnerManagement({
                             key={index}
                             className="flex-row items-start mb-2"
                           >
-                            <Text className="text-yellow-400 mr-2">•</Text>
-                            <Text className="text-slate-300 text-sm flex-1">
+                            <ResponsiveText className="text-yellow-400 mr-2">•</Text>
+                            <ResponsiveText className="text-slate-300 text-sm flex-1">
                               {cause}
                             </Text>
                           </View>
@@ -1361,7 +1369,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
                     </View>
 
                     <View className="mb-6">
-                      <Text className="text-white text-lg font-semibold mb-3">
+                      <ResponsiveText className="text-white text-lg font-semibold mb-3">
                         Step-by-Step Solutions:
                       </Text>
                       {troubleshootingGuide.specificSteps?.map(
@@ -1370,10 +1378,10 @@ const PartnerManagement = React.memo(function PartnerManagement({
                             key={index}
                             className="bg-slate-800/50 rounded-xl p-4 mb-3"
                           >
-                            <Text className="text-blue-400 font-semibold mb-1">
+                            <ResponsiveText className="text-blue-400 font-semibold mb-1">
                               Step {index + 1}
                             </Text>
-                            <Text className="text-slate-300 text-sm">
+                            <ResponsiveText className="text-slate-300 text-sm">
                               {step}
                             </Text>
                           </View>
@@ -1382,7 +1390,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
                     </View>
 
                     <View className="mb-6">
-                      <Text className="text-white text-lg font-semibold mb-3">
+                      <ResponsiveText className="text-white text-lg font-semibold mb-3">
                         Prevention Tips:
                       </Text>
                       {troubleshootingGuide.preventionTips?.map(
@@ -1391,8 +1399,8 @@ const PartnerManagement = React.memo(function PartnerManagement({
                             key={index}
                             className="flex-row items-start mb-2"
                           >
-                            <Text className="text-green-400 mr-2">•</Text>
-                            <Text className="text-slate-300 text-sm flex-1">
+                            <ResponsiveText className="text-green-400 mr-2">•</Text>
+                            <ResponsiveText className="text-slate-300 text-sm flex-1">
                               {tip}
                             </Text>
                           </View>
@@ -1416,10 +1424,10 @@ const PartnerManagement = React.memo(function PartnerManagement({
         {/* Real-time Indicator */}
         <View className="absolute top-4 right-4 bg-slate-800/80 border border-white/10 rounded-xl px-3 py-2 flex-row items-center z-10">
           <View className="w-2 h-2 bg-green-500 rounded-full mr-2" />
-          <Text className="text-white text-xs font-semibold">
+          <ResponsiveText className="text-white text-xs font-semibold">
             Live Monitoring
           </Text>
-          <TouchableOpacity onPress={handleSignOut} className="ml-4">
+          <ResponsiveButton onPress={handleSignOut} className="ml-4" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
             <User size={16} color="#94a3b8" />
           </TouchableOpacity>
         </View>
@@ -1428,27 +1436,27 @@ const PartnerManagement = React.memo(function PartnerManagement({
           {/* Header */}
           <View className="bg-slate-800/80 border border-white/10 rounded-2xl p-4 sm:p-8 mb-6">
             <View className="mb-4">
-              <Text className="text-white text-2xl sm:text-3xl font-bold mb-2">
+              <ResponsiveText className="text-white text-2xl sm:text-3xl font-bold mb-2">
                 Partner Management
               </Text>
-              <Text className="text-slate-400 text-sm sm:text-base">
+              <ResponsiveText className="text-slate-400 text-sm sm:text-base">
                 Welcome {user.name} - Manage white-label partners and their
                 feature access
               </Text>
             </View>
             <View className="flex-row gap-2 sm:gap-4">
-              <TouchableOpacity className="flex-1 bg-white/10 border border-white/10 rounded-xl px-3 py-2 sm:px-6 sm:py-3 flex-row items-center justify-center">
+              <ResponsiveButton className="flex-1 bg-white/10 border border-white/10 rounded-xl px-3 py-2 sm:px-6 sm:py-3 flex-row items-center justify-center" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                 <BarChart3 size={14} color="#e2e8f0" />
-                <Text className="text-slate-200 font-semibold ml-2 text-xs sm:text-sm">
+                <ResponsiveText className="text-slate-200 font-semibold ml-2 text-xs sm:text-sm">
                   Export
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => setShowAddModal(true)}
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowAddModal(true)}
                 className="flex-1 bg-gradient-to-r from-red-600 to-red-500 rounded-xl px-3 py-2 sm:px-6 sm:py-3 flex-row items-center justify-center"
-              >
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <Plus size={14} color="white" />
-                <Text className="text-white font-semibold ml-2 text-xs sm:text-sm">
+                <ResponsiveText className="text-white font-semibold ml-2 text-xs sm:text-sm">
                   Add Partner
                 </Text>
               </TouchableOpacity>
@@ -1471,10 +1479,10 @@ const PartnerManagement = React.memo(function PartnerManagement({
                 {/* Partner Header */}
                 <View className="flex-row justify-between items-start mb-5">
                   <View className="flex-1">
-                    <Text className="text-white text-xl font-bold mb-1">
+                    <ResponsiveText className="text-white text-xl font-bold mb-1">
                       {partner.name}
                     </Text>
-                    <Text className="text-slate-500 text-xs font-mono mb-2">
+                    <ResponsiveText className="text-slate-500 text-xs font-mono mb-2">
                       {partner.domain}
                     </Text>
                     <View
@@ -1482,7 +1490,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
                         partner.plan,
                       )}`}
                     >
-                      <Text className="text-xs font-bold uppercase">
+                      <ResponsiveText className="text-xs font-bold uppercase">
                         {partner.plan} Plan
                       </Text>
                     </View>
@@ -1495,7 +1503,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
                           : "bg-slate-500"
                       }`}
                     />
-                    <Text className="text-xs font-semibold text-slate-300 capitalize">
+                    <ResponsiveText className="text-xs font-semibold text-slate-300 capitalize">
                       {partner.status === "pending"
                         ? "Setup Pending"
                         : partner.status}
@@ -1515,10 +1523,10 @@ const PartnerManagement = React.memo(function PartnerManagement({
                       key={index}
                       className="bg-white/5 rounded-lg p-2 sm:p-3 flex-1 min-w-[70px] items-center"
                     >
-                      <Text className="text-white text-sm sm:text-lg font-bold mb-1">
+                      <ResponsiveText className="text-white text-sm sm:text-lg font-bold mb-1">
                         {stat.value}
                       </Text>
-                      <Text className="text-slate-400 text-xs text-center">
+                      <ResponsiveText className="text-slate-400 text-xs text-center">
                         {stat.label}
                       </Text>
                     </View>
@@ -1528,10 +1536,10 @@ const PartnerManagement = React.memo(function PartnerManagement({
                 {/* Feature Authorization Panel */}
                 <View className="bg-white/5 rounded-xl p-5 mb-4">
                   <View className="flex-row justify-between items-center mb-4">
-                    <Text className="text-white text-base font-semibold">
+                    <ResponsiveText className="text-white text-base font-semibold">
                       Feature Access Control
                     </Text>
-                    <Text className="text-slate-400 text-xs">
+                    <ResponsiveText className="text-slate-400 text-xs">
                       {getEnabledFeaturesCount(partner.features)} of{" "}
                       {partner.features.length} features enabled
                     </Text>
@@ -1541,9 +1549,9 @@ const PartnerManagement = React.memo(function PartnerManagement({
                     {partner.features.map((feature, featureIndex) => (
                       <TouchableOpacity
                         key={featureIndex}
-                        onPress={() => toggleFeature(partner.id, featureIndex)}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> toggleFeature(partner.id, featureIndex)}
                         className="flex-row items-center bg-white/5 rounded-lg p-3"
-                      >
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
                         <View
                           className={`w-5 h-5 border-2 rounded mr-3 items-center justify-center ${
                             feature.enabled
@@ -1554,10 +1562,10 @@ const PartnerManagement = React.memo(function PartnerManagement({
                           {feature.enabled && <Check size={12} color="white" />}
                         </View>
                         <View className="flex-1">
-                          <Text className="text-slate-200 font-semibold text-sm mb-1">
+                          <ResponsiveText className="text-slate-200 font-semibold text-sm mb-1">
                             {feature.name}
                           </Text>
-                          <Text className="text-slate-400 text-xs">
+                          <ResponsiveText className="text-slate-400 text-xs">
                             {feature.description}
                           </Text>
                         </View>
@@ -1566,7 +1574,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
                             feature.badge,
                           )}`}
                         >
-                          <Text className="text-xs font-bold uppercase">
+                          <ResponsiveText className="text-xs font-bold uppercase">
                             {feature.badge}
                           </Text>
                         </View>
@@ -1581,30 +1589,30 @@ const PartnerManagement = React.memo(function PartnerManagement({
                     <>
                       <View className="flex-row gap-2">
                         <TouchableOpacity
-                          onPress={() => handleActivatePartner(partner.id)}
+                          onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleActivatePartner(partner.id)}
                           className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 rounded-lg py-3 px-3 flex-row items-center justify-center min-h-[44px]"
-                        >
+                         accessibilityRole="button" accessibilityLabel="Interactive button">
                           <Check size={14} color="white" />
-                          <Text className="text-white font-semibold text-xs ml-1">
+                          <ResponsiveText className="text-white font-semibold text-xs ml-1">
                             Activate
                           </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                          onPress={() => handleManagePartner(partner.id)}
+                          onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleManagePartner(partner.id)}
                           className="flex-1 bg-white/10 border border-white/10 rounded-lg py-3 px-3 flex-row items-center justify-center min-h-[44px]"
-                        >
+                         accessibilityRole="button" accessibilityLabel="Interactive button">
                           <Settings size={14} color="#e2e8f0" />
-                          <Text className="text-slate-200 font-semibold text-xs ml-1">
+                          <ResponsiveText className="text-slate-200 font-semibold text-xs ml-1">
                             Configure
                           </Text>
                         </TouchableOpacity>
                       </View>
                       <TouchableOpacity
-                        onPress={() => handleDeletePartner(partner.id)}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleDeletePartner(partner.id)}
                         className="bg-red-500/20 border border-red-500/30 rounded-lg py-3 px-3 flex-row items-center justify-center min-h-[44px]"
-                      >
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
                         <Trash2 size={14} color="#ef4444" />
-                        <Text className="text-red-400 font-semibold text-xs ml-1">
+                        <ResponsiveText className="text-red-400 font-semibold text-xs ml-1">
                           Delete Partner
                         </Text>
                       </TouchableOpacity>
@@ -1613,30 +1621,30 @@ const PartnerManagement = React.memo(function PartnerManagement({
                     <>
                       <View className="flex-row gap-2">
                         <TouchableOpacity
-                          onPress={() => handleManagePartner(partner.id)}
+                          onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleManagePartner(partner.id)}
                           className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 rounded-lg py-3 px-3 flex-row items-center justify-center min-h-[44px]"
-                        >
+                         accessibilityRole="button" accessibilityLabel="Interactive button">
                           <Settings size={14} color="white" />
-                          <Text className="text-white font-semibold text-xs ml-1">
+                          <ResponsiveText className="text-white font-semibold text-xs ml-1">
                             Manage
                           </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                          onPress={() => handleViewDashboard(partner.id)}
+                          onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleViewDashboard(partner.id)}
                           className="flex-1 bg-white/10 border border-white/10 rounded-lg py-3 px-3 flex-row items-center justify-center min-h-[44px]"
-                        >
+                         accessibilityRole="button" accessibilityLabel="Interactive button">
                           <Eye size={14} color="#e2e8f0" />
-                          <Text className="text-slate-200 font-semibold text-xs ml-1">
+                          <ResponsiveText className="text-slate-200 font-semibold text-xs ml-1">
                             Dashboard
                           </Text>
                         </TouchableOpacity>
                       </View>
                       <TouchableOpacity
-                        onPress={() => handleUpgradePartner(partner.id)}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleUpgradePartner(partner.id)}
                         className="bg-white/10 border border-white/10 rounded-lg py-3 px-3 flex-row items-center justify-center min-h-[44px]"
-                      >
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
                         <ArrowUp size={14} color="#e2e8f0" />
-                        <Text className="text-slate-200 font-semibold text-xs ml-1">
+                        <ResponsiveText className="text-slate-200 font-semibold text-xs ml-1">
                           Upgrade Plan
                         </Text>
                       </TouchableOpacity>
@@ -1653,15 +1661,15 @@ const PartnerManagement = React.memo(function PartnerManagement({
           visible={showAddModal}
           transparent
           animationType="fade"
-          onRequestClose={() => setShowAddModal(false)}
+          onRequestClose={() = accessibilityViewIsModal={true}> setShowAddModal(false)}
         >
           <View className="flex-1 bg-black/80 justify-center items-center p-6">
             <View className="bg-slate-800 border border-white/10 rounded-2xl p-8 w-full max-w-md">
               <View className="mb-6">
-                <Text className="text-white text-2xl font-bold mb-2">
+                <ResponsiveText className="text-white text-2xl font-bold mb-2">
                   Add New Partner
                 </Text>
-                <Text className="text-slate-400">
+                <ResponsiveText className="text-slate-400">
                   Create a new white-label partner with customized feature
                   access
                 </Text>
@@ -1669,7 +1677,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
 
               <View className="gap-4">
                 <View>
-                  <Text className="text-slate-200 font-semibold mb-2">
+                  <ResponsiveText className="text-slate-200 font-semibold mb-2">
                     Partner Name
                   </Text>
                   <TextInput
@@ -1684,7 +1692,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
                 </View>
 
                 <View>
-                  <Text className="text-slate-200 font-semibold mb-2">
+                  <ResponsiveText className="text-slate-200 font-semibold mb-2">
                     Subdomain
                   </Text>
                   <TextInput
@@ -1702,7 +1710,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
                 </View>
 
                 <View>
-                  <Text className="text-slate-200 font-semibold mb-2">
+                  <ResponsiveText className="text-slate-200 font-semibold mb-2">
                     Subscription Plan
                   </Text>
                   <View className="gap-2">
@@ -1719,7 +1727,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
                     ].map((plan) => (
                       <TouchableOpacity
                         key={plan.value}
-                        onPress={() =>
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                           setNewPartnerForm((prev) => ({
                             ...prev,
                             plan: plan.value,
@@ -1730,7 +1738,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
                             ? "border-red-500 bg-red-500/10"
                             : "border-white/10 bg-white/5"
                         }`}
-                      >
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
                         <View
                           className={`w-4 h-4 border-2 rounded-full mr-3 ${
                             newPartnerForm.plan === plan.value
@@ -1738,7 +1746,7 @@ const PartnerManagement = React.memo(function PartnerManagement({
                               : "border-slate-500"
                           }`}
                         />
-                        <Text className="text-slate-200 text-sm">
+                        <ResponsiveText className="text-slate-200 text-sm">
                           {plan.label}
                         </Text>
                       </TouchableOpacity>
@@ -1749,16 +1757,16 @@ const PartnerManagement = React.memo(function PartnerManagement({
 
               <View className="flex-row gap-3 mt-6">
                 <TouchableOpacity
-                  onPress={() => setShowAddModal(false)}
+                  onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowAddModal(false)}
                   className="flex-1 bg-white/10 border border-white/10 rounded-lg py-3 items-center"
-                >
-                  <Text className="text-slate-200 font-semibold">Cancel</Text>
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
+                  <ResponsiveText className="text-slate-200 font-semibold">Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
+                <ResponsiveButton
                   onPress={handleCreatePartner}
                   className="flex-1 bg-gradient-to-r from-red-600 to-red-500 rounded-lg py-3 items-center"
-                >
-                  <Text className="text-white font-semibold">
+                 accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
+                  <ResponsiveText className="text-white font-semibold">
                     Create Partner
                   </Text>
                 </TouchableOpacity>
@@ -1774,18 +1782,18 @@ const PartnerManagement = React.memo(function PartnerManagement({
     return (
       <SafeAreaView className="flex-1 bg-slate-900 justify-center items-center">
         <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-8 m-4">
-          <Text className="text-white text-xl font-bold mb-4 text-center">
+          <ResponsiveText className="text-white text-xl font-bold mb-4 text-center">
             Something went wrong
           </Text>
-          <Text className="text-slate-300 text-center mb-6">
+          <ResponsiveText className="text-slate-300 text-center mb-6">
             There was a problem loading the partner management dashboard. Please
             try again.
           </Text>
           <TouchableOpacity
-            onPress={() => setHasError(false)}
+            onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setHasError(false)}
             className="bg-gradient-to-r from-yellow-600 to-yellow-500 rounded-xl py-3 items-center"
-          >
-            <Text className="text-white font-bold">Try Again</Text>
+           accessibilityRole="button" accessibilityLabel="Interactive button">
+            <ResponsiveText className="text-white font-bold">Try Again</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>

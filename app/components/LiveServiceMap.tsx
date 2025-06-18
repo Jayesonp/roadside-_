@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import designSystem from "../styles/MobileDesignSystem";
 import {
   View,
   Text,
@@ -6,6 +7,14 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
+import {
+  ResponsiveContainer,
+  ResponsiveGrid,
+  ResponsiveCard,
+  ResponsiveButton,
+  ResponsiveText,
+  ResponsiveMetricCard,
+} from "./responsive/ResponsiveComponents";
 import { MapPin, Users, Truck, AlertCircle, Zap } from "lucide-react-native";
 
 interface MapMarker {
@@ -177,8 +186,8 @@ const LiveServiceMap: React.FC<LiveServiceMapProps> = React.memo(
                   styles.filterButton,
                   filterType === "all" && styles.activeFilter,
                 ]}
-                onPress={() => setFilterType("all")}
-              >
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setFilterType("all")}
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <Text
                   style={[
                     styles.filterText,
@@ -193,8 +202,8 @@ const LiveServiceMap: React.FC<LiveServiceMapProps> = React.memo(
                   styles.filterButton,
                   filterType === "technician" && styles.activeFilter,
                 ]}
-                onPress={() => setFilterType("technician")}
-              >
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setFilterType("technician")}
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <Truck
                   size={16}
                   color={filterType === "technician" ? "#fff" : "#6B7280"}
@@ -213,8 +222,8 @@ const LiveServiceMap: React.FC<LiveServiceMapProps> = React.memo(
                   styles.filterButton,
                   filterType === "customer" && styles.activeFilter,
                 ]}
-                onPress={() => setFilterType("customer")}
-              >
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setFilterType("customer")}
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <Users
                   size={16}
                   color={filterType === "customer" ? "#fff" : "#6B7280"}
@@ -232,10 +241,10 @@ const LiveServiceMap: React.FC<LiveServiceMapProps> = React.memo(
 
             <TouchableOpacity
               style={styles.viewToggle}
-              onPress={() =>
+              onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                 setMapView(mapView === "street" ? "satellite" : "street")
               }
-            >
+             accessibilityRole="button" accessibilityLabel="Interactive button">
               <Text style={styles.viewToggleText}>
                 {mapView === "street" ? "Satellite" : "Street"}
               </Text>
@@ -295,13 +304,13 @@ const LiveServiceMap: React.FC<LiveServiceMapProps> = React.memo(
                         : [{ scale: 1 }],
                   },
                 ]}
-                onPress={() => {
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> {
                   const newSelectedMarker =
                     selectedMarker?.id === marker.id ? null : marker;
                   setSelectedMarker(newSelectedMarker);
                   onMarkerSelect?.(newSelectedMarker?.id || null);
                 }}
-              >
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 {getMarkerIcon(marker)}
                 {marker.status === "emergency" && (
                   <View style={styles.pulseRing}>
@@ -333,8 +342,8 @@ const LiveServiceMap: React.FC<LiveServiceMapProps> = React.memo(
                 </View>
                 <TouchableOpacity
                   style={styles.closeButton}
-                  onPress={() => setSelectedMarker(null)}
-                >
+                  onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setSelectedMarker(null)}
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
                   <Text style={styles.closeButtonText}>×</Text>
                 </TouchableOpacity>
               </View>

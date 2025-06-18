@@ -538,7 +538,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                   onPress={handleNavigateToCustomer}
                   className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500"
                   disabled={operationLoading}
-                  icon={<Navigation size={16} color="white" />}
+                  icon={<Navigation size={16} color="white" / style={{ minHeight: designSystem.spacing.touchTarget.min }}>}
                   iconPosition="left"
                 >
                   Navigate
@@ -549,7 +549,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                   onPress={handleContactCustomer}
                   className="flex-1 bg-white/10 border border-white/10"
                   disabled={operationLoading}
-                  icon={<Phone size={16} color="white" />}
+                  icon={<Phone size={16} color="white" / style={{ minHeight: designSystem.spacing.touchTarget.min }}>}
                   iconPosition="left"
                 >
                   Call
@@ -1361,7 +1361,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
 
             <View className="flex-row gap-3">
               <TouchableOpacity
-                onPress={() => {
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> {
                   setHasError(false);
                   setErrorDetails(null);
                   setTroubleshootingGuide(null);
@@ -1373,7 +1373,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
 
               {troubleshootingGuide && (
                 <TouchableOpacity
-                  onPress={() => setShowTroubleshootingModal(true)}
+                  onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowTroubleshootingModal(true)}
                   className="flex-1 bg-blue-600 rounded-xl py-3 items-center"
                 >
                   <Text className="text-white font-bold">Get Help</Text>
@@ -1404,7 +1404,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
           visible={showTroubleshootingModal}
           transparent
           animationType="slide"
-          onRequestClose={() => setShowTroubleshootingModal(false)}
+          onRequestClose={() = accessibilityViewIsModal={true}> setShowTroubleshootingModal(false)}
         >
           <View className="flex-1 bg-black/50">
             <View className="flex-1 bg-slate-900 mt-20 rounded-t-3xl">
@@ -1414,7 +1414,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                     AI Troubleshooting Guide
                   </Text>
                   <TouchableOpacity
-                    onPress={() => setShowTroubleshootingModal(false)}
+                    onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowTroubleshootingModal(false)}
                     className="w-8 h-8 bg-white/10 rounded-full items-center justify-center"
                   >
                     <Text className="text-slate-400 text-lg">×</Text>
@@ -1523,7 +1523,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
             {/* Back Button */}
             {authMode !== "login" && (
               <TouchableOpacity
-                onPress={() => switchAuthMode("login")}
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("login")}
                 className="absolute top-8 left-6 w-10 h-10 bg-white/10 rounded-xl items-center justify-center"
               >
                 <ArrowLeft size={20} color="#94a3b8" />
@@ -1620,7 +1620,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                         autoCorrect={false}
                       />
                       <TouchableOpacity
-                        onPress={() => setShowPassword(!showPassword)}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowPassword(!showPassword)}
                         className="ml-2"
                       >
                         {showPassword ? (
@@ -1652,7 +1652,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                         autoCorrect={false}
                       />
                       <TouchableOpacity
-                        onPress={() =>
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                           setShowConfirmPassword(!showConfirmPassword)
                         }
                         className="ml-2"
@@ -1678,7 +1678,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                   }
                   disabled={authLoading}
                   className={`bg-gradient-to-r from-green-600 to-green-500 rounded-xl py-4 items-center mb-4 ${authLoading ? "opacity-50" : ""}`}
-                >
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
                   {authLoading ? (
                     <View className="flex-row items-center">
                       <ActivityIndicator color="white" size="small" />
@@ -1704,7 +1704,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                       onPress={handleDemoLogin}
                       disabled={authLoading}
                       className="bg-white/10 border border-white/10 rounded-xl py-3 items-center mb-4"
-                    >
+                     style={{ minHeight: 44 }} accessibilityRole="button" accessibilityLabel="Interactive button">
                       <Text className="text-slate-300 font-semibold text-sm">
                         Demo Login
                       </Text>
@@ -1712,7 +1712,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
 
                     <View className="flex-row justify-between items-center">
                       <TouchableOpacity
-                        onPress={() => switchAuthMode("register")}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("register")}
                         disabled={authLoading}
                       >
                         <Text className="text-green-400 text-sm font-medium">
@@ -1720,7 +1720,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        onPress={() => switchAuthMode("reset")}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("reset")}
                         disabled={authLoading}
                       >
                         <Text className="text-green-400 text-sm font-medium">
@@ -1733,7 +1733,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
 
                 {authMode === "register" && (
                   <TouchableOpacity
-                    onPress={() => switchAuthMode("login")}
+                    onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("login")}
                     disabled={authLoading}
                     className="items-center"
                   >
@@ -1766,7 +1766,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
           visible={showSuccessModal}
           transparent
           animationType="fade"
-          onRequestClose={() => setShowSuccessModal(false)}
+          onRequestClose={() = accessibilityViewIsModal={true}> setShowSuccessModal(false)}
         >
           <View className="flex-1 bg-black/50 justify-center items-center px-6">
             <View className="bg-slate-800 border border-white/10 rounded-2xl p-8 w-full max-w-sm">
@@ -1782,7 +1782,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                 </Text>
               </View>
               <TouchableOpacity
-                onPress={() => setShowSuccessModal(false)}
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowSuccessModal(false)}
                 className="bg-gradient-to-r from-green-600 to-green-500 rounded-xl py-3 items-center"
               >
                 <Text className="text-white font-bold text-base">Continue</Text>
@@ -1862,7 +1862,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
               accessibilityRole="button"
               accessibilityLabel="Notifications"
               accessibilityHint="View notifications"
-            >
+             style={{ minHeight: 44 }}>
               <Bell size={18} color="#94a3b8" />
               <View className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
             </TouchableOpacity>
@@ -1871,7 +1871,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
               accessibilityRole="button"
               accessibilityLabel="Emergency alert"
               accessibilityHint="Access emergency features"
-            >
+             style={{ minHeight: 44 }}>
               <AlertTriangle size={18} color="#94a3b8" />
             </TouchableOpacity>
             <TouchableOpacity
@@ -1880,7 +1880,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
               accessibilityLabel="Sign Out"
               accessibilityHint="Sign out of your account"
               onPress={handleSignOut}
-            >
+             style={{ minHeight: 44 }}>
               <Settings size={18} color="#94a3b8" />
             </TouchableOpacity>
           </View>
@@ -1888,7 +1888,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
         <TouchableOpacity
           onPress={toggleOnlineStatus}
           className="bg-white/10 border border-white/10 rounded-xl px-4 py-2 flex-row items-center justify-center"
-        >
+         style={{ minHeight: 44 }} accessibilityRole="button" accessibilityLabel="Interactive button">
           <View
             className={`w-3 h-3 rounded-full mr-2 ${
               onlineStatus ? "bg-green-500" : "bg-gray-500"
@@ -1906,7 +1906,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
       {/* Bottom Navigation */}
       <View className="absolute bottom-0 left-0 right-0 bg-slate-800/90 backdrop-blur-lg border-t border-white/10 px-2 py-3 flex-row justify-around items-center">
         <TouchableOpacity
-          onPress={() => handleViewChange("dashboard")}
+          onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleViewChange("dashboard")}
           className={`items-center py-2 px-4 rounded-xl ${
             activeView === "dashboard" ? "bg-red-500/20" : ""
           }`}
@@ -1928,7 +1928,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => handleViewChange("jobs")}
+          onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleViewChange("jobs")}
           className={`items-center py-2 px-4 rounded-xl ${
             activeView === "jobs" ? "bg-red-500/20" : ""
           }`}
@@ -1956,12 +1956,12 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
           accessibilityRole="button"
           accessibilityLabel="Emergency SOS"
           accessibilityHint="Contact emergency support"
-        >
+         style={{ minHeight: 44 }}>
           <Text className="text-white font-bold text-sm">SOS</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => handleViewChange("earnings")}
+          onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleViewChange("earnings")}
           className={`items-center py-2 px-4 rounded-xl ${
             activeView === "earnings" ? "bg-red-500/20" : ""
           }`}
@@ -1983,7 +1983,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => handleViewChange("profile")}
+          onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleViewChange("profile")}
           className={`items-center py-2 px-4 rounded-xl ${
             activeView === "profile" ? "bg-red-500/20" : ""
           }`}

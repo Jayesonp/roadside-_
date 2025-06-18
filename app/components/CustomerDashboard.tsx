@@ -716,7 +716,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
             {/* Back Button */}
             {authMode !== "login" && (
               <TouchableOpacity
-                onPress={() => switchAuthMode("login")}
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("login")}
                 className="absolute top-8 left-6 w-10 h-10 bg-white/10 rounded-xl items-center justify-center"
               >
                 <ArrowLeft size={20} color="#94a3b8" />
@@ -814,7 +814,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
                         autoCorrect={false}
                       />
                       <TouchableOpacity
-                        onPress={() => setShowPassword(!showPassword)}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowPassword(!showPassword)}
                         className="ml-2"
                       >
                         {showPassword ? (
@@ -846,7 +846,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
                         autoCorrect={false}
                       />
                       <TouchableOpacity
-                        onPress={() =>
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                           setShowConfirmPassword(!showConfirmPassword)
                         }
                         className="ml-2"
@@ -872,7 +872,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
                   }
                   disabled={authLoading}
                   className={`bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl py-4 items-center mb-4 ${authLoading ? "opacity-50" : ""}`}
-                >
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
                   {authLoading ? (
                     <View className="flex-row items-center">
                       <ActivityIndicator color="white" size="small" />
@@ -898,7 +898,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
                       onPress={handleDemoLogin}
                       disabled={authLoading}
                       className="bg-white/10 border border-white/10 rounded-xl py-3 items-center mb-4"
-                    >
+                     style={{ minHeight: 44 }} accessibilityRole="button" accessibilityLabel="Interactive button">
                       <Text className="text-slate-300 font-semibold text-sm">
                         Demo Login
                       </Text>
@@ -906,7 +906,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
 
                     <View className="flex-row justify-between items-center">
                       <TouchableOpacity
-                        onPress={() => switchAuthMode("register")}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("register")}
                         disabled={authLoading}
                       >
                         <Text className="text-blue-400 text-sm font-medium">
@@ -914,7 +914,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        onPress={() => switchAuthMode("reset")}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("reset")}
                         disabled={authLoading}
                       >
                         <Text className="text-blue-400 text-sm font-medium">
@@ -927,7 +927,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
 
                 {authMode === "register" && (
                   <TouchableOpacity
-                    onPress={() => switchAuthMode("login")}
+                    onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("login")}
                     disabled={authLoading}
                     className="items-center"
                   >
@@ -960,7 +960,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
           visible={showSuccessModal}
           transparent
           animationType="fade"
-          onRequestClose={() => setShowSuccessModal(false)}
+          onRequestClose={() = accessibilityViewIsModal={true}> setShowSuccessModal(false)}
         >
           <View className="flex-1 bg-black/50 justify-center items-center px-6">
             <View className="bg-slate-800 border border-white/10 rounded-2xl p-8 w-full max-w-sm">
@@ -976,7 +976,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
                 </Text>
               </View>
               <TouchableOpacity
-                onPress={() => setShowSuccessModal(false)}
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowSuccessModal(false)}
                 className="bg-gradient-to-r from-green-600 to-green-500 rounded-xl py-3 items-center"
               >
                 <Text className="text-white font-bold text-base">Continue</Text>
@@ -1122,7 +1122,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
         {/* Active Service Alert */}
         {activeRequest && (
           <TouchableOpacity
-            onPress={() => setCurrentView("tracking")}
+            onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setCurrentView("tracking")}
             className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl p-5 mb-6"
           >
             <View className="flex-row justify-between items-center">
@@ -1207,7 +1207,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
                 variant="ghost"
                 size="sm"
                 className="bg-white/10 border border-white/10"
-              >
+               style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                 Update
               </ResponsiveButton>
             </View>
@@ -1327,7 +1327,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
           <TouchableOpacity
             onPress={handleBookingBack}
             className="w-10 h-10 bg-slate-800/80 rounded-xl items-center justify-center"
-          >
+           style={{ minHeight: 44 }} accessibilityRole="button" accessibilityLabel="Interactive button">
             <ArrowLeft size={20} color="#94a3b8" />
           </TouchableOpacity>
           <Text className="text-white text-lg font-bold">Book Service</Text>
@@ -1378,7 +1378,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
                     return (
                       <TouchableOpacity
                         key={service.id}
-                        onPress={() => setSelectedServiceType(service.id)}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setSelectedServiceType(service.id)}
                         className={`flex-row items-center p-4 rounded-xl border ${
                           isSelected
                             ? "bg-red-500/20 border-red-500"
@@ -1470,7 +1470,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
                 Payment Method
               </Text>
               <View className="gap-4">
-                <TouchableOpacity className="flex-row items-center p-4 rounded-xl bg-slate-700/50 border border-white/10">
+                <TouchableOpacity className="flex-row items-center p-4 rounded-xl bg-slate-700/50 border border-white/10" style={{ minHeight: 44 }}>
                   <View className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl items-center justify-center mr-4">
                     <CreditCard size={20} color="white" />
                   </View>
@@ -1484,7 +1484,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
                   </View>
                   <View className="w-4 h-4 bg-red-500 rounded-full" />
                 </TouchableOpacity>
-                <TouchableOpacity className="flex-row items-center p-4 rounded-xl bg-slate-700/50 border border-white/10">
+                <TouchableOpacity className="flex-row items-center p-4 rounded-xl bg-slate-700/50 border border-white/10" style={{ minHeight: 44 }}>
                   <View className="w-12 h-12 bg-gradient-to-br from-green-600 to-green-500 rounded-xl items-center justify-center mr-4">
                     <DollarSign size={20} color="white" />
                   </View>
@@ -1557,7 +1557,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
             <TouchableOpacity
               onPress={handleBookingBack}
               className="flex-1 bg-slate-700/50 border border-white/10 rounded-xl py-4 items-center"
-            >
+             style={{ minHeight: 44 }} accessibilityRole="button" accessibilityLabel="Interactive button">
               <Text className="text-white font-semibold">Back</Text>
             </TouchableOpacity>
           )}
@@ -1571,7 +1571,7 @@ const CustomerDashboard = React.memo(function CustomerDashboard({
                 ? "bg-slate-600 opacity-50"
                 : "bg-gradient-to-r from-red-600 to-red-500"
             }`}
-          >
+           accessibilityRole="button" accessibilityLabel="Interactive button">
             <Text className="text-white font-semibold">
               {bookingStep === 4 ? "Confirm Booking" : "Next"}
             </Text>

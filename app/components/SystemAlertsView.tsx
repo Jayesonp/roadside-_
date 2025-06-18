@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import designSystem from "../styles/MobileDesignSystem";
 import {
   View,
   Text,
@@ -8,6 +9,14 @@ import {
   Alert,
   RefreshControl,
 } from "react-native";
+import {
+  ResponsiveContainer,
+  ResponsiveGrid,
+  ResponsiveCard,
+  ResponsiveButton,
+  ResponsiveText,
+  ResponsiveMetricCard,
+} from "./responsive/ResponsiveComponents";
 import {
   AlertTriangle,
   AlertCircle,
@@ -497,7 +506,7 @@ const SystemAlertsView = React.memo(
             <Text style={styles.errorMessage}>
               {errorMessage || "Please refresh the page or try again later."}
             </Text>
-            <TouchableOpacity style={styles.errorButton} onPress={resetError}>
+            <TouchableOpacity style={styles.errorButton} onPress={resetError} accessibilityRole="button" accessibilityLabel="Interactive button">
               <Text style={styles.errorButtonText}>Try Again</Text>
             </TouchableOpacity>
           </View>
@@ -549,7 +558,7 @@ const SystemAlertsView = React.memo(
                 style={styles.actionButton}
                 onPress={handleRefresh}
                 disabled={isRefreshing}
-              >
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <RefreshCw size={16} color="#3b82f6" />
                 <Text style={[styles.actionButtonText, { marginLeft: 6 }]}>
                   {isRefreshing ? "Refreshing..." : "Refresh"}
@@ -559,7 +568,7 @@ const SystemAlertsView = React.memo(
                 <TouchableOpacity
                   style={styles.actionButton}
                   onPress={markAllAsRead}
-                >
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
                   <Eye size={16} color="#10b981" />
                   <Text
                     style={[
@@ -576,8 +585,8 @@ const SystemAlertsView = React.memo(
                   styles.actionButton,
                   { backgroundColor: "#22c55e20", borderColor: "#22c55e30" },
                 ]}
-                onPress={() => onExportData("csv")}
-              >
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> onExportData("csv")}
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <Download size={16} color="#22c55e" />
                 <Text
                   style={[
@@ -593,8 +602,8 @@ const SystemAlertsView = React.memo(
                   styles.actionButton,
                   { backgroundColor: "#3b82f620", borderColor: "#3b82f630" },
                 ]}
-                onPress={() => onExportData("pdf")}
-              >
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> onExportData("pdf")}
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <Download size={16} color="#3b82f6" />
                 <Text
                   style={[
@@ -617,8 +626,8 @@ const SystemAlertsView = React.memo(
                     styles.filterButton,
                     filter === "all" && styles.filterButtonActive,
                   ]}
-                  onPress={() => setFilter("all")}
-                >
+                  onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setFilter("all")}
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
                   <Text
                     style={[
                       styles.filterText,
@@ -633,8 +642,8 @@ const SystemAlertsView = React.memo(
                     styles.filterButton,
                     filter === "unread" && styles.filterButtonActive,
                   ]}
-                  onPress={() => setFilter("unread")}
-                >
+                  onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setFilter("unread")}
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
                   <Text
                     style={[
                       styles.filterText,
@@ -649,8 +658,8 @@ const SystemAlertsView = React.memo(
                     styles.filterButton,
                     filter === "critical" && styles.filterButtonActive,
                   ]}
-                  onPress={() => setFilter("critical")}
-                >
+                  onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setFilter("critical")}
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
                   <Text
                     style={[
                       styles.filterText,
@@ -665,8 +674,8 @@ const SystemAlertsView = React.memo(
                     styles.filterButton,
                     filter === "active" && styles.filterButtonActive,
                   ]}
-                  onPress={() => setFilter("active")}
-                >
+                  onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setFilter("active")}
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
                   <Text
                     style={[
                       styles.filterText,
@@ -692,8 +701,8 @@ const SystemAlertsView = React.memo(
                       categoryFilter === category &&
                         styles.categoryFilterButtonActive,
                     ]}
-                    onPress={() => setCategoryFilter(category)}
-                  >
+                    onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setCategoryFilter(category)}
+                   accessibilityRole="button" accessibilityLabel="Interactive button">
                     {category !== "all" && (
                       <View style={{ marginRight: 6 }}>
                         {getCategoryIcon(category)}
@@ -779,8 +788,8 @@ const SystemAlertsView = React.memo(
                     </View>
                     <TouchableOpacity
                       style={styles.dismissButton}
-                      onPress={() => dismissAlert(alert.id)}
-                    >
+                      onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> dismissAlert(alert.id)}
+                     accessibilityRole="button" accessibilityLabel="Interactive button">
                       <X size={16} color="#6b7280" />
                     </TouchableOpacity>
                   </View>
@@ -841,8 +850,8 @@ const SystemAlertsView = React.memo(
                     {!alert.isRead && (
                       <TouchableOpacity
                         style={[styles.actionButton, styles.readButton]}
-                        onPress={() => markAsRead(alert.id)}
-                      >
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> markAsRead(alert.id)}
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
                         <Eye size={16} color="#10b981" />
                         <Text
                           style={[
@@ -857,8 +866,8 @@ const SystemAlertsView = React.memo(
                     {alert.status !== "acknowledged" && (
                       <TouchableOpacity
                         style={[styles.actionButton, styles.acknowledgeButton]}
-                        onPress={() => acknowledgeAlert(alert.id)}
-                      >
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> acknowledgeAlert(alert.id)}
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
                         <CheckCircle size={16} color="#3b82f6" />
                         <Text
                           style={[
@@ -873,8 +882,8 @@ const SystemAlertsView = React.memo(
                     {alert.status !== "resolved" && alert.actionRequired && (
                       <TouchableOpacity
                         style={[styles.actionButton, styles.resolveButton]}
-                        onPress={() => resolveAlert(alert.id)}
-                      >
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> resolveAlert(alert.id)}
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
                         <CheckCircle size={16} color="#22c55e" />
                         <Text
                           style={[
@@ -889,8 +898,8 @@ const SystemAlertsView = React.memo(
                     {!alert.escalated && alert.severity === "critical" && (
                       <TouchableOpacity
                         style={[styles.actionButton, styles.escalateButton]}
-                        onPress={() => escalateAlert(alert.id)}
-                      >
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> escalateAlert(alert.id)}
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
                         <AlertTriangle size={16} color="#ef4444" />
                         <Text
                           style={[
@@ -928,7 +937,7 @@ const SystemAlertsView = React.memo(
             <Text style={styles.errorMessage}>
               Please refresh the page or try again later.
             </Text>
-            <TouchableOpacity style={styles.errorButton} onPress={resetError}>
+            <TouchableOpacity style={styles.errorButton} onPress={resetError} accessibilityRole="button" accessibilityLabel="Interactive button">
               <Text style={styles.errorButtonText}>Try Again</Text>
             </TouchableOpacity>
           </View>

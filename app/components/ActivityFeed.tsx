@@ -1,5 +1,24 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions,
+  ActivityIndicator,
+  Modal,
+  TextInput,
+  Alert,
+} from "react-native";
+import designSystem from "../styles/MobileDesignSystem";
+import {
+  ResponsiveContainer,
+  ResponsiveGrid,
+  ResponsiveCard,
+  ResponsiveButton,
+  ResponsiveText,
+  ResponsiveMetricCard,
+} from "./responsive/ResponsiveComponents";
 import {
   AlertTriangle,
   UserPlus,
@@ -441,7 +460,7 @@ const ActivityFeed = React.memo(
         {/* Header */}
         <View className="flex flex-row justify-between items-center mb-5 flex-wrap">
           <View className="flex flex-row items-center">
-            <Text className="text-white text-xl font-semibold mr-3">
+            <ResponsiveText className="text-white text-xl font-semibold mr-3">
               Activity Feed
             </Text>
             <View className="flex flex-row items-center">
@@ -460,11 +479,11 @@ const ActivityFeed = React.memo(
                 <WifiOff size={12} color="#ef4444" />
               )}
             </View>
-            <Text className="text-slate-400 text-xs ml-2">
+            <ResponsiveText className="text-slate-400 text-xs ml-2">
               {isOnline ? (isAutoRefresh ? "Live" : "Paused") : "Offline"}
             </Text>
             {lastFetchTime && (
-              <Text className="text-slate-500 text-xs ml-3">
+              <ResponsiveText className="text-slate-500 text-xs ml-3">
                 Updated: {lastFetchTime.toLocaleTimeString()}
               </Text>
             )}
@@ -477,14 +496,14 @@ const ActivityFeed = React.memo(
                 className={`px-3 py-2 rounded-lg border bg-blue-500/20 border-blue-500/30 ${isLoading ? "opacity-50" : ""}`}
                 onPress={handleManualRefresh}
                 disabled={isLoading}
-              >
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <View className="flex flex-row items-center">
                   <RefreshCw
                     size={12}
                     color="#3b82f6"
                     className={isLoading ? "animate-spin" : ""}
                   />
-                  <Text className="text-blue-400 text-xs font-semibold ml-1">
+                  <ResponsiveText className="text-blue-400 text-xs font-semibold ml-1">
                     {isLoading ? "Refreshing..." : "Refresh"}
                   </Text>
                 </View>
@@ -493,8 +512,8 @@ const ActivityFeed = React.memo(
               {/* Auto Refresh Toggle */}
               <TouchableOpacity
                 className={`px-3 py-2 rounded-lg border ${isAutoRefresh ? "bg-green-500/20 border-green-500/30" : "bg-white/10 border-white/10"}`}
-                onPress={() => setIsAutoRefresh(!isAutoRefresh)}
-              >
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setIsAutoRefresh(!isAutoRefresh)}
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <Text
                   className={`text-xs font-semibold ${isAutoRefresh ? "text-green-400" : "text-gray-300"}`}
                 >
@@ -503,11 +522,11 @@ const ActivityFeed = React.memo(
               </TouchableOpacity>
 
               {/* Filter Dropdown */}
-              <TouchableOpacity
+              <ResponsiveButton
                 className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 flex flex-row items-center"
-                onPress={() => {}}
+                onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}> {}}
               >
-                <Text className="text-gray-300 text-sm mr-2">{filter}</Text>
+                <ResponsiveText className="text-gray-300 text-sm mr-2">{filter}</Text>
                 <ChevronDown size={16} color="#94a3b8" />
               </TouchableOpacity>
             </View>
@@ -519,16 +538,16 @@ const ActivityFeed = React.memo(
           <View className="bg-red-500/20 border border-red-500/30 rounded-xl p-4 mb-4">
             <View className="flex flex-row items-center justify-between">
               <View className="flex-1">
-                <Text className="text-red-400 font-semibold text-sm mb-1">
+                <ResponsiveText className="text-red-400 font-semibold text-sm mb-1">
                   Connection Error
                 </Text>
-                <Text className="text-red-300 text-xs">{error}</Text>
+                <ResponsiveText className="text-red-300 text-xs">{error}</Text>
               </View>
-              <TouchableOpacity
+              <ResponsiveButton
                 className="bg-red-500/30 rounded-lg px-3 py-2"
                 onPress={handleRetry}
-              >
-                <Text className="text-red-400 text-xs font-bold">Retry</Text>
+               accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
+                <ResponsiveText className="text-red-400 text-xs font-bold">Retry</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -542,10 +561,10 @@ const ActivityFeed = React.memo(
               color="#94a3b8"
               className="animate-spin mb-2"
             />
-            <Text className="text-slate-400 text-sm">
+            <ResponsiveText className="text-slate-400 text-sm">
               Loading activities...
             </Text>
-            <Text className="text-slate-500 text-xs mt-1">
+            <ResponsiveText className="text-slate-500 text-xs mt-1">
               Connecting to real-time feed
             </Text>
           </View>
@@ -555,10 +574,10 @@ const ActivityFeed = React.memo(
         {!isLoading && activities.length === 0 && !error && (
           <View className="items-center justify-center py-8">
             <Bell size={32} color="#64748b" className="mb-3" />
-            <Text className="text-slate-400 text-lg font-semibold mb-2">
+            <ResponsiveText className="text-slate-400 text-lg font-semibold mb-2">
               No Activities Yet
             </Text>
-            <Text className="text-slate-500 text-sm text-center">
+            <ResponsiveText className="text-slate-500 text-sm text-center">
               Activity feed is ready. New activities will appear here
               automatically.
             </Text>
@@ -571,8 +590,8 @@ const ActivityFeed = React.memo(
             <TouchableOpacity
               key={activity.id}
               className={`flex flex-row items-start p-4 rounded-xl border border-white/5 hover:bg-white/5 ${index < displayedActivities.length - 1 ? "mb-3" : ""}`}
-              onPress={() => onActivityClick(activity)}
-            >
+              onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> onActivityClick(activity)}
+             accessibilityRole="button" accessibilityLabel="Interactive button">
               {/* Activity Icon */}
               <View
                 className={`w-11 h-11 rounded-xl items-center justify-center mr-4 ${getActivityIconBg(activity.type)}`}
@@ -583,7 +602,7 @@ const ActivityFeed = React.memo(
               {/* Activity Content */}
               <View className="flex-1">
                 <View className="flex flex-row justify-between items-start mb-2">
-                  <Text className="text-white font-semibold text-sm flex-1">
+                  <ResponsiveText className="text-white font-semibold text-sm flex-1">
                     {activity.title}
                   </Text>
                   <View className="flex flex-row items-center gap-2">
@@ -591,36 +610,36 @@ const ActivityFeed = React.memo(
                     <View
                       className={`px-2 py-1 rounded-md border ${getPriorityColor(activity.priority)}`}
                     >
-                      <Text className="text-xs font-semibold uppercase">
+                      <ResponsiveText className="text-xs font-semibold uppercase">
                         {activity.priority}
                       </Text>
                     </View>
                     {/* Timestamp */}
-                    <Text className="text-slate-500 text-xs">
+                    <ResponsiveText className="text-slate-500 text-xs">
                       {activity.timestamp}
                     </Text>
                   </View>
                 </View>
 
                 {/* Description */}
-                <Text className="text-slate-400 text-sm mb-2">
+                <ResponsiveText className="text-slate-400 text-sm mb-2">
                   {activity.description}
                 </Text>
 
                 {/* Additional Info */}
                 <View className="flex flex-row flex-wrap gap-3">
                   {activity.user_name && (
-                    <Text className="text-slate-500 text-xs">
+                    <ResponsiveText className="text-slate-500 text-xs">
                       👤 {activity.user_name}
                     </Text>
                   )}
                   {activity.location && (
-                    <Text className="text-slate-500 text-xs">
+                    <ResponsiveText className="text-slate-500 text-xs">
                       📍 {activity.location}
                     </Text>
                   )}
                   {activity.amount && (
-                    <Text className="text-green-400 text-xs font-semibold">
+                    <ResponsiveText className="text-green-400 text-xs font-semibold">
                       💰 {activity.amount}
                     </Text>
                   )}
@@ -633,18 +652,18 @@ const ActivityFeed = React.memo(
         {/* Footer */}
         <View className="flex flex-row justify-between items-center mt-5 pt-4 border-t border-white/5">
           <View>
-            <Text className="text-slate-500 text-xs">
+            <ResponsiveText className="text-slate-500 text-xs">
               Showing {displayedActivities.length} of {activities.length}{" "}
               activities
             </Text>
             {!isOnline && (
-              <Text className="text-red-400 text-xs mt-1">
+              <ResponsiveText className="text-red-400 text-xs mt-1">
                 ⚠️ Offline - showing cached data
               </Text>
             )}
           </View>
-          <TouchableOpacity className="bg-white/10 border border-white/10 rounded-lg px-3 py-2">
-            <Text className="text-white text-sm font-medium">View All</Text>
+          <ResponsiveButton className="bg-white/10 border border-white/10 rounded-lg px-3 py-2" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
+            <ResponsiveText className="text-white text-sm font-medium">View All</Text>
           </TouchableOpacity>
         </View>
       </View>

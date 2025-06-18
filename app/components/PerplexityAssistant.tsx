@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import designSystem from "../styles/MobileDesignSystem";
 import {
   View,
   Text,
@@ -8,6 +9,14 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
+import {
+  ResponsiveContainer,
+  ResponsiveGrid,
+  ResponsiveCard,
+  ResponsiveButton,
+  ResponsiveText,
+  ResponsiveMetricCard,
+} from "./responsive/ResponsiveComponents";
 import {
   Search,
   Send,
@@ -320,15 +329,15 @@ URL: http://kojqvma-anonymous-3000.exp.direct/node_modules/expo-router/entry.bun
             <Brain size={24} color="white" />
           </View>
           <View className="flex-1">
-            <Text className="text-white text-2xl font-bold mb-1">
+            <ResponsiveText className="text-white text-2xl font-bold mb-1">
               Perplexity AI Assistant
             </Text>
-            <Text className="text-slate-400">
+            <ResponsiveText className="text-slate-400">
               Get real-time, cited answers for your project
             </Text>
           </View>
           <View className="bg-green-500/20 px-3 py-1 rounded-lg">
-            <Text className="text-green-400 text-xs font-bold">LIVE</Text>
+            <ResponsiveText className="text-green-400 text-xs font-bold">LIVE</Text>
           </View>
         </View>
 
@@ -347,14 +356,14 @@ URL: http://kojqvma-anonymous-3000.exp.direct/node_modules/expo-router/entry.bun
             />
           </View>
           <TouchableOpacity
-            onPress={() => handleQuery()}
+            onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleQuery()}
             disabled={isLoading || !query.trim()}
             className={`w-12 h-12 rounded-xl items-center justify-center ${
               isLoading || !query.trim()
                 ? "bg-slate-600"
                 : "bg-gradient-to-br from-purple-600 to-purple-500"
             }`}
-          >
+           accessibilityRole="button" accessibilityLabel="Interactive button">
             {isLoading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
@@ -370,7 +379,7 @@ URL: http://kojqvma-anonymous-3000.exp.direct/node_modules/expo-router/entry.bun
           <View className="bg-slate-800/80 border border-white/10 rounded-2xl p-6 mb-6">
             <View className="flex-row items-center mb-4">
               <Sparkles size={20} color="#a855f7" />
-              <Text className="text-white text-lg font-semibold ml-2">
+              <ResponsiveText className="text-white text-lg font-semibold ml-2">
                 Common Error Fixes
               </Text>
             </View>
@@ -378,10 +387,10 @@ URL: http://kojqvma-anonymous-3000.exp.direct/node_modules/expo-router/entry.bun
               {suggestedQueries.map((suggestion, index) => (
                 <TouchableOpacity
                   key={index}
-                  onPress={() => handleQuery(suggestion)}
+                  onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleQuery(suggestion)}
                   className="bg-white/5 border border-white/10 rounded-lg p-3 flex-row items-center"
-                >
-                  <Text className="text-slate-300 flex-1">{suggestion}</Text>
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
+                  <ResponsiveText className="text-slate-300 flex-1">{suggestion}</Text>
                   <Send size={16} color="#a855f7" />
                 </TouchableOpacity>
               ))}
@@ -394,7 +403,7 @@ URL: http://kojqvma-anonymous-3000.exp.direct/node_modules/expo-router/entry.bun
           <View className="bg-slate-800/80 border border-white/10 rounded-2xl p-6 mb-6">
             <View className="flex-row items-center mb-4">
               <RefreshCw size={20} color="#64748b" />
-              <Text className="text-white text-lg font-semibold ml-2">
+              <ResponsiveText className="text-white text-lg font-semibold ml-2">
                 Recent Queries
               </Text>
             </View>
@@ -402,10 +411,10 @@ URL: http://kojqvma-anonymous-3000.exp.direct/node_modules/expo-router/entry.bun
               {queryHistory.map((historyQuery, index) => (
                 <TouchableOpacity
                   key={index}
-                  onPress={() => handleQuery(historyQuery)}
+                  onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleQuery(historyQuery)}
                   className="bg-white/5 rounded-lg p-3"
-                >
-                  <Text className="text-slate-400 text-sm">{historyQuery}</Text>
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
+                  <ResponsiveText className="text-slate-400 text-sm">{historyQuery}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -418,18 +427,18 @@ URL: http://kojqvma-anonymous-3000.exp.direct/node_modules/expo-router/entry.bun
             {/* Answer */}
             <View className="mb-6">
               <View className="flex-row items-center justify-between mb-4">
-                <Text className="text-white text-lg font-semibold">
+                <ResponsiveText className="text-white text-lg font-semibold">
                   AI Answer
                 </Text>
                 <TouchableOpacity
-                  onPress={() => copyToClipboard(response.answer)}
+                  onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> copyToClipboard(response.answer)}
                   className="bg-white/10 border border-white/10 rounded-lg p-2"
-                >
+                 accessibilityRole="button" accessibilityLabel="Interactive button">
                   <Copy size={16} color="#94a3b8" />
                 </TouchableOpacity>
               </View>
               <View className="bg-white/5 rounded-xl p-4">
-                <Text className="text-slate-200 leading-6">
+                <ResponsiveText className="text-slate-200 leading-6">
                   {response.answer}
                 </Text>
               </View>
@@ -438,21 +447,21 @@ URL: http://kojqvma-anonymous-3000.exp.direct/node_modules/expo-router/entry.bun
             {/* Citations */}
             {response.citations && response.citations.length > 0 && (
               <View className="mb-6">
-                <Text className="text-white text-lg font-semibold mb-4">
+                <ResponsiveText className="text-white text-lg font-semibold mb-4">
                   Sources & Citations
                 </Text>
                 <View className="gap-3">
                   {response.citations.map((citation, index) => (
                     <TouchableOpacity
                       key={index}
-                      onPress={() => openUrl(citation.url)}
+                      onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> openUrl(citation.url)}
                       className="bg-white/5 border border-white/10 rounded-lg p-4 flex-row items-center"
-                    >
+                     accessibilityRole="button" accessibilityLabel="Interactive button">
                       <View className="flex-1">
-                        <Text className="text-slate-200 font-medium mb-1">
+                        <ResponsiveText className="text-slate-200 font-medium mb-1">
                           {citation.title}
                         </Text>
-                        <Text className="text-slate-400 text-sm">
+                        <ResponsiveText className="text-slate-400 text-sm">
                           {citation.url}
                         </Text>
                       </View>
@@ -467,17 +476,17 @@ URL: http://kojqvma-anonymous-3000.exp.direct/node_modules/expo-router/entry.bun
             {response.relatedQuestions &&
               response.relatedQuestions.length > 0 && (
                 <View className="mb-6">
-                  <Text className="text-white text-lg font-semibold mb-4">
+                  <ResponsiveText className="text-white text-lg font-semibold mb-4">
                     Related Questions
                   </Text>
                   <View className="gap-2">
                     {response.relatedQuestions.map((question, index) => (
                       <TouchableOpacity
                         key={index}
-                        onPress={() => handleQuery(question)}
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleQuery(question)}
                         className="bg-white/5 border border-white/10 rounded-lg p-3 flex-row items-center"
-                      >
-                        <Text className="text-slate-300 flex-1">
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
+                        <ResponsiveText className="text-slate-300 flex-1">
                           {question}
                         </Text>
                         <Search size={16} color="#a855f7" />
@@ -490,15 +499,15 @@ URL: http://kojqvma-anonymous-3000.exp.direct/node_modules/expo-router/entry.bun
             {/* Usage Stats */}
             {response.usage && (
               <View className="bg-white/5 rounded-xl p-4">
-                <Text className="text-slate-400 text-sm mb-2">Usage Stats</Text>
+                <ResponsiveText className="text-slate-400 text-sm mb-2">Usage Stats</Text>
                 <View className="flex-row justify-between">
-                  <Text className="text-slate-500 text-xs">
+                  <ResponsiveText className="text-slate-500 text-xs">
                     Tokens: {response.usage.total_tokens}
                   </Text>
-                  <Text className="text-slate-500 text-xs">
+                  <ResponsiveText className="text-slate-500 text-xs">
                     Prompt: {response.usage.prompt_tokens}
                   </Text>
-                  <Text className="text-slate-500 text-xs">
+                  <ResponsiveText className="text-slate-500 text-xs">
                     Response: {response.usage.completion_tokens}
                   </Text>
                 </View>

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
+import designSystem from "../styles/MobileDesignSystem";
 import {
   View,
   Text,
@@ -594,14 +595,14 @@ function AdminDashboardContent({
 
         {/* Mobile Overlay */}
         {isMobile && sidebarOpen && (
-          <TouchableOpacity
+          <ResponsiveButton
             className="absolute inset-0 bg-black/50 z-40"
-            onPress={() => setSidebarOpen(false)}
+            onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}> setSidebarOpen(false)}
           />
         )}
 
         {/* Main Content */}
-        <View className="flex-1 bg-slate-900">
+        <ResponsiveContainer className="flex-1 bg-slate-900">
           {/* Unified Header */}
           <AdminHeader
             sidebarOpen={sidebarOpen}
@@ -651,10 +652,10 @@ function AdminDashboardContent({
                         </Text>
                       </View>
                     </View>
-                    <Text className="text-white text-2xl font-bold mb-1">
+                    <ResponsiveText className="text-white text-2xl font-bold mb-1">
                       {stat.value}
                     </Text>
-                    <Text className="text-slate-400 text-sm">{stat.title}</Text>
+                    <ResponsiveText className="text-slate-400 text-sm">{stat.title}</Text>
                   </View>
                 ))}
               </View>
@@ -664,17 +665,17 @@ function AdminDashboardContent({
                 <View className="flex-row justify-between items-center mb-6">
                   <View className="flex-row items-center">
                     <BarChart3 size={24} color="#3b82f6" />
-                    <Text className="text-white text-xl font-bold ml-3">
+                    <ResponsiveText className="text-white text-xl font-bold ml-3">
                       Analytics Dashboard
                     </Text>
                   </View>
 
                   <TouchableOpacity
-                    onPress={() => setShowTimeRangeModal(true)}
+                    onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowTimeRangeModal(true)}
                     className="flex-row items-center bg-white/10 border border-white/10 rounded-xl px-4 py-2"
-                  >
+                   accessibilityRole="button" accessibilityLabel="Interactive button">
                     <Calendar size={16} color="#94a3b8" />
-                    <Text className="text-slate-300 text-sm ml-2">
+                    <ResponsiveText className="text-slate-300 text-sm ml-2">
                       {
                         timeRangeOptions.find(
                           (opt) => opt.value === analyticsTimeRange,
@@ -691,7 +692,7 @@ function AdminDashboardContent({
                   <View className="flex-row gap-6">
                     {/* Request Volume Chart */}
                     <View className="flex-1 bg-slate-900/50 rounded-xl p-4">
-                      <Text className="text-white text-lg font-semibold mb-4">
+                      <ResponsiveText className="text-white text-lg font-semibold mb-4">
                         Request Volume
                       </Text>
                       {chartKitAvailable && LineChart ? (
@@ -722,7 +723,7 @@ function AdminDashboardContent({
                         />
                       ) : (
                         <View className="h-56 bg-slate-700/50 rounded-xl items-center justify-center">
-                          <Text className="text-slate-400">
+                          <ResponsiveText className="text-slate-400">
                             {chartKitAvailable
                               ? "Chart loading..."
                               : "Charts not available"}
@@ -733,7 +734,7 @@ function AdminDashboardContent({
 
                     {/* Response Time Chart */}
                     <View className="flex-1 bg-slate-900/50 rounded-xl p-4">
-                      <Text className="text-white text-lg font-semibold mb-4">
+                      <ResponsiveText className="text-white text-lg font-semibold mb-4">
                         Avg Response Time (min)
                       </Text>
                       {chartKitAvailable && LineChart ? (
@@ -773,7 +774,7 @@ function AdminDashboardContent({
                         />
                       ) : (
                         <View className="h-56 bg-slate-700/50 rounded-xl items-center justify-center">
-                          <Text className="text-slate-400">
+                          <ResponsiveText className="text-slate-400">
                             {chartKitAvailable
                               ? "Chart loading..."
                               : "Charts not available"}
@@ -787,7 +788,7 @@ function AdminDashboardContent({
                   <View className="flex-row gap-6">
                     {/* User Growth Bar Chart */}
                     <View className="flex-1 bg-slate-900/50 rounded-xl p-4">
-                      <Text className="text-white text-lg font-semibold mb-4">
+                      <ResponsiveText className="text-white text-lg font-semibold mb-4">
                         New User Registrations
                       </Text>
                       {chartKitAvailable && BarChart ? (
@@ -818,7 +819,7 @@ function AdminDashboardContent({
                         />
                       ) : (
                         <View className="h-56 bg-slate-700/50 rounded-xl items-center justify-center">
-                          <Text className="text-slate-400">
+                          <ResponsiveText className="text-slate-400">
                             {chartKitAvailable
                               ? "Chart loading..."
                               : "Charts not available"}
@@ -829,7 +830,7 @@ function AdminDashboardContent({
 
                     {/* Service Type Distribution */}
                     <View className="flex-1 bg-slate-900/50 rounded-xl p-4">
-                      <Text className="text-white text-lg font-semibold mb-4">
+                      <ResponsiveText className="text-white text-lg font-semibold mb-4">
                         Service Type Distribution
                       </Text>
                       {chartKitAvailable && PieChart ? (
@@ -854,7 +855,7 @@ function AdminDashboardContent({
                         />
                       ) : (
                         <View className="h-56 bg-slate-700/50 rounded-xl items-center justify-center">
-                          <Text className="text-slate-400">
+                          <ResponsiveText className="text-slate-400">
                             {chartKitAvailable
                               ? "Chart loading..."
                               : "Charts not available"}
@@ -866,7 +867,7 @@ function AdminDashboardContent({
 
                   {/* Revenue Trend */}
                   <View className="bg-slate-900/50 rounded-xl p-4">
-                    <Text className="text-white text-lg font-semibold mb-4">
+                    <ResponsiveText className="text-white text-lg font-semibold mb-4">
                       Revenue Trend ($)
                     </Text>
                     {chartKitAvailable && LineChart ? (
@@ -906,7 +907,7 @@ function AdminDashboardContent({
                       />
                     ) : (
                       <View className="h-56 bg-slate-700/50 rounded-xl items-center justify-center">
-                        <Text className="text-slate-400">
+                        <ResponsiveText className="text-slate-400">
                           {chartKitAvailable
                             ? "Chart loading..."
                             : "Charts not available"}
@@ -955,58 +956,58 @@ function AdminDashboardContent({
               {/* System Status Section */}
               {dashboardSettings.componentVisibility.systemStatus && (
                 <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mt-6">
-                  <Text className="text-white text-xl font-bold mb-6">
+                  <ResponsiveText className="text-white text-xl font-bold mb-6">
                     System Status
                   </Text>
 
                   <View className="flex-row gap-6">
                     {/* Platform Status */}
                     <View className="flex-1">
-                      <Text className="text-slate-400 text-sm font-semibold mb-4">
+                      <ResponsiveText className="text-slate-400 text-sm font-semibold mb-4">
                         Platform Health
                       </Text>
                       <View className="space-y-3">
                         <View className="flex-row items-center justify-between">
                           <View className="flex-row items-center">
                             <View className="w-2 h-2 bg-green-500 rounded-full mr-3" />
-                            <Text className="text-slate-300 text-sm">
+                            <ResponsiveText className="text-slate-300 text-sm">
                               Customer App
                             </Text>
                           </View>
-                          <Text className="text-green-400 text-sm font-semibold">
+                          <ResponsiveText className="text-green-400 text-sm font-semibold">
                             Online
                           </Text>
                         </View>
                         <View className="flex-row items-center justify-between">
                           <View className="flex-row items-center">
                             <View className="w-2 h-2 bg-green-500 rounded-full mr-3" />
-                            <Text className="text-slate-300 text-sm">
+                            <ResponsiveText className="text-slate-300 text-sm">
                               Technician App
                             </Text>
                           </View>
-                          <Text className="text-green-400 text-sm font-semibold">
+                          <ResponsiveText className="text-green-400 text-sm font-semibold">
                             Online
                           </Text>
                         </View>
                         <View className="flex-row items-center justify-between">
                           <View className="flex-row items-center">
                             <View className="w-2 h-2 bg-green-500 rounded-full mr-3" />
-                            <Text className="text-slate-300 text-sm">
+                            <ResponsiveText className="text-slate-300 text-sm">
                               Partner Apps
                             </Text>
                           </View>
-                          <Text className="text-green-400 text-sm font-semibold">
+                          <ResponsiveText className="text-green-400 text-sm font-semibold">
                             Online
                           </Text>
                         </View>
                         <View className="flex-row items-center justify-between">
                           <View className="flex-row items-center">
                             <View className="w-2 h-2 bg-yellow-500 rounded-full mr-3" />
-                            <Text className="text-slate-300 text-sm">
+                            <ResponsiveText className="text-slate-300 text-sm">
                               Payment Gateway
                             </Text>
                           </View>
-                          <Text className="text-yellow-400 text-sm font-semibold">
+                          <ResponsiveText className="text-yellow-400 text-sm font-semibold">
                             Degraded
                           </Text>
                         </View>
@@ -1015,51 +1016,51 @@ function AdminDashboardContent({
 
                     {/* Security Status */}
                     <View className="flex-1">
-                      <Text className="text-slate-400 text-sm font-semibold mb-4">
+                      <ResponsiveText className="text-slate-400 text-sm font-semibold mb-4">
                         Security Monitoring
                       </Text>
                       <View className="space-y-3">
                         <View className="flex-row items-center justify-between">
                           <View className="flex-row items-center">
                             <Shield size={16} color="#22c55e" />
-                            <Text className="text-slate-300 text-sm ml-2">
+                            <ResponsiveText className="text-slate-300 text-sm ml-2">
                               Firewall
                             </Text>
                           </View>
-                          <Text className="text-green-400 text-sm font-semibold">
+                          <ResponsiveText className="text-green-400 text-sm font-semibold">
                             Active
                           </Text>
                         </View>
                         <View className="flex-row items-center justify-between">
                           <View className="flex-row items-center">
                             <MapPin size={16} color="#22c55e" />
-                            <Text className="text-slate-300 text-sm ml-2">
+                            <ResponsiveText className="text-slate-300 text-sm ml-2">
                               GPS Tracking
                             </Text>
                           </View>
-                          <Text className="text-green-400 text-sm font-semibold">
+                          <ResponsiveText className="text-green-400 text-sm font-semibold">
                             347 Active
                           </Text>
                         </View>
                         <View className="flex-row items-center justify-between">
                           <View className="flex-row items-center">
                             <AlertTriangle size={16} color="#ef4444" />
-                            <Text className="text-slate-300 text-sm ml-2">
+                            <ResponsiveText className="text-slate-300 text-sm ml-2">
                               Security Alerts
                             </Text>
                           </View>
-                          <Text className="text-red-400 text-sm font-semibold">
+                          <ResponsiveText className="text-red-400 text-sm font-semibold">
                             2 Active
                           </Text>
                         </View>
                         <View className="flex-row items-center justify-between">
                           <View className="flex-row items-center">
                             <Clock size={16} color="#94a3b8" />
-                            <Text className="text-slate-300 text-sm ml-2">
+                            <ResponsiveText className="text-slate-300 text-sm ml-2">
                               Last Scan
                             </Text>
                           </View>
-                          <Text className="text-slate-400 text-sm">
+                          <ResponsiveText className="text-slate-400 text-sm">
                             2 min ago
                           </Text>
                         </View>
@@ -1068,35 +1069,35 @@ function AdminDashboardContent({
 
                     {/* Performance Metrics */}
                     <View className="flex-1">
-                      <Text className="text-slate-400 text-sm font-semibold mb-4">
+                      <ResponsiveText className="text-slate-400 text-sm font-semibold mb-4">
                         Performance
                       </Text>
                       <View className="space-y-3">
                         <View className="flex-row items-center justify-between">
-                          <Text className="text-slate-300 text-sm">
+                          <ResponsiveText className="text-slate-300 text-sm">
                             Response Time
                           </Text>
-                          <Text className="text-green-400 text-sm font-semibold">
+                          <ResponsiveText className="text-green-400 text-sm font-semibold">
                             1.2s
                           </Text>
                         </View>
                         <View className="flex-row items-center justify-between">
-                          <Text className="text-slate-300 text-sm">Uptime</Text>
-                          <Text className="text-green-400 text-sm font-semibold">
+                          <ResponsiveText className="text-slate-300 text-sm">Uptime</Text>
+                          <ResponsiveText className="text-green-400 text-sm font-semibold">
                             99.9%
                           </Text>
                         </View>
                         <View className="flex-row items-center justify-between">
-                          <Text className="text-slate-300 text-sm">
+                          <ResponsiveText className="text-slate-300 text-sm">
                             CPU Usage
                           </Text>
-                          <Text className="text-yellow-400 text-sm font-semibold">
+                          <ResponsiveText className="text-yellow-400 text-sm font-semibold">
                             67%
                           </Text>
                         </View>
                         <View className="flex-row items-center justify-between">
-                          <Text className="text-slate-300 text-sm">Memory</Text>
-                          <Text className="text-green-400 text-sm font-semibold">
+                          <ResponsiveText className="text-slate-300 text-sm">Memory</Text>
+                          <ResponsiveText className="text-green-400 text-sm font-semibold">
                             45%
                           </Text>
                         </View>
@@ -1109,35 +1110,35 @@ function AdminDashboardContent({
               {/* Quick Actions */}
               {dashboardSettings.componentVisibility.quickActions && (
                 <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6 mt-6">
-                  <Text className="text-white text-xl font-bold mb-6">
+                  <ResponsiveText className="text-white text-xl font-bold mb-6">
                     Quick Actions
                   </Text>
 
                   <View className="flex-row gap-4">
-                    <TouchableOpacity className="flex-1 bg-gradient-to-br from-red-600 to-red-500 rounded-xl p-4 items-center">
+                    <ResponsiveButton className="flex-1 bg-gradient-to-br from-red-600 to-red-500 rounded-xl p-4 items-center" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                       <AlertTriangle size={24} color="white" />
-                      <Text className="text-white font-semibold text-sm mt-2">
+                      <ResponsiveText className="text-white font-semibold text-sm mt-2">
                         Emergency Response
                       </Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity className="flex-1 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl p-4 items-center">
+                    <ResponsiveButton className="flex-1 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl p-4 items-center" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                       <Users size={24} color="white" />
-                      <Text className="text-white font-semibold text-sm mt-2">
+                      <ResponsiveText className="text-white font-semibold text-sm mt-2">
                         User Management
                       </Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity className="flex-1 bg-gradient-to-br from-green-600 to-green-500 rounded-xl p-4 items-center">
+                    <ResponsiveButton className="flex-1 bg-gradient-to-br from-green-600 to-green-500 rounded-xl p-4 items-center" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                       <TrendingUp size={24} color="white" />
-                      <Text className="text-white font-semibold text-sm mt-2">
+                      <ResponsiveText className="text-white font-semibold text-sm mt-2">
                         Analytics
                       </Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity className="flex-1 bg-gradient-to-br from-purple-600 to-purple-500 rounded-xl p-4 items-center">
+                    <ResponsiveButton className="flex-1 bg-gradient-to-br from-purple-600 to-purple-500 rounded-xl p-4 items-center" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
                       <Settings size={24} color="white" />
-                      <Text className="text-white font-semibold text-sm mt-2">
+                      <ResponsiveText className="text-white font-semibold text-sm mt-2">
                         System Settings
                       </Text>
                     </TouchableOpacity>
@@ -1180,13 +1181,13 @@ function AdminDashboardContent({
           ) : activeSection === "dashboard-settings" ? (
             <ScrollView className="flex-1 p-6">
               <View className="bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6">
-                <Text className="text-white text-2xl font-bold mb-6">
+                <ResponsiveText className="text-white text-2xl font-bold mb-6">
                   Dashboard Settings
                 </Text>
 
                 {/* Theme Settings */}
                 <View className="mb-8">
-                  <Text className="text-white text-lg font-semibold mb-4">
+                  <ResponsiveText className="text-white text-lg font-semibold mb-4">
                     Theme Preferences
                   </Text>
                   <View className="flex-row gap-4">
@@ -1196,13 +1197,13 @@ function AdminDashboardContent({
                           ? "bg-blue-500/20 border-blue-500/50"
                           : "bg-white/5 border-white/10"
                       }`}
-                      onPress={() =>
+                      onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                         setDashboardSettings((prev) => ({
                           ...prev,
                           theme: "dark",
                         }))
                       }
-                    >
+                     accessibilityRole="button" accessibilityLabel="Interactive button">
                       <Text
                         className={`text-center font-medium ${
                           dashboardSettings.theme === "dark"
@@ -1219,13 +1220,13 @@ function AdminDashboardContent({
                           ? "bg-blue-500/20 border-blue-500/50"
                           : "bg-white/5 border-white/10"
                       }`}
-                      onPress={() =>
+                      onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                         setDashboardSettings((prev) => ({
                           ...prev,
                           theme: "light",
                         }))
                       }
-                    >
+                     accessibilityRole="button" accessibilityLabel="Interactive button">
                       <Text
                         className={`text-center font-medium ${
                           dashboardSettings.theme === "light"
@@ -1241,7 +1242,7 @@ function AdminDashboardContent({
 
                 {/* Component Visibility */}
                 <View className="mb-8">
-                  <Text className="text-white text-lg font-semibold mb-4">
+                  <ResponsiveText className="text-white text-lg font-semibold mb-4">
                     Component Visibility
                   </Text>
                   <View className="space-y-3">
@@ -1251,7 +1252,7 @@ function AdminDashboardContent({
                           key={key}
                           className="flex-row items-center justify-between p-3 bg-white/5 rounded-xl"
                         >
-                          <Text className="text-slate-300 font-medium">
+                          <ResponsiveText className="text-slate-300 font-medium">
                             {key
                               .replace(/([A-Z])/g, " $1")
                               .replace(/^./, (str) => str.toUpperCase())}
@@ -1260,7 +1261,7 @@ function AdminDashboardContent({
                             className={`w-12 h-6 rounded-full p-1 ${
                               value ? "bg-green-500" : "bg-slate-600"
                             }`}
-                            onPress={() =>
+                            onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                               setDashboardSettings((prev) => ({
                                 ...prev,
                                 componentVisibility: {
@@ -1269,7 +1270,7 @@ function AdminDashboardContent({
                                 },
                               }))
                             }
-                          >
+                           accessibilityRole="button" accessibilityLabel="Interactive button">
                             <View
                               className={`w-4 h-4 bg-white rounded-full transition-transform ${
                                 value ? "translate-x-6" : "translate-x-0"
@@ -1284,7 +1285,7 @@ function AdminDashboardContent({
 
                 {/* Notification Settings */}
                 <View className="mb-8">
-                  <Text className="text-white text-lg font-semibold mb-4">
+                  <ResponsiveText className="text-white text-lg font-semibold mb-4">
                     Notification Settings
                   </Text>
                   <View className="space-y-3">
@@ -1294,7 +1295,7 @@ function AdminDashboardContent({
                           key={key}
                           className="flex-row items-center justify-between p-3 bg-white/5 rounded-xl"
                         >
-                          <Text className="text-slate-300 font-medium">
+                          <ResponsiveText className="text-slate-300 font-medium">
                             {key
                               .replace(/([A-Z])/g, " $1")
                               .replace(/^./, (str) => str.toUpperCase())}
@@ -1303,7 +1304,7 @@ function AdminDashboardContent({
                             className={`w-12 h-6 rounded-full p-1 ${
                               value ? "bg-green-500" : "bg-slate-600"
                             }`}
-                            onPress={() =>
+                            onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                               setDashboardSettings((prev) => ({
                                 ...prev,
                                 notifications: {
@@ -1312,7 +1313,7 @@ function AdminDashboardContent({
                                 },
                               }))
                             }
-                          >
+                           accessibilityRole="button" accessibilityLabel="Interactive button">
                             <View
                               className={`w-4 h-4 bg-white rounded-full transition-transform ${
                                 value ? "translate-x-6" : "translate-x-0"
@@ -1327,12 +1328,12 @@ function AdminDashboardContent({
 
                 {/* Layout Settings */}
                 <View className="mb-8">
-                  <Text className="text-white text-lg font-semibold mb-4">
+                  <ResponsiveText className="text-white text-lg font-semibold mb-4">
                     Layout Settings
                   </Text>
                   <View className="space-y-4">
                     <View className="flex-row items-center justify-between p-3 bg-white/5 rounded-xl">
-                      <Text className="text-slate-300 font-medium">
+                      <ResponsiveText className="text-slate-300 font-medium">
                         Compact Mode
                       </Text>
                       <TouchableOpacity
@@ -1341,7 +1342,7 @@ function AdminDashboardContent({
                             ? "bg-green-500"
                             : "bg-slate-600"
                         }`}
-                        onPress={() =>
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                           setDashboardSettings((prev) => ({
                             ...prev,
                             layout: {
@@ -1350,7 +1351,7 @@ function AdminDashboardContent({
                             },
                           }))
                         }
-                      >
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
                         <View
                           className={`w-4 h-4 bg-white rounded-full transition-transform ${
                             dashboardSettings.layout.compactMode
@@ -1362,7 +1363,7 @@ function AdminDashboardContent({
                     </View>
 
                     <View className="flex-row items-center justify-between p-3 bg-white/5 rounded-xl">
-                      <Text className="text-slate-300 font-medium">
+                      <ResponsiveText className="text-slate-300 font-medium">
                         Auto Refresh
                       </Text>
                       <TouchableOpacity
@@ -1371,7 +1372,7 @@ function AdminDashboardContent({
                             ? "bg-green-500"
                             : "bg-slate-600"
                         }`}
-                        onPress={() =>
+                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                           setDashboardSettings((prev) => ({
                             ...prev,
                             layout: {
@@ -1380,7 +1381,7 @@ function AdminDashboardContent({
                             },
                           }))
                         }
-                      >
+                       accessibilityRole="button" accessibilityLabel="Interactive button">
                         <View
                           className={`w-4 h-4 bg-white rounded-full transition-transform ${
                             dashboardSettings.layout.autoRefresh
@@ -1392,7 +1393,7 @@ function AdminDashboardContent({
                     </View>
 
                     <View className="p-3 bg-white/5 rounded-xl">
-                      <Text className="text-slate-300 font-medium mb-3">
+                      <ResponsiveText className="text-slate-300 font-medium mb-3">
                         Refresh Interval (seconds)
                       </Text>
                       <View className="flex-row gap-2">
@@ -1405,7 +1406,7 @@ function AdminDashboardContent({
                                 ? "bg-blue-500/20 border-blue-500/50"
                                 : "bg-white/5 border-white/10"
                             }`}
-                            onPress={() =>
+                            onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
                               setDashboardSettings((prev) => ({
                                 ...prev,
                                 layout: {
@@ -1414,7 +1415,7 @@ function AdminDashboardContent({
                                 },
                               }))
                             }
-                          >
+                           accessibilityRole="button" accessibilityLabel="Interactive button">
                             <Text
                               className={`text-center text-sm ${
                                 dashboardSettings.layout.refreshInterval ===
@@ -1433,8 +1434,8 @@ function AdminDashboardContent({
                 </View>
 
                 {/* Save Button */}
-                <TouchableOpacity className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl p-4 items-center">
-                  <Text className="text-white font-semibold text-lg">
+                <ResponsiveButton className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl p-4 items-center" accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}>
+                  <ResponsiveText className="text-white font-semibold text-lg">
                     Save Settings
                   </Text>
                 </TouchableOpacity>
@@ -1442,10 +1443,10 @@ function AdminDashboardContent({
             </ScrollView>
           ) : (
             <ScrollView className="flex-1 p-6">
-              <Text className="text-white text-2xl font-bold">
+              <ResponsiveText className="text-white text-2xl font-bold">
                 {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}
               </Text>
-              <Text className="text-slate-400 mt-2">
+              <ResponsiveText className="text-slate-400 mt-2">
                 This section is under development.
               </Text>
             </ScrollView>
@@ -1458,14 +1459,14 @@ function AdminDashboardContent({
         visible={showTimeRangeModal}
         transparent
         animationType="fade"
-        onRequestClose={() => setShowTimeRangeModal(false)}
+        onRequestClose={() = accessibilityViewIsModal={true}> setShowTimeRangeModal(false)}
       >
-        <TouchableOpacity
+        <ResponsiveButton
           className="flex-1 bg-black/50 justify-center items-center"
-          onPress={() => setShowTimeRangeModal(false)}
+          onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}> setShowTimeRangeModal(false)}
         >
           <View className="bg-slate-800 border border-white/10 rounded-2xl p-6 mx-6 min-w-[300px]">
-            <Text className="text-white text-lg font-semibold mb-4">
+            <ResponsiveText className="text-white text-lg font-semibold mb-4">
               Select Time Range
             </Text>
 
@@ -1477,11 +1478,11 @@ function AdminDashboardContent({
                     ? "bg-blue-500/20 border border-blue-500/30"
                     : "bg-white/5"
                 }`}
-                onPress={() => {
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> {
                   setAnalyticsTimeRange(option.value);
                   setShowTimeRangeModal(false);
                 }}
-              >
+               accessibilityRole="button" accessibilityLabel="Interactive button">
                 <Text
                   className={`text-sm font-medium ${
                     analyticsTimeRange === option.value
@@ -1497,11 +1498,11 @@ function AdminDashboardContent({
               </TouchableOpacity>
             ))}
 
-            <TouchableOpacity
+            <ResponsiveButton
               className="bg-slate-700 rounded-xl p-3 mt-4 items-center"
-              onPress={() => setShowTimeRangeModal(false)}
+              onPress={() = accessibilityRole="button" style={{ minHeight: designSystem.spacing.touchTarget.min }}> setShowTimeRangeModal(false)}
             >
-              <Text className="text-slate-300 font-medium">Cancel</Text>
+              <ResponsiveText className="text-slate-300 font-medium">Cancel</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -1512,63 +1513,63 @@ function AdminDashboardContent({
         visible={showCorsModal}
         transparent
         animationType="fade"
-        onRequestClose={() => setShowCorsModal(false)}
+        onRequestClose={() = accessibilityViewIsModal={true}> setShowCorsModal(false)}
       >
         <View className="flex-1 bg-black/50 justify-center items-center px-6">
           <View className="bg-slate-800 border border-red-500/50 rounded-2xl p-6 max-w-md w-full">
             <View className="flex-row items-center mb-4">
               <AlertTriangle size={24} color="#ef4444" />
-              <Text className="text-white text-xl font-bold ml-3">
+              <ResponsiveText className="text-white text-xl font-bold ml-3">
                 Connection Issue
               </Text>
             </View>
 
-            <Text className="text-slate-300 mb-4 leading-relaxed">
+            <ResponsiveText className="text-slate-300 mb-4 leading-relaxed">
               We detected a CORS (Cross-Origin Resource Sharing) error. This is
               likely caused by a browser extension interfering with requests.
             </Text>
 
             <View className="bg-slate-900/50 rounded-xl p-4 mb-6">
-              <Text className="text-red-400 font-semibold mb-2">
+              <ResponsiveText className="text-red-400 font-semibold mb-2">
                 Quick Fixes:
               </Text>
-              <Text className="text-slate-300 text-sm mb-2">
+              <ResponsiveText className="text-slate-300 text-sm mb-2">
                 • Disable browser extensions temporarily
               </Text>
-              <Text className="text-slate-300 text-sm mb-2">
+              <ResponsiveText className="text-slate-300 text-sm mb-2">
                 • Try using incognito/private browsing mode
               </Text>
-              <Text className="text-slate-300 text-sm mb-2">
+              <ResponsiveText className="text-slate-300 text-sm mb-2">
                 • Clear browser cache and cookies
               </Text>
-              <Text className="text-slate-300 text-sm">
+              <ResponsiveText className="text-slate-300 text-sm">
                 • Hard refresh the page (Ctrl+F5)
               </Text>
             </View>
 
             <View className="flex-row gap-3">
               <TouchableOpacity
-                onPress={() => {
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> {
                   setShowCorsModal(false);
                   setCorsError(false);
                 }}
                 className="flex-1 bg-slate-700 rounded-xl py-3 items-center"
-              >
-                <Text className="text-slate-300 font-medium">Dismiss</Text>
+               accessibilityRole="button" accessibilityLabel="Interactive button">
+                <ResponsiveText className="text-slate-300 font-medium">Dismiss</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={() => {
+                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> {
                   window.location.reload();
                 }}
                 className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl py-3 items-center"
-              >
-                <Text className="text-white font-bold">Reload Page</Text>
+               accessibilityRole="button" accessibilityLabel="Interactive button">
+                <ResponsiveText className="text-white font-bold">Reload Page</Text>
               </TouchableOpacity>
             </View>
 
             <TouchableOpacity
-              onPress={() => {
+              onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> {
                 const incognitoUrl = window.location.href;
                 navigator.clipboard.writeText(incognitoUrl).then(() => {
                   alert(
@@ -1577,8 +1578,8 @@ function AdminDashboardContent({
                 });
               }}
               className="mt-3 bg-white/10 border border-white/10 rounded-xl py-2 items-center"
-            >
-              <Text className="text-slate-300 text-sm">
+             accessibilityRole="button" accessibilityLabel="Interactive button">
+              <ResponsiveText className="text-slate-300 text-sm">
                 Copy URL for Incognito Mode
               </Text>
             </TouchableOpacity>
