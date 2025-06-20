@@ -11,6 +11,7 @@ import LiveServiceMap from "./components/LiveServiceMap";
 import SystemAlertsView from "./components/SystemAlertsView";
 import PerplexityAssistant from "./components/PerplexityAssistant";
 import { AuthGuard } from "./components/Auth";
+import MobileHeader from "./components/MobileHeader";
 
 // Error boundary component
 class ErrorBoundary extends React.Component {
@@ -511,42 +512,26 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <SafeAreaView
-        className="flex-1 bg-slate-900"
-        testID="roadside-app-container"
-      >
-        {/* Panel Navigation */}
-        <View className="bg-slate-800 border-b border-white/10 p-4">
-          <Text className="text-white text-lg font-bold mb-4">
-            RoadSide+ Dashboard Panels
-          </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View className="flex-row gap-2">
-              {panels.map((panel) => (
-                <TouchableOpacity
-                  key={panel.id}
-                  onPress={() => handlePanelChange(panel.id as PanelType)}
-                  className={`px-4 py-2 rounded-lg flex-row items-center ${
-                    activePanel === panel.id ? "bg-red-600" : "bg-slate-700"
-                  }`}
-                >
-                  <Text className="text-lg mr-2">{panel.icon}</Text>
-                  <Text
-                    className={`text-sm font-medium ${
-                      activePanel === panel.id ? "text-white" : "text-slate-300"
-                    }`}
-                  >
-                    {panel.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+      <View className="flex-1 bg-slate-900" testID="roadside-app-container">
+        {/* Mobile-First Header with Hamburger Menu */}
+        <MobileHeader
+          menuItems={panels}
+          activeItem={activePanel}
+          onItemSelect={handlePanelChange}
+          brandName="RoadSide+"
+        />
+
+        {/* Active Panel Content */}
+        <View className="flex-1">
+          <ScrollView
+            className="flex-1"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1 }}
+          >
+            {renderPanel}
           </ScrollView>
         </View>
-
-        {/* Active Panel */}
-        <View className="flex-1">{renderPanel}</View>
-      </SafeAreaView>
+      </View>
     </ErrorBoundary>
   );
 }

@@ -624,11 +624,11 @@ function AdminDashboardContent({
           {activeSection === "dashboard" ? (
             <ScrollView className="flex-1 p-6">
               {/* Stats Cards */}
-              <View className="flex-row flex-wrap gap-4 mb-6">
+              <View className={`${isMobile ? 'gap-4 mb-6' : 'flex-row flex-wrap gap-4 mb-6'}`}>
                 {dashboardStats.map((stat, index) => (
                   <View
                     key={index}
-                    className="flex-1 min-w-[250px] bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6"
+                    className={`${isMobile ? 'w-full' : 'flex-1 min-w-[250px]'} bg-slate-800/80 backdrop-blur-lg border border-white/10 rounded-2xl p-6`}
                   >
                     <View className="flex-row justify-between items-start mb-4">
                       <View
@@ -692,9 +692,9 @@ function AdminDashboardContent({
                 {/* Charts Grid */}
                 <View className="gap-6">
                   {/* Top Row - Line Charts */}
-                  <View className="flex-row gap-6">
+                  <View className={`${isMobile ? 'gap-6' : 'flex-row gap-6'}`}>
                     {/* Request Volume Chart */}
-                    <View className="flex-1 bg-slate-900/50 rounded-xl p-4">
+                    <View className={`${isMobile ? 'w-full' : 'flex-1'} bg-slate-900/50 rounded-xl p-4`}>
                       <ResponsiveText className="text-white text-lg font-semibold mb-4">
                         Request Volume
                       </ResponsiveText>
@@ -736,7 +736,7 @@ function AdminDashboardContent({
                     </View>
 
                     {/* Response Time Chart */}
-                    <View className="flex-1 bg-slate-900/50 rounded-xl p-4">
+                    <View className={`${isMobile ? 'w-full' : 'flex-1'} bg-slate-900/50 rounded-xl p-4`}>
                       <ResponsiveText className="text-white text-lg font-semibold mb-4">
                         Avg Response Time (min)
                       </ResponsiveText>
@@ -788,9 +788,9 @@ function AdminDashboardContent({
                   </View>
 
                   {/* Bottom Row - Bar Chart and Pie Chart */}
-                  <View className="flex-row gap-6">
+                  <View className={`${isMobile ? 'gap-6' : 'flex-row gap-6'}`}>
                     {/* User Growth Bar Chart */}
-                    <View className="flex-1 bg-slate-900/50 rounded-xl p-4">
+                    <View className={`${isMobile ? 'w-full' : 'flex-1'} bg-slate-900/50 rounded-xl p-4`}>
                       <ResponsiveText className="text-white text-lg font-semibold mb-4">
                         New User Registrations
                       </ResponsiveText>
@@ -832,7 +832,7 @@ function AdminDashboardContent({
                     </View>
 
                     {/* Service Type Distribution */}
-                    <View className="flex-1 bg-slate-900/50 rounded-xl p-4">
+                    <View className={`${isMobile ? 'w-full' : 'flex-1'} bg-slate-900/50 rounded-xl p-4`}>
                       <ResponsiveText className="text-white text-lg font-semibold mb-4">
                         Service Type Distribution
                       </ResponsiveText>
@@ -923,9 +923,9 @@ function AdminDashboardContent({
 
               {/* Main Dashboard Grid */}
               {dashboardSettings.componentVisibility.emergencyRequests && (
-                <View className="flex-row gap-6">
+                <View className={`${isMobile ? 'gap-6' : 'flex-row gap-6'}`}>
                   {/* Left Column - Emergency Requests */}
-                  <View className="flex-1">
+                  <View className={`${isMobile ? 'w-full' : 'flex-1'}`}>
                     <EmergencyRequestsTable
                       selectedMarkerId={selectedMarkerId}
                       onExportData={(format) =>
@@ -936,7 +936,7 @@ function AdminDashboardContent({
 
                   {/* Right Column - Activity Feed */}
                   {dashboardSettings.componentVisibility.activityFeed && (
-                    <View className="w-96">
+                    <View className={`${isMobile ? 'w-full mt-6' : 'w-96'}`}>
                       <ActivityFeed maxItems={8} showFilters={true} />
                     </View>
                   )}
@@ -963,9 +963,9 @@ function AdminDashboardContent({
                     System Status
                   </ResponsiveText>
 
-                  <View className="flex-row gap-6">
+                  <View className={`${isMobile ? 'gap-6' : 'flex-row gap-6'}`}>
                     {/* Platform Status */}
-                    <View className="flex-1">
+                    <View className={`${isMobile ? 'w-full' : 'flex-1'}`}>
                       <ResponsiveText className="text-slate-400 text-sm font-semibold mb-4">
                         Platform Health
                       </ResponsiveText>
@@ -1018,7 +1018,7 @@ function AdminDashboardContent({
                     </View>
 
                     {/* Security Status */}
-                    <View className="flex-1">
+                    <View className={`${isMobile ? 'w-full' : 'flex-1'}`}>
                       <ResponsiveText className="text-slate-400 text-sm font-semibold mb-4">
                         Security Monitoring
                       </ResponsiveText>
@@ -1071,7 +1071,7 @@ function AdminDashboardContent({
                     </View>
 
                     {/* Performance Metrics */}
-                    <View className="flex-1">
+                    <View className={`${isMobile ? 'w-full' : 'flex-1'}`}>
                       <ResponsiveText className="text-slate-400 text-sm font-semibold mb-4">
                         Performance
                       </Text>
