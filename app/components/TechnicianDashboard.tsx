@@ -538,7 +538,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                   onPress={handleNavigateToCustomer}
                   className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500"
                   disabled={operationLoading}
-                  icon={<Navigation size={16} color="white" / style={{ minHeight: designSystem.spacing.touchTarget.min }}>}
+                  icon={<Navigation size={16} color="white" />}
                   iconPosition="left"
                 >
                   Navigate
@@ -549,7 +549,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                   onPress={handleContactCustomer}
                   className="flex-1 bg-white/10 border border-white/10"
                   disabled={operationLoading}
-                  icon={<Phone size={16} color="white" / style={{ minHeight: designSystem.spacing.touchTarget.min }}>}
+                  icon={<Phone size={16} color="white" />}
                   iconPosition="left"
                 >
                   Call
@@ -670,6 +670,345 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
 
   // Jobs View
   const renderJobsView = useCallback(() => {
+    const [activeTab, setActiveTab] = useState<'available' | 'active' | 'history'>('available');
+    const [selectedJob, setSelectedJob] = useState<PendingJob | null>(null);
+    const [showJobDetails, setShowJobDetails] = useState(false);
+
+    // Mock job data
+    const jobsData = {
+      available: pendingJobs,
+      active: [
+        {
+          id: "RSJ-78952",
+          type: "Battery Jump Start",
+          time: "In Progress",
+          location: "123 Main Street, Georgetown",
+          customer: "Sarah Mitchell (Premium Member)",
+          icon: "🔋",
+          priority: "emergency" as const,
+          estimatedEarnings: { min: 95, max: 130 },
+          distance: "2.3 km",
+          eta: "Arrived",
+          duration: "25 min",
+          customerPhone: "+592-123-4567",
+          coordinates: { lat: 6.8013, lng: -58.1551 },
+          status: "in_progress",
+          startTime: "2:15 PM",
+          estimatedCompletion: "2:45 PM"
+        }
+      ],
+      history: [
+        {
+          id: "RSJ-78951",
+          type: "Tire Change",
+          time: "Completed 2h ago",
+          location: "Highway 101, Mile 23",
+          customer: "John Davis (Standard Member)",
+          icon: "🛞",
+          priority: "medium" as const,
+          estimatedEarnings: { min: 85, max: 120 },
+          distance: "2.3 km",
+          eta: "Completed",
+          duration: "45 min",
+          customerPhone: "+592-123-4567",
+          coordinates: { lat: 6.8013, lng: -58.1551 },
+          status: "completed",
+          completedAt: "12:30 PM",
+          customerRating: 5,
+          earnings: 120
+        },
+        {
+          id: "RSJ-78950",
+          type: "Lockout Service",
+          time: "Completed 5h ago",
+          location: "Office Building, Camp Street",
+          customer: "Alex Thompson (Standard Member)",
+          icon: "🔐",
+          priority: "low" as const,
+          estimatedEarnings: { min: 60, max: 90 },
+          distance: "1.8 km",
+          eta: "Completed",
+          duration: "20 min",
+          customerPhone: "+592-555-0123",
+          coordinates: { lat: 6.8077, lng: -58.1578 },
+          status: "completed",
+          completedAt: "9:45 AM",
+          customerRating: 4,
+          earnings: 75
+        }
+      ]
+    };
+
+    const handleJobAction = async (job: PendingJob, action: 'accept' | 'decline' | 'navigate' | 'contact' | 'complete') => {
+      try {
+        setOperationLoading(true);
+
+        switch (action) {
+          case 'accept':
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            setPendingJobs(prev => prev.filter(j => j.id !== job.id));
+            Alert.alert("Job Accepted", `You have accepted the ${job.type} job. Navigate to customer location to begin service.`);
+            break;
+
+          case 'decline':
+            Alert.alert(
+              "Decline Job",
+              `Are you sure you want to decline this ${job.type} job?`,
+              [
+                { text: "Cancel", style: "cancel" },
+                {
+                  text: "Decline",
+                  style: "destructive",
+                  onPress: async () => {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    setPendingJobs(prev => prev.filter(j => j.id !== job.id));
+                    Alert.alert("Job Declined", "The job has been declined and returned to the available pool.");
+                  }
+                }
+              ]
+            );
+            break;
+
+          case 'navigate':
+            const destination = job.location;
+            const url = Platform.select({
+              ios: `maps:0,0?q=${encodeURIComponent(destination)}`,
+              android: `geo:0,0?q=${encodeURIComponent(destination)}`,
+              default: `https://maps.google.com/?q=${encodeURIComponent(destination)}`,
+            });
+
+            const canOpen = await Linking.canOpenURL(url!);
+            if (canOpen) {
+              await Linking.openURL(url!);
+            } else {
+              Alert.alert("Error", "Unable to open navigation app");
+            }
+            break;
+
+          case 'contact':
+            const phoneNumber = job.customerPhone || "+592-123-4567";
+            Alert.alert(
+              "Contact Customer",
+              `Call ${job.customer.split(' ')[0]} at ${phoneNumber}?`,
+              [
+                { text: "Cancel", style: "cancel" },
+                {
+                  text: "Call",
+                  onPress: async () => {
+                    const phoneUrl = `tel:${phoneNumber}`;
+                    const canCall = await Linking.canOpenURL(phoneUrl);
+                    if (canCall) {
+                      await Linking.openURL(phoneUrl);
+                    } else {
+                      Alert.alert("Error", "Unable to make phone calls on this device");
+                    }
+                  }
+                }
+              ]
+            );
+            break;
+
+          case 'complete':
+            Alert.alert(
+              "Complete Job",
+              `Mark ${job.type} job as completed?`,
+              [
+                { text: "Cancel", style: "cancel" },
+                {
+                  text: "Complete",
+                  onPress: async () => {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    Alert.alert("Job Completed", "Job has been marked as completed. Payment processing initiated.");
+                  }
+                }
+              ]
+            );
+            break;
+        }
+      } catch (error) {
+        console.error(`Job ${action} error:`, error);
+        Alert.alert("Error", `Failed to ${action} job. Please try again.`);
+      } finally {
+        setOperationLoading(false);
+      }
+    };
+
+    const renderJobCard = (job: any, showActions: boolean = true) => {
+      const priorityColors = {
+        emergency: 'border-red-500/50 bg-red-500/10',
+        high: 'border-orange-500/50 bg-orange-500/10',
+        medium: 'border-yellow-500/50 bg-yellow-500/10',
+        low: 'border-blue-500/50 bg-blue-500/10'
+      };
+
+      const priorityTextColors = {
+        emergency: 'text-red-400',
+        high: 'text-orange-400',
+        medium: 'text-yellow-400',
+        low: 'text-blue-400'
+      };
+
+      return (
+        <ResponsiveCard
+          key={job.id}
+          variant="default"
+          className={`mb-4 border ${priorityColors[job.priority]}`}
+        >
+          <View className="flex-row justify-between items-start mb-4">
+            <View className="flex-1">
+              <ResponsiveText variant="h4" className="mb-1">
+                {job.type}
+              </ResponsiveText>
+              <ResponsiveText variant="caption" color="secondary">
+                Job #{job.id}
+              </ResponsiveText>
+            </View>
+            <View className="items-end">
+              <View className={`px-3 py-1 rounded-lg border ${priorityColors[job.priority]}`}>
+                <ResponsiveText
+                  variant="caption"
+                  className={`font-bold uppercase ${priorityTextColors[job.priority]}`}
+                >
+                  {job.priority}
+                </ResponsiveText>
+              </View>
+              {job.status && (
+                <ResponsiveText variant="caption" color="secondary" className="mt-1">
+                  {job.status.replace('_', ' ').toUpperCase()}
+                </ResponsiveText>
+              )}
+            </View>
+          </View>
+
+          {/* Customer Info */}
+          <View className="bg-white/5 rounded-xl p-3 mb-4">
+            <ResponsiveText variant="body" className="font-semibold mb-1">
+              {job.customer}
+            </ResponsiveText>
+            <ResponsiveText variant="caption" color="secondary">
+              📍 {job.location}
+            </ResponsiveText>
+            {job.distance && (
+              <ResponsiveText variant="caption" color="secondary">
+                📏 {job.distance} • ⏱️ {job.eta}
+              </ResponsiveText>
+            )}
+          </View>
+
+          {/* Earnings Info */}
+          <View className="flex-row justify-between items-center mb-4">
+            <View>
+              <ResponsiveText variant="caption" color="secondary">
+                Estimated Earnings
+              </ResponsiveText>
+              <ResponsiveText variant="body" className="text-green-400 font-semibold">
+                ${job.estimatedEarnings.min} - ${job.estimatedEarnings.max}
+              </ResponsiveText>
+            </View>
+            {job.earnings && (
+              <View>
+                <ResponsiveText variant="caption" color="secondary">
+                  Actual Earnings
+                </ResponsiveText>
+                <ResponsiveText variant="body" className="text-green-400 font-semibold">
+                  ${job.earnings}
+                </ResponsiveText>
+              </View>
+            )}
+            {job.customerRating && (
+              <View>
+                <ResponsiveText variant="caption" color="secondary">
+                  Customer Rating
+                </ResponsiveText>
+                <ResponsiveText variant="body" className="text-yellow-400 font-semibold">
+                  {'⭐'.repeat(job.customerRating)} ({job.customerRating}/5)
+                </ResponsiveText>
+              </View>
+            )}
+          </View>
+
+          {/* Action Buttons */}
+          {showActions && (
+            <View className="space-y-2">
+              {activeTab === 'available' && (
+                <View className="flex-row gap-2">
+                  <ResponsiveButton
+                    variant="success"
+                    size="md"
+                    onPress={() => handleJobAction(job, 'accept')}
+                    className="flex-1"
+                    disabled={operationLoading}
+                    icon={<CheckCircle size={16} color="white" />}
+                  >
+                    Accept
+                  </ResponsiveButton>
+                  <ResponsiveButton
+                    variant="danger"
+                    size="md"
+                    onPress={() => handleJobAction(job, 'decline')}
+                    className="flex-1"
+                    disabled={operationLoading}
+                  >
+                    Decline
+                  </ResponsiveButton>
+                </View>
+              )}
+
+              {activeTab === 'active' && (
+                <View className="space-y-2">
+                  <View className="flex-row gap-2">
+                    <ResponsiveButton
+                      variant="primary"
+                      size="md"
+                      onPress={() => handleJobAction(job, 'navigate')}
+                      className="flex-1"
+                      disabled={operationLoading}
+                      icon={<Navigation size={16} color="white" />}
+                    >
+                      Navigate
+                    </ResponsiveButton>
+                    <ResponsiveButton
+                      variant="ghost"
+                      size="md"
+                      onPress={() => handleJobAction(job, 'contact')}
+                      className="flex-1 bg-white/10"
+                      disabled={operationLoading}
+                      icon={<Phone size={16} color="white" />}
+                    >
+                      Call
+                    </ResponsiveButton>
+                  </View>
+                  <ResponsiveButton
+                    variant="success"
+                    size="md"
+                    onPress={() => handleJobAction(job, 'complete')}
+                    fullWidth
+                    disabled={operationLoading}
+                    icon={<CheckCircle size={16} color="white" />}
+                  >
+                    Mark Complete
+                  </ResponsiveButton>
+                </View>
+              )}
+
+              <ResponsiveButton
+                variant="ghost"
+                size="sm"
+                onPress={() => {
+                  setSelectedJob(job);
+                  setShowJobDetails(true);
+                }}
+                fullWidth
+                className="bg-white/5"
+              >
+                View Details
+              </ResponsiveButton>
+            </View>
+          )}
+        </ResponsiveCard>
+      );
+    };
+
     return (
       <ScrollView
         className="flex-1 bg-slate-900/30"
@@ -679,19 +1018,337 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
         }}
       >
         <ResponsiveContainer>
-          <ResponsiveText variant="h2" className="py-6">
-            Available Jobs
-          </ResponsiveText>
-          <ResponsiveText variant="body" color="secondary" className="mb-6">
-            Jobs view coming soon with mobile-first responsive design.
-          </ResponsiveText>
+          {/* Header */}
+          <View className="flex-row justify-between items-center py-6">
+            <ResponsiveText variant="h2">
+              Job Management
+            </ResponsiveText>
+            <View className="bg-red-500/20 px-3 py-1 rounded-lg">
+              <ResponsiveText variant="caption" className="text-red-400 font-semibold">
+                {jobsData.available.length} Available
+              </ResponsiveText>
+            </View>
+          </View>
+
+          {/* Tab Navigation */}
+          <ResponsiveCard variant="default" className="mb-6">
+            <View className="flex-row gap-1">
+              {(['available', 'active', 'history'] as const).map((tab) => (
+                <ResponsiveButton
+                  key={tab}
+                  variant={activeTab === tab ? "primary" : "ghost"}
+                  size="sm"
+                  onPress={() => setActiveTab(tab)}
+                  className={`flex-1 ${activeTab === tab ? 'bg-red-500' : 'bg-white/5'}`}
+                >
+                  <ResponsiveText
+                    variant="caption"
+                    className={`font-semibold capitalize ${activeTab === tab ? 'text-white' : 'text-slate-400'}`}
+                  >
+                    {tab} ({jobsData[tab].length})
+                  </ResponsiveText>
+                </ResponsiveButton>
+              ))}
+            </View>
+          </ResponsiveCard>
+
+          {/* Job Lists */}
+          {jobsData[activeTab].length > 0 ? (
+            jobsData[activeTab].map((job) => renderJobCard(job))
+          ) : (
+            <ResponsiveCard variant="default" className="items-center py-8">
+              <ResponsiveText variant="h4" color="secondary" className="mb-2">
+                No {activeTab} jobs
+              </ResponsiveText>
+              <ResponsiveText variant="body" color="secondary" className="text-center">
+                {activeTab === 'available' ? 'Check back soon for new job opportunities' :
+                 activeTab === 'active' ? 'No jobs currently in progress' :
+                 'No completed jobs in your history yet'}
+              </ResponsiveText>
+            </ResponsiveCard>
+          )}
+
+          {/* Job Details Modal */}
+          <Modal
+            visible={showJobDetails}
+            transparent
+            animationType="slide"
+            onRequestClose={() => setShowJobDetails(false)}
+          >
+            <View className="flex-1 bg-black/50 justify-end">
+              <ResponsiveCard variant="elevated" className="m-4 mb-8 max-h-[80%]">
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  {selectedJob && (
+                    <>
+                      <View className="flex-row justify-between items-center mb-6">
+                        <ResponsiveText variant="h3">
+                          Job Details
+                        </ResponsiveText>
+                        <TouchableOpacity
+                          onPress={() => setShowJobDetails(false)}
+                          className="w-8 h-8 bg-white/10 rounded-full items-center justify-center"
+                          style={{ minHeight: designSystem.spacing.touchTarget.min }}
+                          accessibilityRole="button"
+                          accessibilityLabel="Close job details"
+                        >
+                          <ResponsiveText variant="body">×</ResponsiveText>
+                        </TouchableOpacity>
+                      </View>
+
+                      <View className="space-y-4">
+                        <View>
+                          <ResponsiveText variant="caption" color="secondary" className="mb-1">
+                            Service Type
+                          </ResponsiveText>
+                          <ResponsiveText variant="h4">{selectedJob.type}</ResponsiveText>
+                        </View>
+
+                        <View>
+                          <ResponsiveText variant="caption" color="secondary" className="mb-1">
+                            Job ID
+                          </ResponsiveText>
+                          <ResponsiveText variant="body">{selectedJob.id}</ResponsiveText>
+                        </View>
+
+                        <View>
+                          <ResponsiveText variant="caption" color="secondary" className="mb-1">
+                            Customer Information
+                          </ResponsiveText>
+                          <ResponsiveText variant="body" className="mb-1">{selectedJob.customer}</ResponsiveText>
+                          <ResponsiveText variant="caption" color="secondary">
+                            Phone: {selectedJob.customerPhone}
+                          </ResponsiveText>
+                        </View>
+
+                        <View>
+                          <ResponsiveText variant="caption" color="secondary" className="mb-1">
+                            Location
+                          </ResponsiveText>
+                          <ResponsiveText variant="body" className="mb-1">{selectedJob.location}</ResponsiveText>
+                          <ResponsiveText variant="caption" color="secondary">
+                            Distance: {selectedJob.distance} • ETA: {selectedJob.eta}
+                          </ResponsiveText>
+                        </View>
+
+                        <View>
+                          <ResponsiveText variant="caption" color="secondary" className="mb-1">
+                            Priority Level
+                          </ResponsiveText>
+                          <View className={`self-start px-3 py-1 rounded-lg ${
+                            selectedJob.priority === 'emergency' ? 'bg-red-500/20 border border-red-500/30' :
+                            selectedJob.priority === 'high' ? 'bg-orange-500/20 border border-orange-500/30' :
+                            selectedJob.priority === 'medium' ? 'bg-yellow-500/20 border border-yellow-500/30' :
+                            'bg-blue-500/20 border border-blue-500/30'
+                          }`}>
+                            <ResponsiveText variant="caption" className={`font-bold uppercase ${
+                              selectedJob.priority === 'emergency' ? 'text-red-400' :
+                              selectedJob.priority === 'high' ? 'text-orange-400' :
+                              selectedJob.priority === 'medium' ? 'text-yellow-400' :
+                              'text-blue-400'
+                            }`}>
+                              {selectedJob.priority}
+                            </ResponsiveText>
+                          </View>
+                        </View>
+
+                        <View>
+                          <ResponsiveText variant="caption" color="secondary" className="mb-1">
+                            Estimated Earnings
+                          </ResponsiveText>
+                          <ResponsiveText variant="body" className="text-green-400 font-semibold">
+                            ${selectedJob.estimatedEarnings.min} - ${selectedJob.estimatedEarnings.max}
+                          </ResponsiveText>
+                        </View>
+
+                        <View>
+                          <ResponsiveText variant="caption" color="secondary" className="mb-1">
+                            Estimated Duration
+                          </ResponsiveText>
+                          <ResponsiveText variant="body">{selectedJob.duration}</ResponsiveText>
+                        </View>
+
+                        {selectedJob.status === 'completed' && (
+                          <>
+                            <View>
+                              <ResponsiveText variant="caption" color="secondary" className="mb-1">
+                                Completion Time
+                              </ResponsiveText>
+                              <ResponsiveText variant="body">{(selectedJob as any).completedAt}</ResponsiveText>
+                            </View>
+
+                            <View>
+                              <ResponsiveText variant="caption" color="secondary" className="mb-1">
+                                Customer Rating
+                              </ResponsiveText>
+                              <ResponsiveText variant="body" className="text-yellow-400">
+                                {'⭐'.repeat((selectedJob as any).customerRating)} ({(selectedJob as any).customerRating}/5)
+                              </ResponsiveText>
+                            </View>
+
+                            <View>
+                              <ResponsiveText variant="caption" color="secondary" className="mb-1">
+                                Final Earnings
+                              </ResponsiveText>
+                              <ResponsiveText variant="body" className="text-green-400 font-semibold">
+                                ${(selectedJob as any).earnings}
+                              </ResponsiveText>
+                            </View>
+                          </>
+                        )}
+                      </View>
+
+                      <View className="mt-6 space-y-3">
+                        {activeTab === 'available' && (
+                          <View className="flex-row gap-2">
+                            <ResponsiveButton
+                              variant="success"
+                              size="md"
+                              onPress={() => {
+                                setShowJobDetails(false);
+                                handleJobAction(selectedJob, 'accept');
+                              }}
+                              className="flex-1"
+                              disabled={operationLoading}
+                              icon={<CheckCircle size={16} color="white" />}
+                            >
+                              Accept Job
+                            </ResponsiveButton>
+                            <ResponsiveButton
+                              variant="danger"
+                              size="md"
+                              onPress={() => {
+                                setShowJobDetails(false);
+                                handleJobAction(selectedJob, 'decline');
+                              }}
+                              className="flex-1"
+                              disabled={operationLoading}
+                            >
+                              Decline
+                            </ResponsiveButton>
+                          </View>
+                        )}
+
+                        {activeTab === 'active' && (
+                          <>
+                            <View className="flex-row gap-2">
+                              <ResponsiveButton
+                                variant="primary"
+                                size="md"
+                                onPress={() => {
+                                  setShowJobDetails(false);
+                                  handleJobAction(selectedJob, 'navigate');
+                                }}
+                                className="flex-1"
+                                disabled={operationLoading}
+                                icon={<Navigation size={16} color="white" />}
+                              >
+                                Navigate
+                              </ResponsiveButton>
+                              <ResponsiveButton
+                                variant="ghost"
+                                size="md"
+                                onPress={() => {
+                                  setShowJobDetails(false);
+                                  handleJobAction(selectedJob, 'contact');
+                                }}
+                                className="flex-1 bg-white/10"
+                                disabled={operationLoading}
+                                icon={<Phone size={16} color="white" />}
+                              >
+                                Call Customer
+                              </ResponsiveButton>
+                            </View>
+                            <ResponsiveButton
+                              variant="success"
+                              size="md"
+                              onPress={() => {
+                                setShowJobDetails(false);
+                                handleJobAction(selectedJob, 'complete');
+                              }}
+                              fullWidth
+                              disabled={operationLoading}
+                              icon={<CheckCircle size={16} color="white" />}
+                            >
+                              Mark Complete
+                            </ResponsiveButton>
+                          </>
+                        )}
+
+                        <ResponsiveButton
+                          variant="ghost"
+                          size="md"
+                          onPress={() => setShowJobDetails(false)}
+                          fullWidth
+                          className="mt-4"
+                        >
+                          Close
+                        </ResponsiveButton>
+                      </View>
+                    </>
+                  )}
+                </ScrollView>
+              </ResponsiveCard>
+            </View>
+          </Modal>
         </ResponsiveContainer>
       </ScrollView>
     );
-  }, []);
+  }, [pendingJobs, operationLoading]);
 
   // Earnings View
   const renderEarningsView = useCallback(() => {
+    const [selectedPeriod, setSelectedPeriod] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
+    const [selectedServiceType, setSelectedServiceType] = useState<string>('all');
+    const [showExportModal, setShowExportModal] = useState(false);
+
+    // Mock earnings data
+    const earningsData = {
+      daily: {
+        total: 847,
+        change: 127,
+        transactions: [
+          { id: 1, service: 'Tire Change', amount: 120, time: '2:30 PM', customer: 'John Davis', status: 'paid' },
+          { id: 2, service: 'Jump Start', amount: 85, time: '11:15 AM', customer: 'Sarah Wilson', status: 'paid' },
+          { id: 3, service: 'Lockout', amount: 75, time: '9:45 AM', customer: 'Mike Johnson', status: 'pending' },
+        ]
+      },
+      weekly: {
+        total: 3240,
+        change: 580,
+        breakdown: {
+          'Tire Change': 1200,
+          'Jump Start': 680,
+          'Towing': 950,
+          'Lockout': 410
+        }
+      },
+      monthly: {
+        total: 12850,
+        change: 2100,
+        taxes: 1928,
+        net: 10922
+      }
+    };
+
+    const serviceTypes = ['all', 'Tire Change', 'Jump Start', 'Towing', 'Lockout', 'Fuel Delivery'];
+
+    const handleExportReport = (format: 'pdf' | 'csv' | 'excel') => {
+      setShowExportModal(false);
+      Alert.alert(
+        "Export Report",
+        `${format.toUpperCase()} report for ${selectedPeriod} earnings has been generated and will be sent to your email.`,
+        [{ text: "OK" }]
+      );
+    };
+
+    const handleViewDetails = (transactionId: number) => {
+      Alert.alert(
+        "Transaction Details",
+        `Detailed view for transaction #${transactionId} would be displayed here with payment method, customer info, and service notes.`,
+        [{ text: "OK" }]
+      );
+    };
+
     return (
       <ScrollView
         className="flex-1 bg-slate-900/30"
@@ -701,12 +1358,303 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
         }}
       >
         <ResponsiveContainer>
-          <ResponsiveText variant="h2" className="py-6">
-            Earnings
-          </ResponsiveText>
-          <ResponsiveText variant="body" color="secondary" className="mb-6">
-            Earnings view coming soon with mobile-first responsive design.
-          </ResponsiveText>
+          {/* Header */}
+          <View className="flex-row justify-between items-center py-6">
+            <ResponsiveText variant="h2">
+              Earnings Dashboard
+            </ResponsiveText>
+            <ResponsiveButton
+              variant="primary"
+              size="sm"
+              onPress={() => setShowExportModal(true)}
+              icon={<DollarSign size={16} color="white" />}
+            >
+              Export
+            </ResponsiveButton>
+          </View>
+
+          {/* Period Selector */}
+          <ResponsiveCard variant="default" className="mb-6">
+            <ResponsiveText variant="h4" className="mb-4">
+              Time Period
+            </ResponsiveText>
+            <View className="flex-row gap-2">
+              {(['daily', 'weekly', 'monthly'] as const).map((period) => (
+                <ResponsiveButton
+                  key={period}
+                  variant={selectedPeriod === period ? "primary" : "ghost"}
+                  size="sm"
+                  onPress={() => setSelectedPeriod(period)}
+                  className={`flex-1 ${selectedPeriod === period ? 'bg-red-500' : 'bg-white/10'}`}
+                >
+                  <ResponsiveText
+                    variant="caption"
+                    className={`font-semibold capitalize ${selectedPeriod === period ? 'text-white' : 'text-slate-400'}`}
+                  >
+                    {period}
+                  </ResponsiveText>
+                </ResponsiveButton>
+              ))}
+            </View>
+          </ResponsiveCard>
+
+          {/* Earnings Summary */}
+          <ResponsiveCard variant="elevated" className="bg-gradient-to-r from-green-600 to-green-500 border-green-500/30 mb-6">
+            <View className="flex-row justify-between items-center mb-4">
+              <ResponsiveText variant="body" className="text-white/90 font-semibold">
+                {selectedPeriod.charAt(0).toUpperCase() + selectedPeriod.slice(1)} Earnings
+              </ResponsiveText>
+              <ResponsiveText variant="caption" className="text-white/80">
+                {selectedPeriod === 'daily' ? 'Today' :
+                 selectedPeriod === 'weekly' ? 'This Week' : 'This Month'}
+              </ResponsiveText>
+            </View>
+            <ResponsiveText variant="h1" className="mb-2">
+              ${earningsData[selectedPeriod].total.toLocaleString()}
+            </ResponsiveText>
+            <ResponsiveText variant="body" className="text-white/90">
+              +${earningsData[selectedPeriod].change} vs last {selectedPeriod.slice(0, -2)}
+            </ResponsiveText>
+          </ResponsiveCard>
+
+          {/* Performance Metrics */}
+          <ResponsiveGrid columns={{ mobile: 2, tablet: 4, desktop: 4 }} gap="md" className="mb-6">
+            <ResponsiveMetricCard
+              title="Jobs Completed"
+              value="47"
+              change="+12 this week"
+              changeType="positive"
+            />
+            <ResponsiveMetricCard
+              title="Avg per Job"
+              value="$89"
+              change="+$8 vs last week"
+              changeType="positive"
+            />
+            <ResponsiveMetricCard
+              title="Customer Rating"
+              value="4.9"
+              change="+0.1 this month"
+              changeType="positive"
+            />
+            <ResponsiveMetricCard
+              title="Bonus Earned"
+              value="$340"
+              change="Quality bonus"
+              changeType="positive"
+            />
+          </ResponsiveGrid>
+
+          {/* Service Type Filter */}
+          <ResponsiveCard variant="default" className="mb-6">
+            <ResponsiveText variant="h4" className="mb-4">
+              Filter by Service Type
+            </ResponsiveText>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+              <View className="flex-row gap-2 pr-4">
+                {serviceTypes.map((type) => (
+                  <ResponsiveButton
+                    key={type}
+                    variant={selectedServiceType === type ? "primary" : "ghost"}
+                    size="sm"
+                    onPress={() => setSelectedServiceType(type)}
+                    className={`${selectedServiceType === type ? 'bg-blue-500' : 'bg-white/10'} min-w-[80px]`}
+                  >
+                    <ResponsiveText
+                      variant="caption"
+                      className={`font-semibold ${selectedServiceType === type ? 'text-white' : 'text-slate-400'}`}
+                    >
+                      {type === 'all' ? 'All' : type}
+                    </ResponsiveText>
+                  </ResponsiveButton>
+                ))}
+              </View>
+            </ScrollView>
+          </ResponsiveCard>
+
+          {/* Earnings Breakdown */}
+          {selectedPeriod === 'weekly' && (
+            <ResponsiveCard variant="default" className="mb-6">
+              <ResponsiveText variant="h4" className="mb-4">
+                Service Type Breakdown
+              </ResponsiveText>
+              <View className="space-y-3">
+                {Object.entries(earningsData.weekly.breakdown).map(([service, amount]) => (
+                  <View key={service} className="flex-row justify-between items-center p-3 bg-white/5 rounded-xl">
+                    <View className="flex-1">
+                      <ResponsiveText variant="body" className="font-semibold">
+                        {service}
+                      </ResponsiveText>
+                      <ResponsiveText variant="caption" color="secondary">
+                        {Math.round((amount / earningsData.weekly.total) * 100)}% of total
+                      </ResponsiveText>
+                    </View>
+                    <ResponsiveText variant="h4" className="text-green-400">
+                      ${amount.toLocaleString()}
+                    </ResponsiveText>
+                  </View>
+                ))}
+              </View>
+            </ResponsiveCard>
+          )}
+
+          {/* Recent Transactions */}
+          {selectedPeriod === 'daily' && (
+            <ResponsiveCard variant="default" className="mb-6">
+              <View className="flex-row justify-between items-center mb-4">
+                <ResponsiveText variant="h4">
+                  Today's Transactions
+                </ResponsiveText>
+                <ResponsiveText variant="caption" color="secondary">
+                  {earningsData.daily.transactions.length} transactions
+                </ResponsiveText>
+              </View>
+
+              <View className="space-y-3">
+                {earningsData.daily.transactions.map((transaction) => (
+                  <TouchableOpacity
+                    key={transaction.id}
+                    onPress={() => handleViewDetails(transaction.id)}
+                    className="p-4 bg-white/5 rounded-xl border border-white/10"
+                    style={{ minHeight: designSystem.spacing.touchTarget.min }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`View details for ${transaction.service} transaction`}
+                  >
+                    <View className="flex-row justify-between items-start mb-2">
+                      <View className="flex-1">
+                        <ResponsiveText variant="body" className="font-semibold mb-1">
+                          {transaction.service}
+                        </ResponsiveText>
+                        <ResponsiveText variant="caption" color="secondary">
+                          {transaction.customer} • {transaction.time}
+                        </ResponsiveText>
+                      </View>
+                      <View className="items-end">
+                        <ResponsiveText variant="h4" className="text-green-400">
+                          ${transaction.amount}
+                        </ResponsiveText>
+                        <View className={`px-2 py-1 rounded-md ${transaction.status === 'paid' ? 'bg-green-500/20' : 'bg-yellow-500/20'}`}>
+                          <ResponsiveText
+                            variant="caption"
+                            className={`font-semibold ${transaction.status === 'paid' ? 'text-green-400' : 'text-yellow-400'}`}
+                          >
+                            {transaction.status.toUpperCase()}
+                          </ResponsiveText>
+                        </View>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ResponsiveCard>
+          )}
+
+          {/* Monthly Tax Summary */}
+          {selectedPeriod === 'monthly' && (
+            <ResponsiveCard variant="default" className="mb-6">
+              <ResponsiveText variant="h4" className="mb-4">
+                Tax Summary
+              </ResponsiveText>
+
+              <View className="space-y-4">
+                <View className="flex-row justify-between items-center p-3 bg-white/5 rounded-xl">
+                  <ResponsiveText variant="body">Gross Earnings</ResponsiveText>
+                  <ResponsiveText variant="body" className="font-semibold">
+                    ${earningsData.monthly.total.toLocaleString()}
+                  </ResponsiveText>
+                </View>
+
+                <View className="flex-row justify-between items-center p-3 bg-red-500/10 rounded-xl">
+                  <ResponsiveText variant="body">Estimated Taxes</ResponsiveText>
+                  <ResponsiveText variant="body" className="font-semibold text-red-400">
+                    -${earningsData.monthly.taxes.toLocaleString()}
+                  </ResponsiveText>
+                </View>
+
+                <View className="flex-row justify-between items-center p-3 bg-green-500/10 rounded-xl">
+                  <ResponsiveText variant="body" className="font-semibold">Net Earnings</ResponsiveText>
+                  <ResponsiveText variant="h4" className="text-green-400">
+                    ${earningsData.monthly.net.toLocaleString()}
+                  </ResponsiveText>
+                </View>
+              </View>
+
+              <ResponsiveButton
+                variant="ghost"
+                size="md"
+                onPress={() => Alert.alert("Tax Documents", "Tax documentation and 1099 forms would be available for download here.")}
+                fullWidth
+                className="mt-4 bg-white/5 border border-white/10"
+                icon={<DollarSign size={16} color="#94a3b8" />}
+              >
+                Download Tax Documents
+              </ResponsiveButton>
+            </ResponsiveCard>
+          )}
+
+          {/* Export Modal */}
+          <Modal
+            visible={showExportModal}
+            transparent
+            animationType="slide"
+            onRequestClose={() => setShowExportModal(false)}
+          >
+            <View className="flex-1 bg-black/50 justify-end">
+              <ResponsiveCard variant="elevated" className="m-4 mb-8">
+                <ResponsiveText variant="h3" className="mb-4">
+                  Export Earnings Report
+                </ResponsiveText>
+
+                <ResponsiveText variant="body" color="secondary" className="mb-6">
+                  Choose format for your {selectedPeriod} earnings report
+                </ResponsiveText>
+
+                <View className="space-y-3">
+                  <ResponsiveButton
+                    variant="primary"
+                    size="md"
+                    onPress={() => handleExportReport('pdf')}
+                    fullWidth
+                    icon={<DollarSign size={16} color="white" />}
+                  >
+                    Export as PDF
+                  </ResponsiveButton>
+
+                  <ResponsiveButton
+                    variant="ghost"
+                    size="md"
+                    onPress={() => handleExportReport('csv')}
+                    fullWidth
+                    className="bg-white/10"
+                    icon={<DollarSign size={16} color="#94a3b8" />}
+                  >
+                    Export as CSV
+                  </ResponsiveButton>
+
+                  <ResponsiveButton
+                    variant="ghost"
+                    size="md"
+                    onPress={() => handleExportReport('excel')}
+                    fullWidth
+                    className="bg-white/10"
+                    icon={<DollarSign size={16} color="#94a3b8" />}
+                  >
+                    Export as Excel
+                  </ResponsiveButton>
+
+                  <ResponsiveButton
+                    variant="ghost"
+                    size="md"
+                    onPress={() => setShowExportModal(false)}
+                    fullWidth
+                    className="mt-4"
+                  >
+                    Cancel
+                  </ResponsiveButton>
+                </View>
+              </ResponsiveCard>
+            </View>
+          </Modal>
         </ResponsiveContainer>
       </ScrollView>
     );
@@ -714,6 +1662,91 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
 
   // Profile View
   const renderProfileView = useCallback(() => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [profileData, setProfileData] = useState({
+      name: user?.name || technicianName,
+      phone: user?.phone || "+592-123-4567",
+      email: user?.email || "technician@roadside.com",
+      technicianId: user?.technicianId || technicianId,
+      specialties: ["Tire Change", "Jump Start", "Lockout Service", "Towing"],
+      certifications: ["ASE Certified", "Emergency Response", "First Aid"],
+      yearsExperience: 5,
+      emergencyContact: {
+        name: "John Doe",
+        phone: "+592-987-6543"
+      },
+      vehicleInfo: {
+        make: "Ford",
+        model: "Transit",
+        year: "2022",
+        licensePlate: "RSP-001"
+      },
+      notificationPreferences: {
+        email: true,
+        sms: true,
+        push: true,
+        emergencyOnly: false
+      }
+    });
+
+    const handleSaveProfile = async () => {
+      try {
+        setOperationLoading(true);
+
+        // Simulate API call to update profile
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Update user state
+        setUser(prev => prev ? {
+          ...prev,
+          name: profileData.name,
+          phone: profileData.phone,
+          email: profileData.email
+        } : null);
+
+        setIsEditing(false);
+        Alert.alert("Success", "Profile updated successfully!");
+      } catch (error) {
+        console.error("Profile update error:", error);
+        Alert.alert("Error", "Failed to update profile. Please try again.");
+      } finally {
+        setOperationLoading(false);
+      }
+    };
+
+    const handleUploadPhoto = () => {
+      Alert.alert(
+        "Upload Photo",
+        "Choose photo source",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Camera", onPress: () => Alert.alert("Info", "Camera functionality would be implemented here") },
+          { text: "Gallery", onPress: () => Alert.alert("Info", "Gallery functionality would be implemented here") }
+        ]
+      );
+    };
+
+    const toggleAvailability = async () => {
+      try {
+        setOperationLoading(true);
+        const newStatus = !onlineStatus;
+        setOnlineStatus(newStatus);
+
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        Alert.alert(
+          "Status Updated",
+          `You are now ${newStatus ? "available" : "unavailable"} for new jobs`
+        );
+      } catch (error) {
+        console.error("Availability toggle error:", error);
+        Alert.alert("Error", "Failed to update availability status");
+      } finally {
+        setOperationLoading(false);
+      }
+    };
+
     return (
       <ScrollView
         className="flex-1 bg-slate-900/30"
@@ -723,16 +1756,312 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
         }}
       >
         <ResponsiveContainer>
-          <ResponsiveText variant="h2" className="py-6">
-            Profile
-          </ResponsiveText>
-          <ResponsiveText variant="body" color="secondary" className="mb-6">
-            Profile view coming soon with mobile-first responsive design.
-          </ResponsiveText>
+          {/* Header */}
+          <View className="flex-row justify-between items-center py-6">
+            <ResponsiveText variant="h2">
+              Technician Profile
+            </ResponsiveText>
+            <ResponsiveButton
+              variant={isEditing ? "success" : "primary"}
+              size="sm"
+              onPress={isEditing ? handleSaveProfile : () => setIsEditing(true)}
+              disabled={operationLoading}
+              icon={isEditing ? <CheckCircle size={16} color="white" /> : <Settings size={16} color="white" />}
+            >
+              {operationLoading ? "Saving..." : isEditing ? "Save" : "Edit"}
+            </ResponsiveButton>
+          </View>
+
+          {/* Profile Photo & Basic Info */}
+          <ResponsiveCard variant="elevated" className="mb-6">
+            <View className="items-center mb-6">
+              <View className="relative">
+                <View className="w-24 h-24 bg-gradient-to-br from-red-600 to-red-500 rounded-full items-center justify-center mb-4">
+                  <ResponsiveText variant="h2" className="font-bold">
+                    {profileData.name.split(' ').map(n => n[0]).join('')}
+                  </ResponsiveText>
+                </View>
+                <TouchableOpacity
+                  onPress={handleUploadPhoto}
+                  className="absolute -bottom-2 -right-2 w-8 h-8 bg-blue-600 rounded-full items-center justify-center"
+                  style={{ minHeight: designSystem.spacing.touchTarget.min }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Upload profile photo"
+                >
+                  <User size={16} color="white" />
+                </TouchableOpacity>
+              </View>
+
+              <ResponsiveText variant="h3" className="mb-2">
+                {profileData.name}
+              </ResponsiveText>
+              <View className="bg-red-500/20 px-3 py-1 rounded-lg mb-2">
+                <ResponsiveText variant="caption" className="text-red-400 font-semibold">
+                  ID: {profileData.technicianId}
+                </ResponsiveText>
+              </View>
+              <View className="flex-row items-center">
+                <View className={`w-3 h-3 rounded-full mr-2 ${onlineStatus ? 'bg-green-500' : 'bg-gray-500'}`} />
+                <ResponsiveText variant="body" color={onlineStatus ? "success" : "secondary"}>
+                  {onlineStatus ? "Available" : "Unavailable"}
+                </ResponsiveText>
+              </View>
+            </View>
+
+            {/* Availability Toggle */}
+            <ResponsiveButton
+              variant={onlineStatus ? "danger" : "success"}
+              size="md"
+              onPress={toggleAvailability}
+              fullWidth
+              disabled={operationLoading}
+              icon={onlineStatus ? <AlertTriangle size={16} color="white" /> : <CheckCircle size={16} color="white" />}
+            >
+              {onlineStatus ? "Go Unavailable" : "Go Available"}
+            </ResponsiveButton>
+          </ResponsiveCard>
+
+          {/* Personal Information */}
+          <ResponsiveCard variant="default" className="mb-6">
+            <ResponsiveText variant="h4" className="mb-4">
+              Personal Information
+            </ResponsiveText>
+
+            <View className="space-y-4">
+              <View>
+                <ResponsiveText variant="caption" color="secondary" className="mb-2">
+                  Full Name
+                </ResponsiveText>
+                {isEditing ? (
+                  <TextInput
+                    value={profileData.name}
+                    onChangeText={(text) => setProfileData(prev => ({ ...prev, name: text }))}
+                    className="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white"
+                    style={{ minHeight: designSystem.spacing.touchTarget.min }}
+                    placeholderTextColor="#94a3b8"
+                  />
+                ) : (
+                  <ResponsiveText variant="body">{profileData.name}</ResponsiveText>
+                )}
+              </View>
+
+              <View>
+                <ResponsiveText variant="caption" color="secondary" className="mb-2">
+                  Phone Number
+                </ResponsiveText>
+                {isEditing ? (
+                  <TextInput
+                    value={profileData.phone}
+                    onChangeText={(text) => setProfileData(prev => ({ ...prev, phone: text }))}
+                    className="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white"
+                    style={{ minHeight: designSystem.spacing.touchTarget.min }}
+                    keyboardType="phone-pad"
+                    placeholderTextColor="#94a3b8"
+                  />
+                ) : (
+                  <ResponsiveText variant="body">{profileData.phone}</ResponsiveText>
+                )}
+              </View>
+
+              <View>
+                <ResponsiveText variant="caption" color="secondary" className="mb-2">
+                  Email Address
+                </ResponsiveText>
+                {isEditing ? (
+                  <TextInput
+                    value={profileData.email}
+                    onChangeText={(text) => setProfileData(prev => ({ ...prev, email: text }))}
+                    className="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white"
+                    style={{ minHeight: designSystem.spacing.touchTarget.min }}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    placeholderTextColor="#94a3b8"
+                  />
+                ) : (
+                  <ResponsiveText variant="body">{profileData.email}</ResponsiveText>
+                )}
+              </View>
+
+              <View>
+                <ResponsiveText variant="caption" color="secondary" className="mb-2">
+                  Years of Experience
+                </ResponsiveText>
+                <ResponsiveText variant="body">{profileData.yearsExperience} years</ResponsiveText>
+              </View>
+            </View>
+          </ResponsiveCard>
+
+          {/* Professional Credentials */}
+          <ResponsiveCard variant="default" className="mb-6">
+            <ResponsiveText variant="h4" className="mb-4">
+              Professional Credentials
+            </ResponsiveText>
+
+            <View className="mb-4">
+              <ResponsiveText variant="body" className="mb-3 font-semibold">
+                Service Specializations
+              </ResponsiveText>
+              <View className="flex-row flex-wrap gap-2">
+                {profileData.specialties.map((specialty, index) => (
+                  <View key={index} className="bg-blue-500/20 border border-blue-500/30 px-3 py-2 rounded-lg">
+                    <ResponsiveText variant="caption" className="text-blue-400 font-semibold">
+                      {specialty}
+                    </ResponsiveText>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View>
+              <ResponsiveText variant="body" className="mb-3 font-semibold">
+                Certifications
+              </ResponsiveText>
+              <View className="flex-row flex-wrap gap-2">
+                {profileData.certifications.map((cert, index) => (
+                  <View key={index} className="bg-green-500/20 border border-green-500/30 px-3 py-2 rounded-lg">
+                    <ResponsiveText variant="caption" className="text-green-400 font-semibold">
+                      {cert}
+                    </ResponsiveText>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </ResponsiveCard>
+
+          {/* Emergency Contact */}
+          <ResponsiveCard variant="default" className="mb-6">
+            <ResponsiveText variant="h4" className="mb-4">
+              Emergency Contact
+            </ResponsiveText>
+
+            <View className="space-y-4">
+              <View>
+                <ResponsiveText variant="caption" color="secondary" className="mb-2">
+                  Contact Name
+                </ResponsiveText>
+                <ResponsiveText variant="body">{profileData.emergencyContact.name}</ResponsiveText>
+              </View>
+
+              <View>
+                <ResponsiveText variant="caption" color="secondary" className="mb-2">
+                  Contact Phone
+                </ResponsiveText>
+                <ResponsiveText variant="body">{profileData.emergencyContact.phone}</ResponsiveText>
+              </View>
+            </View>
+          </ResponsiveCard>
+
+          {/* Vehicle Information */}
+          <ResponsiveCard variant="default" className="mb-6">
+            <ResponsiveText variant="h4" className="mb-4">
+              Vehicle Information
+            </ResponsiveText>
+
+            <ResponsiveGrid columns={{ mobile: 2, tablet: 2, desktop: 2 }} gap="md">
+              <View>
+                <ResponsiveText variant="caption" color="secondary" className="mb-2">
+                  Make & Model
+                </ResponsiveText>
+                <ResponsiveText variant="body">
+                  {profileData.vehicleInfo.make} {profileData.vehicleInfo.model}
+                </ResponsiveText>
+              </View>
+
+              <View>
+                <ResponsiveText variant="caption" color="secondary" className="mb-2">
+                  Year
+                </ResponsiveText>
+                <ResponsiveText variant="body">{profileData.vehicleInfo.year}</ResponsiveText>
+              </View>
+
+              <View>
+                <ResponsiveText variant="caption" color="secondary" className="mb-2">
+                  License Plate
+                </ResponsiveText>
+                <ResponsiveText variant="body">{profileData.vehicleInfo.licensePlate}</ResponsiveText>
+              </View>
+            </ResponsiveGrid>
+          </ResponsiveCard>
+
+          {/* Notification Preferences */}
+          <ResponsiveCard variant="default" className="mb-6">
+            <ResponsiveText variant="h4" className="mb-4">
+              Notification Preferences
+            </ResponsiveText>
+
+            <View className="space-y-4">
+              {Object.entries(profileData.notificationPreferences).map(([key, value]) => (
+                <View key={key} className="flex-row justify-between items-center">
+                  <ResponsiveText variant="body" className="flex-1">
+                    {key === 'email' ? 'Email Notifications' :
+                     key === 'sms' ? 'SMS Notifications' :
+                     key === 'push' ? 'Push Notifications' :
+                     'Emergency Only Mode'}
+                  </ResponsiveText>
+                  <TouchableOpacity
+                    onPress={() => setProfileData(prev => ({
+                      ...prev,
+                      notificationPreferences: {
+                        ...prev.notificationPreferences,
+                        [key]: !value
+                      }
+                    }))}
+                    className={`w-12 h-6 rounded-full ${value ? 'bg-green-500' : 'bg-gray-600'} justify-center`}
+                    style={{ minHeight: designSystem.spacing.touchTarget.min }}
+                    accessibilityRole="switch"
+                    accessibilityState={{ checked: value }}
+                  >
+                    <View className={`w-5 h-5 bg-white rounded-full ${value ? 'self-end mr-0.5' : 'self-start ml-0.5'}`} />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          </ResponsiveCard>
+
+          {/* Account Actions */}
+          <ResponsiveCard variant="default" className="mb-6">
+            <ResponsiveText variant="h4" className="mb-4">
+              Account Settings
+            </ResponsiveText>
+
+            <View className="space-y-3">
+              <ResponsiveButton
+                variant="ghost"
+                size="md"
+                onPress={() => Alert.alert("Info", "Change password functionality would be implemented here")}
+                fullWidth
+                className="bg-white/5 border border-white/10 justify-start"
+                icon={<Lock size={16} color="#94a3b8" />}
+              >
+                <ResponsiveText variant="body" className="text-left">Change Password</ResponsiveText>
+              </ResponsiveButton>
+
+              <ResponsiveButton
+                variant="ghost"
+                size="md"
+                onPress={() => Alert.alert("Info", "Privacy settings would be implemented here")}
+                fullWidth
+                className="bg-white/5 border border-white/10 justify-start"
+                icon={<Shield size={16} color="#94a3b8" />}
+              >
+                <ResponsiveText variant="body" className="text-left">Privacy Settings</ResponsiveText>
+              </ResponsiveButton>
+
+              <ResponsiveButton
+                variant="danger"
+                size="md"
+                onPress={handleSignOut}
+                fullWidth
+                icon={<ArrowLeft size={16} color="white" />}
+              >
+                Sign Out
+              </ResponsiveButton>
+            </View>
+          </ResponsiveCard>
         </ResponsiveContainer>
       </ScrollView>
     );
-  }, []);
+  }, [user, technicianName, technicianId, onlineStatus, operationLoading, handleSignOut]);
 
   // View rendering function
   const renderCurrentView = () => {
@@ -898,6 +2227,288 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
   useEffect(() => {
     checkAuthStatus();
   }, []); // Empty dependency array to run only once on mount
+
+  // Real-time data subscriptions
+  useEffect(() => {
+    if (!user?.id) return;
+
+    let technicianSubscription: any;
+    let earningsSubscription: any;
+    let jobsSubscription: any;
+
+    const setupRealtimeSubscriptions = async () => {
+      try {
+        // Subscribe to technician profile changes
+        technicianSubscription = supabase
+          .channel('technician_profile')
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'technicians',
+              filter: `user_id=eq.${user.id}`
+            },
+            (payload) => {
+              console.log('Technician profile updated:', payload);
+              if (payload.new) {
+                setUser(prev => prev ? {
+                  ...prev,
+                  name: payload.new.name,
+                  phone: payload.new.phone,
+                  email: payload.new.email,
+                  rating: payload.new.rating,
+                  totalJobs: payload.new.total_jobs
+                } : null);
+              }
+            }
+          )
+          .subscribe();
+
+        // Subscribe to earnings changes
+        earningsSubscription = supabase
+          .channel('technician_earnings')
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'technician_earnings',
+              filter: `technician_id=eq.${user.id}`
+            },
+            (payload) => {
+              console.log('Earnings updated:', payload);
+              // Update earnings stats in real-time
+              if (payload.eventType === 'INSERT' && payload.new) {
+                setStats(prev => prev.map(stat => {
+                  if (stat.type === 'earnings') {
+                    const currentEarnings = parseInt(stat.number.replace('$', '').replace(',', ''));
+                    const newAmount = payload.new.net_amount;
+                    return {
+                      ...stat,
+                      number: `$${(currentEarnings + newAmount).toLocaleString()}`,
+                      change: `+$${newAmount} new payment`
+                    };
+                  }
+                  return stat;
+                }));
+              }
+            }
+          )
+          .subscribe();
+
+        // Subscribe to service requests (jobs) changes
+        jobsSubscription = supabase
+          .channel('service_requests')
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'service_requests'
+            },
+            (payload) => {
+              console.log('Service request updated:', payload);
+
+              if (payload.eventType === 'INSERT' && payload.new) {
+                // New job available
+                const newJob: PendingJob = {
+                  id: payload.new.id,
+                  type: payload.new.service_type,
+                  time: 'Just now',
+                  location: payload.new.location,
+                  customer: `${payload.new.customer_name} (${payload.new.customer_email ? 'Premium' : 'Standard'} Member)`,
+                  icon: getServiceIcon(payload.new.service_type),
+                  priority: payload.new.priority as 'low' | 'medium' | 'high' | 'emergency',
+                  estimatedEarnings: getEstimatedEarnings(payload.new.service_type),
+                  distance: '0.0 km', // Would be calculated based on technician location
+                  eta: 'Calculating...',
+                  duration: getEstimatedDuration(payload.new.service_type),
+                  customerPhone: payload.new.customer_phone,
+                  coordinates: { lat: payload.new.latitude || 0, lng: payload.new.longitude || 0 }
+                };
+
+                setPendingJobs(prev => [newJob, ...prev]);
+
+                // Show notification for emergency jobs
+                if (payload.new.priority === 'emergency') {
+                  Alert.alert(
+                    "🚨 Emergency Job Available",
+                    `${payload.new.service_type} needed at ${payload.new.location}`,
+                    [
+                      { text: "View Jobs", onPress: () => setActiveView("jobs") },
+                      { text: "Dismiss", style: "cancel" }
+                    ]
+                  );
+                }
+              }
+
+              if (payload.eventType === 'UPDATE' && payload.new) {
+                // Job status updated
+                setPendingJobs(prev => prev.map(job =>
+                  job.id === payload.new.id
+                    ? { ...job, status: payload.new.status }
+                    : job
+                ));
+              }
+            }
+          )
+          .subscribe();
+
+        console.log('Real-time subscriptions established');
+      } catch (error) {
+        console.error('Error setting up real-time subscriptions:', error);
+      }
+    };
+
+    setupRealtimeSubscriptions();
+
+    // Cleanup subscriptions
+    return () => {
+      if (technicianSubscription) {
+        supabase.removeChannel(technicianSubscription);
+      }
+      if (earningsSubscription) {
+        supabase.removeChannel(earningsSubscription);
+      }
+      if (jobsSubscription) {
+        supabase.removeChannel(jobsSubscription);
+      }
+    };
+  }, [user?.id]);
+
+  // Helper functions for real-time data processing
+  const getServiceIcon = (serviceType: string): string => {
+    const icons: { [key: string]: string } = {
+      'tire_change': '🛞',
+      'jump_start': '🔋',
+      'towing': '🚛',
+      'lockout': '🔐',
+      'fuel_delivery': '⛽'
+    };
+    return icons[serviceType] || '🔧';
+  };
+
+  const getEstimatedEarnings = (serviceType: string): { min: number; max: number } => {
+    const earnings: { [key: string]: { min: number; max: number } } = {
+      'tire_change': { min: 85, max: 120 },
+      'jump_start': { min: 60, max: 95 },
+      'towing': { min: 150, max: 250 },
+      'lockout': { min: 50, max: 80 },
+      'fuel_delivery': { min: 40, max: 70 }
+    };
+    return earnings[serviceType] || { min: 50, max: 100 };
+  };
+
+  const getEstimatedDuration = (serviceType: string): string => {
+    const durations: { [key: string]: string } = {
+      'tire_change': '30-45 min',
+      'jump_start': '15-25 min',
+      'towing': '45-60 min',
+      'lockout': '15-30 min',
+      'fuel_delivery': '20-35 min'
+    };
+    return durations[serviceType] || '30 min';
+  };
+
+  // Enhanced data fetching with error handling
+  const fetchTechnicianData = useCallback(async () => {
+    if (!user?.id) return;
+
+    try {
+      setIsLoading(true);
+
+      // Fetch technician profile
+      const { data: technicianData, error: technicianError } = await supabase
+        .from('technicians')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (technicianError && technicianError.code !== 'PGRST116') {
+        throw technicianError;
+      }
+
+      // Fetch recent earnings
+      const { data: earningsData, error: earningsError } = await supabase
+        .from('technician_earnings')
+        .select('*')
+        .eq('technician_id', technicianData?.id)
+        .gte('earning_date', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+        .order('earning_date', { ascending: false });
+
+      if (earningsError) {
+        console.warn('Error fetching earnings:', earningsError);
+      }
+
+      // Fetch job history
+      const { data: jobHistoryData, error: jobHistoryError } = await supabase
+        .from('technician_job_history')
+        .select(`
+          *,
+          service_requests (
+            customer_name,
+            service_type,
+            location,
+            customer_phone
+          )
+        `)
+        .eq('technician_id', technicianData?.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (jobHistoryError) {
+        console.warn('Error fetching job history:', jobHistoryError);
+      }
+
+      // Update stats with real data
+      if (earningsData) {
+        const todayEarnings = earningsData
+          .filter(e => e.earning_date === new Date().toISOString().split('T')[0])
+          .reduce((sum, e) => sum + parseFloat(e.net_amount), 0);
+
+        const weeklyEarnings = earningsData
+          .reduce((sum, e) => sum + parseFloat(e.net_amount), 0);
+
+        setStats(prev => prev.map(stat => {
+          if (stat.type === 'earnings') {
+            return {
+              ...stat,
+              number: `$${Math.round(todayEarnings)}`,
+              change: `Weekly: $${Math.round(weeklyEarnings)}`
+            };
+          }
+          if (stat.type === 'jobs' && technicianData) {
+            return {
+              ...stat,
+              number: technicianData.total_jobs?.toString() || '0'
+            };
+          }
+          if (stat.type === 'rating' && technicianData) {
+            return {
+              ...stat,
+              number: technicianData.rating?.toFixed(1) || '5.0'
+            };
+          }
+          return stat;
+        }));
+      }
+
+      console.log('Technician data fetched successfully');
+    } catch (error) {
+      console.error('Error fetching technician data:', error);
+      handleError(error, 'data_fetch');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user?.id, handleError]);
+
+  // Fetch data on component mount and user change
+  useEffect(() => {
+    if (user?.id) {
+      fetchTechnicianData();
+    }
+  }, [user?.id, fetchTechnicianData]);
 
   const handleSignIn = async () => {
     if (!email.trim() || !password.trim()) {
@@ -1361,20 +2972,24 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
 
             <View className="flex-row gap-3">
               <TouchableOpacity
-                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> {
+                onPress={() => {
                   setHasError(false);
                   setErrorDetails(null);
                   setTroubleshootingGuide(null);
                 }}
                 className="flex-1 bg-gradient-to-r from-green-600 to-green-500 rounded-xl py-3 items-center"
+                accessibilityRole="button"
+                accessibilityLabel="Try again"
               >
                 <Text className="text-white font-bold">Try Again</Text>
               </TouchableOpacity>
 
               {troubleshootingGuide && (
                 <TouchableOpacity
-                  onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowTroubleshootingModal(true)}
+                  onPress={() => setShowTroubleshootingModal(true)}
                   className="flex-1 bg-blue-600 rounded-xl py-3 items-center"
+                  accessibilityRole="button"
+                  accessibilityLabel="Get help"
                 >
                   <Text className="text-white font-bold">Get Help</Text>
                 </TouchableOpacity>
@@ -1404,7 +3019,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
           visible={showTroubleshootingModal}
           transparent
           animationType="slide"
-          onRequestClose={() = accessibilityViewIsModal={true}> setShowTroubleshootingModal(false)}
+          onRequestClose={() => setShowTroubleshootingModal(false)}
         >
           <View className="flex-1 bg-black/50">
             <View className="flex-1 bg-slate-900 mt-20 rounded-t-3xl">
@@ -1414,8 +3029,10 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                     AI Troubleshooting Guide
                   </Text>
                   <TouchableOpacity
-                    onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowTroubleshootingModal(false)}
+                    onPress={() => setShowTroubleshootingModal(false)}
                     className="w-8 h-8 bg-white/10 rounded-full items-center justify-center"
+                    accessibilityRole="button"
+                    accessibilityLabel="Close troubleshooting guide"
                   >
                     <Text className="text-slate-400 text-lg">├ù</Text>
                   </TouchableOpacity>
@@ -1523,8 +3140,10 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
             {/* Back Button */}
             {authMode !== "login" && (
               <TouchableOpacity
-                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("login")}
+                onPress={() => switchAuthMode("login")}
                 className="absolute top-8 left-6 w-10 h-10 bg-white/10 rounded-xl items-center justify-center"
+                accessibilityRole="button"
+                accessibilityLabel="Go back to login"
               >
                 <ArrowLeft size={20} color="#94a3b8" />
               </TouchableOpacity>
@@ -1620,8 +3239,10 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                         autoCorrect={false}
                       />
                       <TouchableOpacity
-                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowPassword(!showPassword)}
+                        onPress={() => setShowPassword(!showPassword)}
                         className="ml-2"
+                        accessibilityRole="button"
+                        accessibilityLabel="Toggle password visibility"
                       >
                         {showPassword ? (
                           <EyeOff size={20} color="#94a3b8" />
@@ -1652,10 +3273,10 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                         autoCorrect={false}
                       />
                       <TouchableOpacity
-                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button">
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
+                        onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                         className="ml-2"
+                        accessibilityRole="button"
+                        accessibilityLabel="Toggle confirm password visibility"
                       >
                         {showConfirmPassword ? (
                           <EyeOff size={20} color="#94a3b8" />
@@ -1678,7 +3299,9 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                   }
                   disabled={authLoading}
                   className={`bg-gradient-to-r from-green-600 to-green-500 rounded-xl py-4 items-center mb-4 ${authLoading ? "opacity-50" : ""}`}
-                 accessibilityRole="button" accessibilityLabel="Interactive button">
+                  accessibilityRole="button"
+                  accessibilityLabel="Submit form"
+                >
                   {authLoading ? (
                     <View className="flex-row items-center">
                       <ActivityIndicator color="white" size="small" />
@@ -1704,7 +3327,10 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                       onPress={handleDemoLogin}
                       disabled={authLoading}
                       className="bg-white/10 border border-white/10 rounded-xl py-3 items-center mb-4"
-                     style={{ minHeight: 44 }} accessibilityRole="button" accessibilityLabel="Interactive button">
+                      style={{ minHeight: 44 }}
+                      accessibilityRole="button"
+                      accessibilityLabel="Demo login"
+                    >
                       <Text className="text-slate-300 font-semibold text-sm">
                         Demo Login
                       </Text>
@@ -1712,16 +3338,20 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
 
                     <View className="flex-row justify-between items-center">
                       <TouchableOpacity
-                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("register")}
+                        onPress={() => switchAuthMode("register")}
                         disabled={authLoading}
+                        accessibilityRole="button"
+                        accessibilityLabel="Create account"
                       >
                         <Text className="text-green-400 text-sm font-medium">
                           Create Account
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("reset")}
+                        onPress={() => switchAuthMode("reset")}
                         disabled={authLoading}
+                        accessibilityRole="button"
+                        accessibilityLabel="Reset password"
                       >
                         <Text className="text-green-400 text-sm font-medium">
                           Forgot Password?
@@ -1733,9 +3363,11 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
 
                 {authMode === "register" && (
                   <TouchableOpacity
-                    onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> switchAuthMode("login")}
+                    onPress={() => switchAuthMode("login")}
                     disabled={authLoading}
                     className="items-center"
+                    accessibilityRole="button"
+                    accessibilityLabel="Sign in instead"
                   >
                     <Text className="text-green-400 text-sm font-medium">
                       Already have an account? Sign In
@@ -1766,7 +3398,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
           visible={showSuccessModal}
           transparent
           animationType="fade"
-          onRequestClose={() = accessibilityViewIsModal={true}> setShowSuccessModal(false)}
+          onRequestClose={() => setShowSuccessModal(false)}
         >
           <View className="flex-1 bg-black/50 justify-center items-center px-6">
             <View className="bg-slate-800 border border-white/10 rounded-2xl p-8 w-full max-w-sm">
@@ -1782,8 +3414,10 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                 </Text>
               </View>
               <TouchableOpacity
-                onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> setShowSuccessModal(false)}
+                onPress={() => setShowSuccessModal(false)}
                 className="bg-gradient-to-r from-green-600 to-green-500 rounded-xl py-3 items-center"
+                accessibilityRole="button"
+                accessibilityLabel="Continue"
               >
                 <Text className="text-white font-bold text-base">Continue</Text>
               </TouchableOpacity>
@@ -1888,7 +3522,10 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
         <TouchableOpacity
           onPress={toggleOnlineStatus}
           className="bg-white/10 border border-white/10 rounded-xl px-4 py-2 flex-row items-center justify-center"
-         style={{ minHeight: 44 }} accessibilityRole="button" accessibilityLabel="Interactive button">
+          style={{ minHeight: 44 }}
+          accessibilityRole="button"
+          accessibilityLabel="Toggle online status"
+        >
           <View
             className={`w-3 h-3 rounded-full mr-2 ${
               onlineStatus ? "bg-green-500" : "bg-gray-500"
@@ -1906,7 +3543,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
       {/* Bottom Navigation */}
       <View className="absolute bottom-0 left-0 right-0 bg-slate-800/90 backdrop-blur-lg border-t border-white/10 px-2 py-3 flex-row justify-around items-center">
         <TouchableOpacity
-          onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleViewChange("dashboard")}
+          onPress={() => handleViewChange("dashboard")}
           className={`items-center py-2 px-4 rounded-xl ${
             activeView === "dashboard" ? "bg-red-500/20" : ""
           }`}
@@ -1928,7 +3565,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleViewChange("jobs")}
+          onPress={() => handleViewChange("jobs")}
           className={`items-center py-2 px-4 rounded-xl ${
             activeView === "jobs" ? "bg-red-500/20" : ""
           }`}
@@ -1956,12 +3593,13 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
           accessibilityRole="button"
           accessibilityLabel="Emergency SOS"
           accessibilityHint="Contact emergency support"
-         style={{ minHeight: 44 }}>
+          style={{ minHeight: 44 }}
+        >
           <Text className="text-white font-bold text-sm">SOS</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleViewChange("earnings")}
+          onPress={() => handleViewChange("earnings")}
           className={`items-center py-2 px-4 rounded-xl ${
             activeView === "earnings" ? "bg-red-500/20" : ""
           }`}
@@ -1983,7 +3621,7 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() = accessibilityRole="button" accessibilityLabel="Interactive button"> handleViewChange("profile")}
+          onPress={() => handleViewChange("profile")}
           className={`items-center py-2 px-4 rounded-xl ${
             activeView === "profile" ? "bg-red-500/20" : ""
           }`}
