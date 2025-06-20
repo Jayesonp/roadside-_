@@ -52,6 +52,7 @@ import {
   ArrowLeft,
   Wrench,
 } from "lucide-react-native";
+import MapComponent from "./Maps/MapComponent";
 
 interface JobTimer {
   minutes: number;
@@ -770,18 +771,47 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
             break;
 
           case 'navigate':
-            const destination = job.location;
-            const url = Platform.select({
-              ios: `maps:0,0?q=${encodeURIComponent(destination)}`,
-              android: `geo:0,0?q=${encodeURIComponent(destination)}`,
-              default: `https://maps.google.com/?q=${encodeURIComponent(destination)}`,
-            });
+            if (job.coordinates) {
+              // Use coordinates if available for more accurate navigation
+              const destination = `${job.coordinates.lat},${job.coordinates.lng}`;
+              const googleMapsUrl = Platform.select({
+                ios: `comgooglemaps://?daddr=${destination}&directionsmode=driving`,
+                android: `google.navigation:q=${destination}&mode=d`,
+              });
 
-            const canOpen = await Linking.canOpenURL(url!);
-            if (canOpen) {
-              await Linking.openURL(url!);
+              const fallbackUrl = Platform.select({
+                ios: `maps:0,0?q=${destination}`,
+                android: `geo:0,0?q=${destination}`,
+                default: `https://maps.google.com/?q=${destination}`,
+              });
+
+              try {
+                // Try Google Maps first
+                if (googleMapsUrl && await Linking.canOpenURL(googleMapsUrl)) {
+                  await Linking.openURL(googleMapsUrl);
+                } else if (fallbackUrl && await Linking.canOpenURL(fallbackUrl)) {
+                  await Linking.openURL(fallbackUrl);
+                } else {
+                  throw new Error('No navigation app available');
+                }
+              } catch (error) {
+                Alert.alert("Navigation Error", "Unable to open navigation app. Please ensure you have Google Maps or Apple Maps installed.");
+              }
             } else {
-              Alert.alert("Error", "Unable to open navigation app");
+              // Fallback to address-based navigation
+              const destination = job.location;
+              const url = Platform.select({
+                ios: `maps:0,0?q=${encodeURIComponent(destination)}`,
+                android: `geo:0,0?q=${encodeURIComponent(destination)}`,
+                default: `https://maps.google.com/?q=${encodeURIComponent(destination)}`,
+              });
+
+              const canOpen = await Linking.canOpenURL(url!);
+              if (canOpen) {
+                await Linking.openURL(url!);
+              } else {
+                Alert.alert("Error", "Unable to open navigation app");
+              }
             }
             break;
 
@@ -1125,9 +1155,29 @@ const TechnicianDashboard: React.FC<TechnicianDashboardProps> = ({
                             Location
                           </ResponsiveText>
                           <ResponsiveText variant="body" className="mb-1">{selectedJob.location}</ResponsiveText>
-                          <ResponsiveText variant="caption" color="secondary">
+                          <ResponsiveText variant="caption" color="secondary" className="mb-3">
                             Distance: {selectedJob.distance} • ETA: {selectedJob.eta}
                           </ResponsiveText>
+
+                          {/* Map Component for Job Location */}
+                          {selectedJob.coordinates && (
+                            <View className="mt-2">
+                              <MapComponent
+                                destination={{
+                                  latitude: selectedJob.coordinates.lat,
+                                  longitude: selectedJob.coordinates.lng,
+                                  title: selectedJob.type,
+                                  description: selectedJob.location
+                                }}
+                                showCurrentLocation={true}
+                                height={200}
+                                onNavigate={() => {
+                                  setShowJobDetails(false);
+                                  Alert.alert("Navigation", "Opening navigation app...");
+                                }}
+                              />
+                            </View>
+                          )}
                         </View>
 
                         <View>
