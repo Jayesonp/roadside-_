@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import "../global.css";
 import { Platform } from "react-native";
-import { AuthProvider } from "./components/Auth";
+// import { AuthProvider } from "./components/Auth";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -56,17 +56,15 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <ThemeProvider value={DefaultTheme}>
-        <Stack
-          screenOptions={({ route }) => ({
-            headerShown: !route.name.startsWith("tempobook"),
-          })}
-        >
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </AuthProvider>
+    <ThemeProvider value={DefaultTheme}>
+      <Stack
+        screenOptions={({ route }) => ({
+          headerShown: !route.name.startsWith("tempobook"),
+        })}
+      >
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+      </Stack>
+      <StatusBar style="auto" />
+    </ThemeProvider>
   );
 }

@@ -651,7 +651,7 @@ function AdminDashboardContent({
                           }`}
                         >
                           {stat.change}
-                        </ResponsiveText>
+                        </Text>
                       </View>
                     </View>
                     <ResponsiveText className="text-white text-2xl font-bold mb-1">
