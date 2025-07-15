@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import WebErrorBoundary from "./components/WebErrorBoundary";
+import WebHead from "./components/WebHead";
+import WebPerformanceMonitor from "./components/WebPerformanceMonitor";
 
 type PanelType = "customer" | "admin" | "technician" | "partner" | "security";
 
@@ -65,22 +68,29 @@ export default function MinimalApp() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900">
-      <View className="flex-1 bg-slate-900">
-        {/* Simple header */}
-        <View className="bg-slate-800/90 backdrop-blur-lg border-b border-white/10 px-4 py-3">
-          <Text className="text-white text-xl font-bold">🚗 RoadSide+</Text>
-        </View>
+    <WebErrorBoundary>
+      <WebHead
+        title={`RoadSide+ | ${panels.find(p => p.id === activePanel)?.name || 'Dashboard'}`}
+        description="Manage your roadside assistance services with our comprehensive dashboard"
+      />
+      <WebPerformanceMonitor />
+      <SafeAreaView className="flex-1 bg-slate-900">
+        <View className="flex-1 bg-slate-900">
+          {/* Simple header */}
+          <View className="bg-slate-800/90 backdrop-blur-lg border-b border-white/10 px-4 py-3">
+            <Text className="text-white text-xl font-bold">🚗 RoadSide+</Text>
+          </View>
 
-        {/* Content */}
-        <ScrollView
-          className="flex-1"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ flexGrow: 1 }}
-        >
-          {renderPanel()}
-        </ScrollView>
-      </View>
-    </SafeAreaView>
+          {/* Content */}
+          <ScrollView
+            className="flex-1"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1 }}
+          >
+            {renderPanel()}
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    </WebErrorBoundary>
   );
 }

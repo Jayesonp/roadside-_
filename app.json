@@ -1,11 +1,10 @@
 {
   "expo": {
-    "name": "test-tempo",
-    "slug": "test-tempo",
+    "name": "RoadSide+",
+    "slug": "roadside-plus",
     "version": "1.0.0",
     "orientation": "portrait",
-    // "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "roadside-plus",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -15,10 +14,6 @@
       }
     },
     "android": {
-      // "adaptiveIcon": {
-      //   "foregroundImage": "./assets/images/adaptive-icon.png",
-      //   "backgroundColor": "#ffffff"
-      // },
       "config": {
         "googleMaps": {
           "apiKey": "YOUR_ANDROID_GOOGLE_MAPS_API_KEY"
@@ -31,21 +26,11 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
-      // "favicon": "./assets/images/favicon.png"
+      "output": "static"
     },
     "plugins": [
       "expo-router",
       "expo-location",
-      // [
-      //   "expo-splash-screen",
-      //   {
-      //     "image": "./assets/images/splash-icon.png",
-      //     "imageWidth": 200,
-      //     "resizeMode": "contain",
-      //     "backgroundColor": "#ffffff"
-      //   }
-      // ],
       "expo-web-browser"
     ],
     "experiments": {

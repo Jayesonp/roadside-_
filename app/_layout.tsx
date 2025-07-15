@@ -68,3 +68,8 @@ export default function RootLayout() {
     </ThemeProvider>
   );
 }
+
+// Add static rendering configuration for Expo Router
+export const unstable_settings = {
+  initialRouteName: "index",
+};
