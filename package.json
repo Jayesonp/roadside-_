@@ -8,6 +8,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "build:web": "npx expo export --platform web",
+    "vercel-build": "node vercel-build.js",
     "test": "jest --watchAll",
     "lint": "expo lint"
   },
